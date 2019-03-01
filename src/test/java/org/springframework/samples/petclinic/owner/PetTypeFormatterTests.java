@@ -12,6 +12,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.PetTypeFormatter;
+import org.springframework.samples.petclinic.repositories.PetRepository;
 
 import static org.junit.Assert.assertEquals;
 

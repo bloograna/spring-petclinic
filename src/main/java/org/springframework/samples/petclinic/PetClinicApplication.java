@@ -16,8 +16,18 @@
 
 package org.springframework.samples.petclinic;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.Collections;
 
 /**
  * PetClinic Spring Boot Application.
@@ -26,10 +36,41 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  */
 @SpringBootApplication
+@EnableSwagger2
 public class PetClinicApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PetClinicApplication.class, args);
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
+
+    /**
+     * swagger definition setup.
+     * @return swagger docket
+     */
+    @Bean
+    public Docket petClinicApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+            .select()
+            .apis(RequestHandlerSelectors.basePackage("org.springframework.samples.petclinic"))
+            .build()
+            .apiInfo(apiInfo());
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfo(
+            "Pet Clinic API",
+            "REST API for Pet Clinic",
+            "1.0",
+            "ToS",
+            new Contact("Nadia", "https://github.com/bloograna/spring-petclinic", "nadia@nadiabernhardt.com"),
+            "",
+            "",
+            Collections.emptyList());
     }
 
 }
