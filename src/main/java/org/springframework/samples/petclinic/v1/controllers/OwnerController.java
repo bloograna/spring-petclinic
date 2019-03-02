@@ -17,16 +17,13 @@
 package org.springframework.samples.petclinic.v1.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
-import org.springframework.samples.petclinic.v1.dtos.OwnerDTO;
-import org.springframework.samples.petclinic.v1.dtos.ResponseData;
-import org.springframework.samples.petclinic.exceptions.ServiceException;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.repositories.OwnerRepository;
+import org.springframework.lang.NonNull;
+import org.springframework.samples.petclinic.dtos.OwnerDTO;
+import org.springframework.samples.petclinic.dtos.ResponseData;
+import org.springframework.samples.petclinic.service.interfaces.OwnerService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 @Slf4j
@@ -34,34 +31,21 @@ import java.util.Collection;
 @RequestMapping(path = "/v1/owners", produces = MediaType.APPLICATION_JSON_VALUE)
 class OwnerController {
 
-    private final OwnerRepository owners;
-    private ModelMapper modelMapper;
+    private final OwnerService ownerService;
 
 
-    public OwnerController(OwnerRepository clinicService, ModelMapper modelMapper) {
-        this.owners = clinicService;
-        this.modelMapper = modelMapper;
+    public OwnerController(OwnerService ownerService) {
+        this.ownerService = ownerService;
     }
 
-    @PostMapping("/update")
-    public ResponseData<String> processCreationForm(@RequestBody OwnerDTO newOwner) {
-        Owner owner = modelMapper.map(newOwner, Owner.class);
-        try {
-            this.owners.save(owner);
-        } catch (Exception exception) {
-            log.error("Error saving owner to database", exception.getMessage());
-            throw new ServiceException("Error saving user to database");
-        }
-        return new ResponseData<>("ok");
+    @PostMapping
+    public ResponseData<String> saveOwner(@RequestBody @NonNull OwnerDTO ownerDTO) {
+        return ownerService.saveOwner(ownerDTO);
     }
 
     @GetMapping
-    public  ResponseData<Collection<OwnerDTO>> getOwners(String lastName) {
-        String searchLastName = lastName == null ? "" : lastName;
-        Collection<Owner> results = this.owners.findByLastName(searchLastName);
-        ArrayList<OwnerDTO> convertedResults = new ArrayList<>();
-        results.forEach(owner -> convertedResults.add(modelMapper.map(owner, OwnerDTO.class)));
-        return new ResponseData<>(convertedResults);
+    public ResponseData<Collection<OwnerDTO>> getOwners(String lastName) {
+        return ownerService.findOwnerByLastName(lastName);
     }
 
 }

@@ -1,15 +1,13 @@
 package org.springframework.samples.petclinic.service.interfaces;
 
 import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.v1.dtos.PetDTO;
-import org.springframework.samples.petclinic.v1.dtos.ResponseData;
+import org.springframework.samples.petclinic.dtos.PetDTO;
+import org.springframework.samples.petclinic.dtos.ResponseData;
 
 import java.util.Collection;
 
 public interface PetService {
     ResponseData<String> savePet(PetDTO pet);
-
-    ResponseData<String> deletePet(int petId);
 
     ResponseData<PetDTO> getPetById(int petId);
 

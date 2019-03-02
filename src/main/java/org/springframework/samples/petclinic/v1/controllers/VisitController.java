@@ -17,8 +17,9 @@
 package org.springframework.samples.petclinic.v1.controllers;
 
 import org.springframework.http.MediaType;
-import org.springframework.samples.petclinic.v1.dtos.ResponseData;
-import org.springframework.samples.petclinic.v1.dtos.VisitDTO;
+import org.springframework.lang.NonNull;
+import org.springframework.samples.petclinic.dtos.ResponseData;
+import org.springframework.samples.petclinic.dtos.VisitDTO;
 import org.springframework.samples.petclinic.service.interfaces.VisitService;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,8 +43,9 @@ class VisitController {
         this.visitService = visitService;
     }
 
+    // in an ideal world add/update would be separate endpoints
     @PostMapping
-    public ResponseData<String> updateVisit(@RequestBody VisitDTO visit) {
+    public ResponseData<String> saveVisit(@RequestBody @NonNull VisitDTO visit) {
         return visitService.saveVisit(visit);
     }
 

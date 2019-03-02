@@ -18,9 +18,10 @@ package org.springframework.samples.petclinic.v1.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.samples.petclinic.service.interfaces.PetService;
-import org.springframework.samples.petclinic.v1.dtos.PetDTO;
-import org.springframework.samples.petclinic.v1.dtos.ResponseData;
+import org.springframework.samples.petclinic.dtos.PetDTO;
+import org.springframework.samples.petclinic.dtos.ResponseData;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,13 +44,8 @@ class PetController {
     }
 
     @PostMapping
-    public ResponseData<String> updatePet(@RequestBody PetDTO pet) {
+    public ResponseData<String> savePet(@RequestBody @NonNull PetDTO pet) {
         return petService.savePet(pet);
-    }
-
-    @DeleteMapping("/{petId}")
-    public ResponseData<String> deletePet(@PathVariable int petId) {
-        return petService.deletePet(petId);
     }
 
     @GetMapping("/{petId}")

@@ -1,7 +1,7 @@
 package org.springframework.samples.petclinic.service.interfaces;
 
-import org.springframework.samples.petclinic.v1.dtos.ResponseData;
-import org.springframework.samples.petclinic.v1.dtos.VisitDTO;
+import org.springframework.samples.petclinic.dtos.ResponseData;
+import org.springframework.samples.petclinic.dtos.VisitDTO;
 
 import java.util.Collection;
 

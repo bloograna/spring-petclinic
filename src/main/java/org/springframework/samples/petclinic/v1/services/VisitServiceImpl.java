@@ -4,17 +4,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.samples.petclinic.v1.dtos.ResponseData;
-import org.springframework.samples.petclinic.v1.dtos.VisitDTO;
+import org.springframework.samples.petclinic.dtos.ResponseData;
+import org.springframework.samples.petclinic.dtos.VisitDTO;
 import org.springframework.samples.petclinic.exceptions.InvalidFormatException;
 import org.springframework.samples.petclinic.exceptions.InvalidIdException;
+import org.springframework.samples.petclinic.exceptions.InvalidRequestBodyException;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repositories.PetRepository;
 import org.springframework.samples.petclinic.repositories.VisitRepository;
 import org.springframework.samples.petclinic.service.interfaces.VisitService;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Slf4j
-@Component
+@Service
 public class VisitServiceImpl implements VisitService {
     private final VisitRepository visits;
     private final PetRepository pets;
@@ -37,15 +39,23 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     public ResponseData<String> saveVisit(VisitDTO visitDto) {
-        Pet pet = pets.findById(visitDto.getPetId());
-        // if we're actually have this pet in the database, then save the visit
-        if (pet != null) {
-            Visit visit = modelMapper.map(visitDto, Visit.class);
-            visits.save(visit);
-        } else {
-            throw new InvalidIdException("Invalid pet id, this pet is not registered yet");
+        try {
+            if (visitDto.getPetId() != null) {
+                Pet pet = pets.findById(visitDto.getPetId());
+                // if we're actually have this pet in the database, then save the visit
+                if (pet != null) {
+                    Visit visit = modelMapper.map(visitDto, Visit.class);
+                    visits.save(visit);
+                } else {
+                    throw new InvalidIdException("Invalid pet id, this pet is not registered yet");
+                }
+                return new ResponseData<>("ok");
+            } else {
+                throw new InvalidRequestBodyException("Received bad request body for visit, missing pet id");
+            }
+        } catch (ConstraintViolationException exception) {
+            throw new InvalidRequestBodyException("Received bad request body for visit: " + exception.getConstraintViolations());
         }
-        return new ResponseData<>("ok");
     }
 
 

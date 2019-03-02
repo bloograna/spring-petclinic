@@ -34,14 +34,14 @@ import org.springframework.beans.support.PropertyComparator;
  */
 @Entity
 @Table(name = "vets")
-public class Vet extends org.springframework.samples.petclinic.model.Person {
+public class Vet extends Person {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"), inverseJoinColumns = @JoinColumn(name = "specialty_id"))
-    private Set<org.springframework.samples.petclinic.model.Specialty> specialties;
+    private Set<Specialty> specialties;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "vetId", fetch = FetchType.EAGER)
-    private Set<org.springframework.samples.petclinic.model.Visit> visits = new LinkedHashSet<>();
+    private Set<Visit> visits = new LinkedHashSet<>();
 
     protected Set<org.springframework.samples.petclinic.model.Specialty> getSpecialtiesInternal() {
         if (this.specialties == null) {

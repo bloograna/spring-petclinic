@@ -16,10 +16,14 @@
 package org.springframework.samples.petclinic.repositories;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +47,19 @@ public interface VetRepository extends Repository<Vet, Integer> {
     @Cacheable("vets")
     Collection<Vet> findAll() throws DataAccessException;
 
+    Vet findById(Integer vetId);
 
+    /**
+     * Save a {@link Vet} to the data store, either inserting or updating it.
+     * @param vet the {@link Vet} to save
+     */
+    void save(Vet vet);
+
+    /**
+     * Retrieve all {@link Specialty}s from the data store.
+     * @return a Collection of {@link Specialty}s.
+     */
+    @Query("SELECT sname FROM Specialty sname ORDER BY sname.name")
+    @Transactional(readOnly = true)
+    Set<Specialty> findSpecialties();
 }

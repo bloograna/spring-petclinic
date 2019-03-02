@@ -34,7 +34,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Entity
 @Table(name = "visits")
-public class Visit extends org.springframework.samples.petclinic.model.BaseEntity {
+public class Visit extends BaseEntity {
 
     @Column(name = "visit_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")

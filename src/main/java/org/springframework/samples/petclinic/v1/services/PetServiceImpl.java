@@ -3,28 +3,29 @@ package org.springframework.samples.petclinic.v1.services;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.samples.petclinic.exceptions.InvalidIdException;
+import org.springframework.samples.petclinic.exceptions.InvalidRequestBodyException;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.repositories.OwnerRepository;
 import org.springframework.samples.petclinic.repositories.PetRepository;
 import org.springframework.samples.petclinic.service.interfaces.PetService;
-import org.springframework.samples.petclinic.v1.dtos.PetDTO;
-import org.springframework.samples.petclinic.v1.dtos.ResponseData;
-import org.springframework.stereotype.Component;
+import org.springframework.samples.petclinic.dtos.PetDTO;
+import org.springframework.samples.petclinic.dtos.ResponseData;
+import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Slf4j
-@Component
+@Service
 public class PetServiceImpl implements PetService {
-    private PetRepository pets;
-    private OwnerRepository owners;
-    private ModelMapper modelMapper;
+    private final PetRepository pets;
+    private final OwnerRepository owners;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public PetServiceImpl(PetRepository pets, OwnerRepository owners, ModelMapper modelMapper) {
@@ -37,20 +38,14 @@ public class PetServiceImpl implements PetService {
     public ResponseData<String> savePet(PetDTO petDto) {
         Owner owner = owners.findById(petDto.getOwnerId());
         if (owner != null) {
-            Pet pet = modelMapper.map(petDto, Pet.class);
-            pets.save(pet);
+            try {
+                Pet pet = modelMapper.map(petDto, Pet.class);
+                pets.save(pet);
+            } catch (ConstraintViolationException exception) {
+                throw new InvalidRequestBodyException("Received bad request body for pet: " + exception.getConstraintViolations());
+            }
         } else {
             throw new InvalidIdException("Invalid owner id, this owner is not registered yet");
-        }
-        return new ResponseData<>("ok");
-    }
-
-    @Override
-    public ResponseData<String> deletePet(int petId) {
-        try {
-            pets.deleteById(petId);
-        } catch (EmptyResultDataAccessException exception) {
-            throw new InvalidIdException("Invalid pet id, this pet does not exist");
         }
         return new ResponseData<>("ok");
     }
@@ -76,9 +71,9 @@ public class PetServiceImpl implements PetService {
     }
 
 
-    private Collection<PetDTO> convertToPetDTO(Collection<Pet> Pets) {
-        List<PetDTO> convertedResults = new ArrayList<>(Pets.size());
-        Pets.forEach(Pet -> convertedResults.add(modelMapper.map(Pet, PetDTO.class)));
+    private Collection<PetDTO> convertToPetDTO(Collection<Pet> pets) {
+        List<PetDTO> convertedResults = new ArrayList<>(pets.size());
+        pets.forEach(pet -> convertedResults.add(modelMapper.map(pet, PetDTO.class)));
         return convertedResults;
     }
 }

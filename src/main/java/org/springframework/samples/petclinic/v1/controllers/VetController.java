@@ -17,14 +17,15 @@
 package org.springframework.samples.petclinic.v1.controllers;
 
 import org.springframework.http.MediaType;
-import org.springframework.samples.petclinic.repositories.VetRepository;
-import org.springframework.samples.petclinic.v1.dtos.ResponseData;
-import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.lang.NonNull;
+import org.springframework.samples.petclinic.dtos.VetDTO;
+import org.springframework.samples.petclinic.model.Specialty;
+import org.springframework.samples.petclinic.dtos.ResponseData;
+import org.springframework.samples.petclinic.service.interfaces.VetService;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Set;
 
 
 /**
@@ -37,15 +38,30 @@ import java.util.Collection;
 @RequestMapping(path = "/v1/vets", produces = MediaType.APPLICATION_JSON_VALUE)
 class VetController {
 
-    private final VetRepository vets;
+    private final VetService vetService;
 
-    public VetController(VetRepository clinicService) {
-        this.vets = clinicService;
+    public VetController(VetService vetService) {
+        this.vetService = vetService;
     }
 
     @GetMapping
-    public ResponseData<Collection<Vet>> showResourcesVetList() {
-        return new ResponseData<>(this.vets.findAll());
+    public ResponseData<Collection<VetDTO>> getVets() {
+        return vetService.getVets();
+    }
+
+    @GetMapping("/{vetId}")
+    public ResponseData<VetDTO> getVetById(@PathVariable int vetId) {
+        return vetService.getVetById(vetId);
+    }
+
+    @GetMapping("/speciality")
+    public ResponseData<Set<Specialty>> getSpecialties() {
+        return vetService.getSpecialties();
+    }
+
+    @PostMapping
+    public ResponseData<String> saveVet(@RequestBody @NonNull VetDTO vetDTO) {
+        return vetService.saveVet(vetDTO);
     }
 
 }
