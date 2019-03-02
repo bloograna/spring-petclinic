@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.samples.petclinic.controllers;
+package org.springframework.samples.petclinic.v1.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
-import org.springframework.samples.petclinic.dtos.OwnerDTO;
-import org.springframework.samples.petclinic.dtos.ResponseData;
+import org.springframework.samples.petclinic.v1.dtos.OwnerDTO;
+import org.springframework.samples.petclinic.v1.dtos.ResponseData;
 import org.springframework.samples.petclinic.exceptions.ServiceException;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.repositories.OwnerRepository;
@@ -31,7 +31,7 @@ import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/owners", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/v1/owners", produces = MediaType.APPLICATION_JSON_VALUE)
 class OwnerController {
 
     private final OwnerRepository owners;

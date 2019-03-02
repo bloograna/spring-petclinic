@@ -13,10 +13,10 @@
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 //import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.samples.petclinic.controllers.VisitController;
-//import org.springframework.samples.petclinic.model.Pet;
-//import org.springframework.samples.petclinic.repositories.PetRepository;
-//import org.springframework.samples.petclinic.repositories.VisitRepository;
+//import org.springframework.samples.petclinic.v1.controllers.VisitController;
+//import org.springframework.samples.petclinic.v1.PetPet;
+//import org.springframework.samples.petclinic.v1.repositoriestory;
+//import org.springframework.samples.petclinic.v1.repositoriessitory;
 //import org.springframework.test.context.junit4.SpringRunner;
 //import org.springframework.test.web.servlet.MockMvc;
 //

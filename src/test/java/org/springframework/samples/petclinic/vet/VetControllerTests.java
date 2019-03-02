@@ -16,10 +16,10 @@
 //import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 //import org.springframework.boot.test.mock.mockito.MockBean;
 //import org.springframework.http.MediaType;
-//import org.springframework.samples.petclinic.controllers.VetController;
-//import org.springframework.samples.petclinic.model.Specialty;
-//import org.springframework.samples.petclinic.model.Vet;
-//import org.springframework.samples.petclinic.repositories.VetRepository;
+//import org.springframework.samples.petclinic.v1.controllers.VetController;
+//import org.springframework.samples.petclinic.v1.modelecialty;
+//import org.springframework.samples.petclinic.v1.VetVet;
+//import org.springframework.samples.petclinic.v1.repositoriestory;
 //import org.springframework.test.context.junit4.SpringRunner;
 //import org.springframework.test.web.servlet.MockMvc;
 //import org.springframework.test.web.servlet.ResultActions;

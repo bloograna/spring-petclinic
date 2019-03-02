@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.samples.petclinic.repositories;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.util.Collection;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.repository.Repository;
@@ -41,6 +43,11 @@ public interface VisitRepository extends Repository<Visit, Integer> {
      */
     void save(Visit visit) throws DataAccessException;
 
-    List<Visit> findByPetId(Integer petId);
+    Collection<Visit> findByPetId(Integer petId);
 
+    void deleteById(int id) throws DataAccessException;
+
+    Collection<Visit> findByDate(LocalDate visitDate);
+
+    Collection<Visit> findByVetId(Integer vetId);
 }

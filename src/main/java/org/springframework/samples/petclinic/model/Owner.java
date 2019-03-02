@@ -58,7 +58,7 @@ public class Owner extends Person {
     private String telephone;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
-    private Set<Pet> pets;
+    private Set<org.springframework.samples.petclinic.model.Pet> pets;
 
     public String getAddress() {
         return this.address;
@@ -91,18 +91,18 @@ public class Owner extends Person {
         return this.pets;
     }
 
-    protected void setPetsInternal(Set<Pet> pets) {
+    protected void setPetsInternal(Set<org.springframework.samples.petclinic.model.Pet> pets) {
         this.pets = pets;
     }
 
-    public List<Pet> getPets() {
-        List<Pet> sortedPets = new ArrayList<>(getPetsInternal());
+    public List<org.springframework.samples.petclinic.model.Pet> getPets() {
+        List<org.springframework.samples.petclinic.model.Pet> sortedPets = new ArrayList<>(getPetsInternal());
         PropertyComparator.sort(sortedPets,
                 new MutableSortDefinition("name", true, true));
         return Collections.unmodifiableList(sortedPets);
     }
 
-    public void addPet(Pet pet) {
+    public void addPet(org.springframework.samples.petclinic.model.Pet pet) {
         if (pet.isNew()) {
             getPetsInternal().add(pet);
         }
@@ -115,7 +115,7 @@ public class Owner extends Person {
      * @param name to test
      * @return true if pet name is already in use
      */
-    public Pet getPet(String name) {
+    public org.springframework.samples.petclinic.model.Pet getPet(String name) {
         return getPet(name, false);
     }
 
@@ -125,9 +125,9 @@ public class Owner extends Person {
      * @param name to test
      * @return true if pet name is already in use
      */
-    public Pet getPet(String name, boolean ignoreNew) {
+    public org.springframework.samples.petclinic.model.Pet getPet(String name, boolean ignoreNew) {
         name = name.toLowerCase();
-        for (Pet pet : getPetsInternal()) {
+        for (org.springframework.samples.petclinic.model.Pet pet : getPetsInternal()) {
             if (!ignoreNew || !pet.isNew()) {
                 String compName = pet.getName();
                 compName = compName.toLowerCase();

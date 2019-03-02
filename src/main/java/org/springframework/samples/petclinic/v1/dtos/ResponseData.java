@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.dtos;
+package org.springframework.samples.petclinic.v1.dtos;
 
 public class ResponseData<T> {
     private T data = null;

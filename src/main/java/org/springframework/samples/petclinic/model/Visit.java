@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.samples.petclinic.model;
 
+import java.sql.Time;
 import java.time.LocalDate;
 
 import javax.persistence.Column;
@@ -23,7 +25,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.samples.petclinic.model.BaseEntity;
 
 /**
  * Simple JavaBean domain object representing a visit.
@@ -33,11 +34,17 @@ import org.springframework.samples.petclinic.model.BaseEntity;
  */
 @Entity
 @Table(name = "visits")
-public class Visit extends BaseEntity {
+public class Visit extends org.springframework.samples.petclinic.model.BaseEntity {
 
     @Column(name = "visit_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
+
+    @Column(name = "start_time")
+    private Time startTime;
+
+    @Column(name = "end_time")
+    private Time endTime;
 
     @NotEmpty
     @Column(name = "description")
@@ -45,6 +52,9 @@ public class Visit extends BaseEntity {
 
     @Column(name = "pet_id")
     private Integer petId;
+
+    @Column(name = "vet_id")
+    private Integer vetId;
 
     /**
      * Creates a new instance of Visit for the current date
@@ -75,6 +85,30 @@ public class Visit extends BaseEntity {
 
     public void setPetId(Integer petId) {
         this.petId = petId;
+    }
+
+    public Integer getVetId() {
+        return this.vetId;
+    }
+
+    public void setVetId(Integer vetId) {
+        this.vetId = vetId;
+    }
+
+    public Time getStartTime() {
+        return this.startTime;
+    }
+
+    public void setStartTime(Time startTime) {
+        this.startTime = startTime;
+    }
+
+    public Time getEndTime() {
+        return this.endTime;
+    }
+
+    public void setEndTimeTime(Time endTime) {
+        this.endTime = endTime;
     }
 
 }

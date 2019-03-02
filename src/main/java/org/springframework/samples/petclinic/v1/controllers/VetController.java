@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.samples.petclinic.controllers;
+package org.springframework.samples.petclinic.v1.controllers;
 
 import org.springframework.http.MediaType;
-import org.springframework.samples.petclinic.dtos.ResponseData;
-import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.repositories.VetRepository;
+import org.springframework.samples.petclinic.v1.dtos.ResponseData;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +34,7 @@ import java.util.Collection;
  * @author Arjen Poutsma
  */
 @RestController
-@RequestMapping(path = "/vets", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/v1/vets", produces = MediaType.APPLICATION_JSON_VALUE)
 class VetController {
 
     private final VetRepository vets;

@@ -16,13 +16,13 @@
 //import org.springframework.boot.test.mock.mockito.MockBean;
 //import org.springframework.context.annotation.ComponentScan;
 //import org.springframework.context.annotation.FilterType;
-//import org.springframework.samples.petclinic.controllers.PetController;
-//import org.springframework.samples.petclinic.model.Owner;
-//import org.springframework.samples.petclinic.model.Pet;
-//import org.springframework.samples.petclinic.model.PetType;
-//import org.springframework.samples.petclinic.model.PetTypeFormatter;
-//import org.springframework.samples.petclinic.repositories.OwnerRepository;
-//import org.springframework.samples.petclinic.repositories.PetRepository;
+//import org.springframework.samples.petclinic.v1.controllers.PetController;
+//import org.springframework.samples.petclinic.v1.modelner;
+//import org.springframework.samples.petclinic.v1.PetPet;
+//import org.springframework.samples.petclinic.v1.PetTypeype;
+//import org.springframework.samples.petclinic.v1.modeltTypeFormatter;
+//import org.springframework.samples.petclinic.v1.OwnerRepositoryory;
+//import org.springframework.samples.petclinic.v1.PetRepositoryory;
 //import org.springframework.test.context.junit4.SpringRunner;
 //import org.springframework.test.web.servlet.MockMvc;
 //

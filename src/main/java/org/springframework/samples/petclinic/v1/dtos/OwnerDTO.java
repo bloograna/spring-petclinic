@@ -1,8 +1,7 @@
-package org.springframework.samples.petclinic.dtos;
+package org.springframework.samples.petclinic.v1.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.Set;
 
 @Getter
