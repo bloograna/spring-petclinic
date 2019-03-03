@@ -1,7 +1,7 @@
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
+import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { capitalize } from 'lodash';
 import { concat } from 'rxjs/observable/concat';
 import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
@@ -19,7 +19,7 @@ const GET_VET_BY_ID = 'vet/GET_VET_BY_ID';
 const GET_VET_BY_ID_SUCCESS = 'vet/GET_VET_BY_ID_SUCCESS';
 
 /* ----- ACTIONS ----- */
-const saveVet = mac(SAVE_VET, 'vet');
+const saveVet = mac(SAVE_VET, 'vet', 'add');
 const saveVetSuccess = mac(SAVE_VET_SUCCESS, 'vet');
 const getVetSpecialties = mac(GET_VET_SPECIALTIES);
 const getVetSpecialtiesSuccess = mac(
@@ -52,6 +52,21 @@ const vetReducer = (state = vetInitialState, action) => {
   }
 };
 
+/* -------- HELPERS ------- */
+const getVetRequestBody = vet => {
+  const { specialties, firstName, lastName } = vet;
+  const mappedSpecialties = specialties.map(value => {
+    const specialtyWithId = { id: `${value}` };
+    return specialtyWithId;
+  });
+  return {
+    firstName,
+    lastName,
+    specialties: mappedSpecialties,
+    visits: []
+  };
+};
+
 /* -------- EPICS ------- */
 
 const getVetsEpic = action$ =>
@@ -66,6 +81,21 @@ const getVetsEpic = action$ =>
     )
   );
 
+const saveVetEpic = action$ =>
+  action$.ofType(SAVE_VET).mergeMap(action =>
+    concat(
+      fromPromise(vetService.saveVet(getVetRequestBody(action.vet))).map(
+        result => {
+          if (result.error) {
+            return addMessage('An error occurred while saving vet');
+          }
+          return saveVetSuccess(result.data);
+        }
+      ),
+      of(getVets())
+    )
+  );
+
 const getSpecialtiesEpic = action$ =>
   action$.ofType(GET_VET_SPECIALTIES).mergeMap(() =>
     concat(
@@ -75,14 +105,12 @@ const getSpecialtiesEpic = action$ =>
             'An error occured while getting vet specialities from server'
           );
         }
-        return getVetSpecialtiesSuccess(
-          result.data.map(specialty => capitalize(specialty.name))
-        );
+        return getVetSpecialtiesSuccess(result.data);
       })
     )
   );
 
-const vetEpics = [getVetsEpic, getSpecialtiesEpic];
+const vetEpics = [getVetsEpic, getSpecialtiesEpic, saveVetEpic];
 
 export {
   vetReducer as default,

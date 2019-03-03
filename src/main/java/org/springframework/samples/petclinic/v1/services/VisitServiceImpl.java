@@ -38,13 +38,13 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public ResponseData<String> saveVisit(VisitDTO visitDto) {
+    public ResponseData<String> saveVisit(VisitDTO visitDTO) {
         try {
-            if (visitDto.getPetId() != null) {
-                Pet pet = pets.findById(visitDto.getPetId());
+            if (visitDTO.getPetId() != null) {
+                Pet pet = pets.findById(visitDTO.getPetId());
                 // if we're actually have this pet in the database, then save the visit
                 if (pet != null) {
-                    Visit visit = modelMapper.map(visitDto, Visit.class);
+                    Visit visit = modelMapper.map(visitDTO, Visit.class);
                     visits.save(visit);
                 } else {
                     throw new InvalidIdException("Invalid pet id, this pet is not registered yet");

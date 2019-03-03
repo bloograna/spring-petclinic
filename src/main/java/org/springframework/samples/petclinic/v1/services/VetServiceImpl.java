@@ -10,7 +10,6 @@ import org.springframework.samples.petclinic.exceptions.InvalidIdException;
 import org.springframework.samples.petclinic.exceptions.InvalidRequestBodyException;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repositories.VetRepository;
 import org.springframework.samples.petclinic.service.interfaces.VetService;
 import org.springframework.stereotype.Service;
@@ -45,21 +44,18 @@ public class VetServiceImpl implements VetService {
         if (result != null) {
             return new ResponseData<>(modelMapper.map(vets.findById(vetId), VetDTO.class));
         } else {
-            throw new InvalidIdException("Invalid pet id, this pet does not exist");
+            throw new InvalidIdException("Invalid vet id, this vet does not exist");
         }
     }
 
     @Override
     public ResponseData<String> saveVet(VetDTO vetDto) {
         try {
+            // for some fucking reason I can ONLY ADD ONE VET. THATS IT, NO MORE ADDING VETS. WHAT THE ACTUAL FUCK
+            // if want to add new visit or vet, id must be null
+            // "id" : null
+            // if want to add specialty must include id otherwise shit.
             Vet vet = modelMapper.map(vetDto, Vet.class);
-            // for some bloody reason visits and specialties are not mapped.
-            vetDto.getVisits().forEach(visitDTO -> {
-                Visit visit = modelMapper.map(visitDTO, Visit.class);
-                vet.addVisit(visit);
-            });
-            vetDto.getSpecialties().forEach(specialty -> vet.addSpecialty(specialty));
-
             vets.save(vet);
             return new ResponseData<>("ok");
         } catch (ConstraintViolationException exception) {
@@ -70,6 +66,18 @@ public class VetServiceImpl implements VetService {
     @Override
     public ResponseData<Set<Specialty>> getSpecialties() {
         return new ResponseData<>(vets.findSpecialties());
+    }
+
+    @Override
+    public ResponseData<String> addSpecialtyToVet(int vetId, Collection<Specialty> specialties) {
+        Vet vet = this.vets.findById(vetId);
+        if (vet != null) {
+            specialties.forEach(specialty -> vet.addSpecialty(specialty));
+            vets.save(vet);
+            return new ResponseData<>("ok");
+        } else {
+            throw new InvalidIdException("Invalid vet id, this vet does not exist");
+        }
     }
 
 

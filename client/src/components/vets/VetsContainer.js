@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getVets, getVetSpecialties } from '../../state/vet/vetStore';
+import { getVets, getVetSpecialties, saveVet } from '../../state/vet/vetStore';
 import Vets from './Vets';
 import AddVetForm from './AddVetForm';
 
@@ -9,7 +9,7 @@ class VetsContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      addVet: { firstName: '', lastName: '', specialties: [] },
+      newVet: { firstName: '', lastName: '', specialties: [] },
       validatedNewVet: false
     };
   }
@@ -22,23 +22,34 @@ class VetsContainer extends Component {
   onChange = event => {
     const field = event.target.id;
     const value = event.target.value;
-    console.log('on change event.target.value', event.target.value);
-    console.log('on change event.target.id', event.target.id);
-    const { addVet } = this.state;
+    const { newVet } = this.state;
 
     if (field === 'specialties') {
-      let specialtySet;
-      const existingAddSpecialty = addVet.specialties;
+      if (value !== 'None') {
+        const selectedOptions = event.currentTarget.selectedOptions;
+        const specialties = Object.entries(selectedOptions).map(
+          entry => entry[1].value
+        );
+
+        newVet.specialties = specialties;
+      } else {
+        newVet.specialties = [];
+      }
+    } else {
+      newVet[field] = value;
     }
-    addVet[field] = value;
-    this.setState({ addVet: addVet });
+    this.setState({ newVet: newVet });
   };
 
   onSubmit = event => {
+    const { addVet } = this.props;
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
+    } else {
+      const { newVet } = this.state;
+      addVet(newVet);
     }
     this.setState({ validatedNewVet: true });
   };
@@ -62,7 +73,8 @@ class VetsContainer extends Component {
 
 VetsContainer.protoTypes = {
   onVetsClicked: PropTypes.func.isRequired,
-  loadSpecialties: PropTypes.func.isRequired
+  loadSpecialties: PropTypes.func.isRequired,
+  addVet: PropTypes.func.isRequired
 };
 
 /* istanbul ignore next */
@@ -78,6 +90,9 @@ const mapDispatchToProps = dispatch => ({
   },
   loadSpecialties: () => {
     dispatch(getVetSpecialties());
+  },
+  addVet: vet => {
+    dispatch(saveVet(vet));
   }
 });
 

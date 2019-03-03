@@ -35,11 +35,11 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public ResponseData<String> savePet(PetDTO petDto) {
-        Owner owner = owners.findById(petDto.getOwnerId());
+    public ResponseData<String> savePet(PetDTO petDTO) {
+        Owner owner = owners.findById(petDTO.getOwnerId());
         if (owner != null) {
             try {
-                Pet pet = modelMapper.map(petDto, Pet.class);
+                Pet pet = modelMapper.map(petDTO, Pet.class);
                 pets.save(pet);
             } catch (ConstraintViolationException exception) {
                 throw new InvalidRequestBodyException("Received bad request body for pet: " + exception.getConstraintViolations());

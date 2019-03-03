@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.samples.petclinic.dtos.VetDTO;
+import org.springframework.samples.petclinic.dtos.VisitDTO;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.dtos.ResponseData;
 import org.springframework.samples.petclinic.service.interfaces.VetService;
@@ -61,8 +62,14 @@ class VetController {
         return vetService.getSpecialties();
     }
 
-    @GetMapping("/{vetId}")    public ResponseData<VetDTO> getVetById(@PathVariable int vetId) {
+    @GetMapping("/{vetId}")
+    public ResponseData<VetDTO> getVetById(@PathVariable int vetId) {
         return vetService.getVetById(vetId);
+    }
+
+    @PostMapping("/{vetId}/specialty")
+    public ResponseData<String> addSpecialty(@PathVariable int vetId, @RequestBody Collection<Specialty> specialty) {
+        return vetService.addSpecialtyToVet(vetId, specialty);
     }
 
 }

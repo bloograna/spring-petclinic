@@ -54,6 +54,14 @@ public class Vet extends Person {
         this.specialties = specialties;
     }
 
+    public void setSpecialties(Set<Specialty> specialties) {
+        this.specialties = specialties;
+    }
+
+    public void setVisits(Set<Visit> visits) {
+        this.visits = visits;
+    }
+
     @XmlElement
     public List<org.springframework.samples.petclinic.model.Specialty> getSpecialties() {
         List<org.springframework.samples.petclinic.model.Specialty> sortedSpecs = new ArrayList<>(getSpecialtiesInternal());

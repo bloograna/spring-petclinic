@@ -1,36 +1,41 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button, Col } from 'react-bootstrap';
+import { capitalize } from 'lodash';
 
 const AddVetForm = ({ formValidated, specialties, onChange, onSubmit }) => (
-  <Form noValidate validated={formValidated} onSubmit={onSubmit}>
+  <Form noValidate validated={formValidated}>
     <Form.Row>
       <Form.Group as={Col} md="4" controlId="firstName">
-        <Form.Label>First name</Form.Label>
+        <Form.Label>First Name</Form.Label>
         <Form.Control
           required
           type="text"
           placeholder="First Name"
           onChange={onChange}
         />
-        <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid">
+          Please enter a first name
+        </Form.Control.Feedback>
       </Form.Group>
       <Form.Group as={Col} md="4" controlId="lastName">
-        <Form.Label>First name</Form.Label>
+        <Form.Label>Last Name</Form.Label>
         <Form.Control
           required
           type="text"
-          placeholder="Last name"
+          placeholder="Last Name"
           onChange={onChange}
         />
-        <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid">
+          Please enter a last name
+        </Form.Control.Feedback>
       </Form.Group>
     </Form.Row>
     <Form.Row>
       {constructSpecialtiesMultiSelect(specialties, onChange)}
     </Form.Row>
     <Button variant="primary" onClick={onSubmit}>
-      Submit
+      Add
     </Button>
   </Form>
 );
@@ -38,7 +43,9 @@ const AddVetForm = ({ formValidated, specialties, onChange, onSubmit }) => (
 const constructSpecialtiesMultiSelect = (specialties, onChange) => {
   const specialtyOptions = [];
   specialties.forEach(specialty => {
-    specialtyOptions.push(<option>{specialty}</option>);
+    specialtyOptions.push(
+      <option value={specialty.id}>{capitalize(specialty.name)}</option>
+    );
   });
   specialtyOptions.push(<option>None</option>);
   return (
