@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import NavigationBar from './components/navbar/NavigationBar';
-import VetsContainer from './components/vets/VetsContainer';
-import { getVets, getVetSpecialties } from './state/vet/vetStore';
+import VetsContainer from './components/vet/VetsContainer';
+import OwnersContainer from './components/owner/OwnersContainer';
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { activePanel: '' };
+    this.state = { activePanel: 'home' };
   }
 
   onHomeClick = () => {
@@ -16,7 +16,7 @@ class App extends Component {
   };
 
   onOwnerClick = () => {
-    console.log('owner click!');
+    this.setState({ activePanel: 'owners' });
   };
 
   onVetClick = () => {
@@ -32,6 +32,11 @@ class App extends Component {
     return activePanel === 'vets' ? <VetsContainer /> : null;
   };
 
+  renderOwners = () => {
+    const { activePanel } = this.state;
+    return activePanel === 'owners' ? <OwnersContainer /> : null;
+  };
+
   render() {
     return (
       <div className="App">
@@ -42,6 +47,7 @@ class App extends Component {
           onAppointmentClick={this.onAppointmentClick}
         />
         {this.renderVets()}
+        {this.renderOwners()}
       </div>
     );
   }
@@ -51,18 +57,9 @@ App.protoTypes = {
   onVetsClicked: PropTypes.func.isRequired,
   loadSpecialties: PropTypes.func.isRequired
 };
-/* istanbul ignore next */
-const mapDispatchToProps = dispatch => ({
-  onVetsClicked: () => {
-    dispatch(getVets());
-  },
-  loadSpecialties: () => {
-    dispatch(getVetSpecialties());
-  }
-});
 
 export { App as TestApp };
 export default connect(
   null,
-  mapDispatchToProps
+  null
 )(App);

@@ -2,8 +2,8 @@ import clinicRequest from '../clinicRequest';
 
 const endpoint = '/owner';
 
-const getOwners = () => {
-  return clinicRequest.get(endpoint);
+const getOwners = lastName => {
+  return clinicRequest.get(endpoint, lastName);
 };
 
 const saveOwner = owner => {

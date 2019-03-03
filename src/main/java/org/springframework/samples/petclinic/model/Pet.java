@@ -53,14 +53,14 @@ public class Pet extends NamedEntity {
 
     @ManyToOne
     @JoinColumn(name = "type_id")
-    private org.springframework.samples.petclinic.model.PetType type;
+    private PetType type;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
-    private org.springframework.samples.petclinic.model.Owner owner;
+    private Owner owner;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "petId", fetch = FetchType.EAGER)
-    private Set<org.springframework.samples.petclinic.model.Visit> visits = new LinkedHashSet<>();
+    private Set<Visit> visits = new LinkedHashSet<>();
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
@@ -70,7 +70,7 @@ public class Pet extends NamedEntity {
         return this.birthDate;
     }
 
-    public org.springframework.samples.petclinic.model.PetType getType() {
+    public PetType getType() {
         return this.type;
     }
 
@@ -78,11 +78,11 @@ public class Pet extends NamedEntity {
         this.type = type;
     }
 
-    public org.springframework.samples.petclinic.model.Owner getOwner() {
+    public Owner getOwner() {
         return this.owner;
     }
 
-    protected void setOwner(org.springframework.samples.petclinic.model.Owner owner) {
+    protected void setOwner(Owner owner) {
         this.owner = owner;
     }
 
@@ -93,18 +93,18 @@ public class Pet extends NamedEntity {
         return this.visits;
     }
 
-    protected void setVisitsInternal(Set<org.springframework.samples.petclinic.model.Visit> visits) {
+    protected void setVisitsInternal(Set<Visit> visits) {
         this.visits = visits;
     }
 
-    public List<org.springframework.samples.petclinic.model.Visit> getVisits() {
-        List<org.springframework.samples.petclinic.model.Visit> sortedVisits = new ArrayList<>(getVisitsInternal());
+    public List<Visit> getVisits() {
+        List<Visit> sortedVisits = new ArrayList<>(getVisitsInternal());
         PropertyComparator.sort(sortedVisits,
                 new MutableSortDefinition("date", false, false));
         return Collections.unmodifiableList(sortedVisits);
     }
 
-    public void addVisit(org.springframework.samples.petclinic.model.Visit visit) {
+    public void addVisit(Visit visit) {
         getVisitsInternal().add(visit);
         visit.setPetId(this.getId());
     }

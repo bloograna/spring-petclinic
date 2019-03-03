@@ -40,6 +40,7 @@ public class PetServiceImpl implements PetService {
         if (owner != null) {
             try {
                 Pet pet = modelMapper.map(petDTO, Pet.class);
+                owner.addPet(pet);
                 pets.save(pet);
             } catch (ConstraintViolationException exception) {
                 throw new InvalidRequestBodyException("Received bad request body for pet: " + exception.getConstraintViolations());

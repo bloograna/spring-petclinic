@@ -1,16 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Button } from 'react-bootstrap';
 import { getVets, getVetSpecialties, saveVet } from '../../state/vet/vetStore';
 import Vets from './Vets';
 import AddVetForm from './AddVetForm';
+import LargeModal from '../common/LargeModal';
 
 class VetsContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       newVet: { firstName: '', lastName: '', specialties: [] },
-      validatedNewVet: false
+      validatedNewVet: false,
+      showAddVetModal: false,
+      formRef: null
     };
   }
 
@@ -18,6 +22,16 @@ class VetsContainer extends Component {
     this.props.onVetsClicked();
     this.props.loadSpecialties();
   }
+
+  onHideModal = () => {
+    this.setState({ showAddVetModal: false, validatedNewVet: false });
+  };
+
+  onShowModal = () => {
+    this.setState({ showAddVetModal: true });
+  };
+
+  setAddFormRef = ref => this.setState({ formRef: ref });
 
   onChange = event => {
     const field = event.target.id;
@@ -43,29 +57,56 @@ class VetsContainer extends Component {
 
   onSubmit = event => {
     const { addVet } = this.props;
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
+    const { formRef } = this.state;
+    if (formRef.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
+      this.setState({ validatedNewVet: true });
     } else {
       const { newVet } = this.state;
       addVet(newVet);
+      this.setState({ showAddVetModal: false, validatedNewVet: false });
     }
-    this.setState({ validatedNewVet: true });
+  };
+
+  renderAddButton = () => {
+    return (
+      <Button variant="primary" onClick={this.onShowModal}>
+        Add a vet
+      </Button>
+    );
+  };
+
+  renderAddVetModal = () => {
+    const { showAddVetModal, validatedNewVet } = this.state;
+    const { specialties } = this.props;
+    if (showAddVetModal) {
+      return (
+        <LargeModal
+          show={showAddVetModal}
+          onHide={this.onHideModal}
+          onClick={this.onSubmit}
+          title={'Add a vet'}
+        >
+          <AddVetForm
+            formValidated={validatedNewVet}
+            specialties={specialties}
+            onChange={this.onChange}
+            getRef={this.setAddFormRef}
+          />
+        </LargeModal>
+      );
+    }
+    return null;
   };
 
   render() {
     const { vets, specialties } = this.props;
-    const { validatedNewVet } = this.state;
     return (
       <div>
+        {this.renderAddButton()}
         <Vets vets={vets} specialties={specialties} />
-        <AddVetForm
-          formValidated={validatedNewVet}
-          specialties={specialties}
-          onChange={this.onChange}
-          onSubmit={this.onSubmit}
-        />
+        {this.renderAddVetModal()}
       </div>
     );
   }
