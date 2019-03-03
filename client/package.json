@@ -7,7 +7,8 @@
     "react": "^16.8.3",
     "react-bootstrap": "^1.0.0-beta.5",
     "react-dom": "^16.8.3",
-    "react-scripts": "2.1.5"
+    "react-scripts": "2.1.5",
+    "superagent": "^4.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -23,5 +24,13 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "js-logger": "^1.6.0",
+    "lodash": "^4.17.11",
+    "react-redux": "^6.0.1",
+    "redux": "^4.0.1",
+    "redux-logger": "^3.0.6",
+    "redux-multi": "^0.1.12"
+  }
 }

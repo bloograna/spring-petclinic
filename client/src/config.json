@@ -1,0 +1,10 @@
+{
+    "server": "http://localhost:8080/",
+    "apiVersion": "v1",
+    "acceptType": "application/json",
+    "logging": {
+        "all": false,
+        "app": "DEBUG",
+        "redux": true
+    }
+}

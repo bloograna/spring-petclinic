@@ -35,7 +35,7 @@ import java.util.Set;
  * @author Arjen Poutsma
  */
 @RestController
-@RequestMapping(path = "/v1/vets", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/v1/vet", produces = MediaType.APPLICATION_JSON_VALUE)
 class VetController {
 
     private final VetService vetService;

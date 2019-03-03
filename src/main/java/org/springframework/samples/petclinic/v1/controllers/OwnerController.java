@@ -28,7 +28,7 @@ import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/v1/owners", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/v1/owner", produces = MediaType.APPLICATION_JSON_VALUE)
 class OwnerController {
 
     private final OwnerService ownerService;

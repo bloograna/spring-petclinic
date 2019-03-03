@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import './App.css';
-import NavigationBar from './navbar/NavigationBar';
+import { connect } from 'react-redux';
+import NavigationBar from './components/navbar/NavigationBar';
 
+const createHandlers = dispatch => ({
+  // initToolkitAction: () => dispatch(initToolkitAction())
+});
 class App extends Component {
   onHomeClick = () => {
     console.log('home click!');
@@ -12,6 +15,9 @@ class App extends Component {
   onFindVetClick = () => {
     console.log('vet click!');
   };
+  onAppointmentClick = () => {
+    console.log('appt click!');
+  };
   render() {
     return (
       <div className="App">
@@ -19,10 +25,16 @@ class App extends Component {
           onHomeClick={this.onHomeClick}
           onOwnerClick={this.onOwnerClick}
           onFindVetClick={this.onFindVetClick}
+          onAppointmentClick={this.onAppointmentClick}
         />
       </div>
     );
   }
 }
+// const mapStateToProps = state => ({
+//   toolkit: state.jsPlumb.toolkit,
+//   graphIsDirty: state.graph.present.isDirty
+// });
 
-export default App;
+export { createHandlers, App as TestApp };
+export default connect(null)(App);

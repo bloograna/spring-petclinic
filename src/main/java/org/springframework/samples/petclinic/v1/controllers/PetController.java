@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 @Slf4j
 @RestController
-@RequestMapping(path = "/v1/pets", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/v1/pet", produces = MediaType.APPLICATION_JSON_VALUE)
 class PetController {
 
     private PetService petService;

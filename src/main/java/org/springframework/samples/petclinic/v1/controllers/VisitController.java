@@ -33,7 +33,7 @@ import java.util.Collection;
  * @author Dave Syer
  */
 @RestController
-@RequestMapping(path = "/v1/visits", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/v1/visit", produces = MediaType.APPLICATION_JSON_VALUE)
 class VisitController {
 
     private final VisitService visitService;
