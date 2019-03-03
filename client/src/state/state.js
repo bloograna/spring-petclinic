@@ -3,7 +3,8 @@ const initialState = {
   pet: {},
   vet: { vets: [], specialties: [] },
   owner: [],
-  visit: []
+  visit: [],
+  message: []
 };
 
 export default initialState;

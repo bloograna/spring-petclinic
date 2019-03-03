@@ -1,7 +1,7 @@
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { catchError } from 'rxjs/operators';
+import { capitalize } from 'lodash';
 import { concat } from 'rxjs/observable/concat';
 import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
@@ -57,21 +57,29 @@ const vetReducer = (state = vetInitialState, action) => {
 const getVetsEpic = action$ =>
   action$.ofType(GET_VETS).mergeMap(() =>
     concat(
-      fromPromise(vetService.getVets()).map(result =>
-        getVetsSuccess(result.data)
-      )
-      // fromPromise(vetService.getVets()).map(vets => getVetsSuccess(vets))
-    ).pipe(catchError(error => addMessage(error.message)))
+      fromPromise(vetService.getVets()).map(result => {
+        if (result.error) {
+          return addMessage('An error occurred while getting vets from server');
+        }
+        return getVetsSuccess(result.data);
+      })
+    )
   );
 
 const getSpecialtiesEpic = action$ =>
   action$.ofType(GET_VET_SPECIALTIES).mergeMap(() =>
     concat(
-      fromPromise(vetService.getVetSpecialties()).map(result =>
-        getVetSpecialtiesSuccess(result.data)
-      )
-      // fromPromise(vetService.getVets()).map(vets => getVetsSuccess(vets))
-    ).pipe(catchError(error => addMessage(error.message)))
+      fromPromise(vetService.getVetSpecialties()).map(result => {
+        if (result.error) {
+          return addMessage(
+            'An error occured while getting vet specialities from server'
+          );
+        }
+        return getVetSpecialtiesSuccess(
+          result.data.map(specialty => capitalize(specialty.name))
+        );
+      })
+    )
   );
 
 const vetEpics = [getVetsEpic, getSpecialtiesEpic];
