@@ -1,18 +1,14 @@
-// import { findIndex, isEmpty, set } from 'lodash';
-import { makeActionCreator as mac } from './common/makeActionCreator';
-import initialState from './state';
-import createReducer from './common/createReducer';
+import { makeActionCreator as mac } from '../common/makeActionCreator';
+import createReducer from '../common/createReducer';
+import initialState from '../state';
 
 /* ----- TYPES ----- */
-
-// Selected Item
 const SAVE_PET = 'pet/SAVE_PET';
 const GET_PET_TYPES = 'pet/GET_PET_TYPES';
 const GET_PET_BY_OWNER = 'pet/GET_PET_BY_OWNER';
 const GET_PET_BY_ID = 'pet/GET_PET_BY_ID';
 
 /* ----- ACTIONS ----- */
-// Selected Item
 const savePet = mac(SAVE_PET, 'pet');
 const getPetTypes = mac(GET_PET_TYPES);
 const getPetByOwner = mac(GET_PET_BY_OWNER, 'ownerId');
@@ -30,7 +26,7 @@ const petInitialState = initialState.pet;
 // };
 
 const handlers = {
-  savePet: state => [],
+  savePet: (state, action) => [],
   getPetTypes: (state, action) => [],
   getPetByOwner: (state, action) => [],
   getPetById: (state, action) => []
@@ -38,9 +34,9 @@ const handlers = {
 
 const petReducer = createReducer(petInitialState, {
   [SAVE_PET]: handlers.savePet,
-  [GET_PET_TYPES]: handlers.containsValueUpdate,
-  [GET_PET_BY_OWNER]: handlers.doUpdate,
-  [GET_PET_BY_ID]: handlers.expressionTypeUpdate
+  [GET_PET_TYPES]: handlers.getPetTypes,
+  [GET_PET_BY_OWNER]: handlers.getPetByOwner,
+  [GET_PET_BY_ID]: handlers.getPetById
 });
 
 export default petReducer;

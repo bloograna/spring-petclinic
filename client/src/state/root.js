@@ -1,5 +1,11 @@
 import { combineReducers } from 'redux';
-import petReducer from './petStore';
+import { combineEpics } from 'redux-observable';
+import petReducer from './pet/petStore';
+import { vetReducer, vetEpics } from './vet';
+
 /* ---- REDUCERS ---- */
-const rootReducer = combineReducers({ petReducer });
-export default rootReducer;
+const rootReducer = combineReducers({ petReducer, vetReducer });
+
+/* ---- EPICS ---- */
+const rootEpic = combineEpics(...vetEpics);
+export { rootReducer, rootEpic };

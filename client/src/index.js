@@ -4,11 +4,9 @@ import './index.css';
 import { Provider } from 'react-redux';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { configureStore } from './state';
+import { store } from './state';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-reboot.css';
-
-const store = configureStore();
 
 const render = Component =>
   // eslint-disable-next-line react/no-render-return-value

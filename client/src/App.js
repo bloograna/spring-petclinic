@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import NavigationBar from './components/navbar/NavigationBar';
+import { getVets, getVetSpecialties } from './state/vet/vetStore';
 
-const createHandlers = dispatch => ({
-  // initToolkitAction: () => dispatch(initToolkitAction())
-});
 class App extends Component {
   onHomeClick = () => {
     console.log('home click!');
@@ -12,8 +11,10 @@ class App extends Component {
   onOwnerClick = () => {
     console.log('owner click!');
   };
-  onFindVetClick = () => {
-    console.log('vet click!');
+  onVetClick = () => {
+    console.log('vetlick');
+    this.props.onVetsClicked();
+    this.props.loadSpecialties();
   };
   onAppointmentClick = () => {
     console.log('appt click!');
@@ -24,17 +25,30 @@ class App extends Component {
         <NavigationBar
           onHomeClick={this.onHomeClick}
           onOwnerClick={this.onOwnerClick}
-          onFindVetClick={this.onFindVetClick}
+          onVetClick={this.onVetClick}
           onAppointmentClick={this.onAppointmentClick}
         />
       </div>
     );
   }
 }
-// const mapStateToProps = state => ({
-//   toolkit: state.jsPlumb.toolkit,
-//   graphIsDirty: state.graph.present.isDirty
-// });
 
-export { createHandlers, App as TestApp };
-export default connect(null)(App);
+App.protoTypes = {
+  onVetsClicked: PropTypes.func.isRequired,
+  loadSpecialties: PropTypes.func.isRequired
+};
+/* istanbul ignore next */
+const mapDispatchToProps = dispatch => ({
+  onVetsClicked: () => {
+    dispatch(getVets());
+  },
+  loadSpecialties: () => {
+    dispatch(getVetSpecialties());
+  }
+});
+
+export { App as TestApp };
+export default connect(
+  null,
+  mapDispatchToProps
+)(App);

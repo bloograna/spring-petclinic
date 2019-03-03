@@ -1,17 +1,27 @@
-import logger from 'redux-logger';
-import multi from 'redux-multi';
-import { createStore, compose, applyMiddleware } from 'redux';
-import rootReducer from './root';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import { createEpicMiddleware } from 'redux-observable';
 
-const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+import { rootEpic, rootReducer } from './root';
 
-/* eslint-disable no-underscore-dangle */
-export default function configureStore() {
+function configureStore() {
+  const epicMiddleware = createEpicMiddleware();
+  const composeEnhancers = composeWithDevTools({
+    latency: 0,
+    maxAge: 10
+  });
+
   const store = createStore(
     rootReducer,
-    composeEnhancer(applyMiddleware(multi, logger))
+    composeEnhancers(applyMiddleware(epicMiddleware))
   );
+  epicMiddleware.run(rootEpic);
 
+  // FOR DEBUGGING ONLY
+  window.store = {
+    getState: store.getState
+  };
   return store;
 }
-/* eslint-enable */
+const store = configureStore();
+export default store;

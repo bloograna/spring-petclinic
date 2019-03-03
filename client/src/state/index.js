@@ -1,3 +1,3 @@
-import configureStore from './store';
+import store from './store';
 
-export { configureStore };
+export { store };

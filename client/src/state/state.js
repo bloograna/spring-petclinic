@@ -1,7 +1,7 @@
 /* ---- INITIAL STATE ---- */
 const initialState = {
-  pet: [],
-  vet: [],
+  pet: {},
+  vet: { vets: [], specialties: [] },
   owner: [],
   visit: []
 };

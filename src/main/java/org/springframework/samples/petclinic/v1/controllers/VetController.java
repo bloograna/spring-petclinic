@@ -16,6 +16,7 @@
 
 package org.springframework.samples.petclinic.v1.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.samples.petclinic.dtos.VetDTO;
@@ -34,6 +35,7 @@ import java.util.Set;
  * @author Ken Krebs
  * @author Arjen Poutsma
  */
+@Slf4j
 @RestController
 @RequestMapping(path = "/v1/vet", produces = MediaType.APPLICATION_JSON_VALUE)
 class VetController {
@@ -44,24 +46,23 @@ class VetController {
         this.vetService = vetService;
     }
 
+    @PostMapping
+    public ResponseData<String> saveVet(@RequestBody @NonNull VetDTO vetDTO) {
+        return vetService.saveVet(vetDTO);
+    }
+
     @GetMapping
     public ResponseData<Collection<VetDTO>> getVets() {
         return vetService.getVets();
     }
 
-    @GetMapping("/{vetId}")
-    public ResponseData<VetDTO> getVetById(@PathVariable int vetId) {
-        return vetService.getVetById(vetId);
-    }
-
-    @GetMapping("/speciality")
+    @GetMapping("/specialty")
     public ResponseData<Set<Specialty>> getSpecialties() {
         return vetService.getSpecialties();
     }
 
-    @PostMapping
-    public ResponseData<String> saveVet(@RequestBody @NonNull VetDTO vetDTO) {
-        return vetService.saveVet(vetDTO);
+    @GetMapping("/{vetId}")    public ResponseData<VetDTO> getVetById(@PathVariable int vetId) {
+        return vetService.getVetById(vetId);
     }
 
 }

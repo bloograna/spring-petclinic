@@ -9,7 +9,11 @@ const get = (endpoint, args) => {
     .query(args)
     .accept(acceptType)
     .ok(response => response.status === 200)
-    .then(response => response.body);
+    .then(response => response.body)
+    .catch(error => {
+      const errorMsg = `Error getting data: ${error.message}`;
+      return { error: errorMsg, data: [] };
+    });
 };
 
 const post = (endpoint, body) => {
@@ -19,7 +23,11 @@ const post = (endpoint, body) => {
     .send(body)
     .accept(acceptType)
     .ok(response => response.status === 200)
-    .then(response => response.body);
+    .then(response => response.body)
+    .catch(error => {
+      const errorMsg = `Error getting data: ${error.message}`;
+      return { error: errorMsg, data: [] };
+    });
 };
 
 const del = endpoint => {
@@ -27,7 +35,11 @@ const del = endpoint => {
     .delete(url + endpoint)
     .accept(acceptType)
     .ok(response => response.status === 200)
-    .then(response => response.body);
+    .then(response => response.body)
+    .catch(error => {
+      const errorMsg = `Error getting data: ${error.message}`;
+      return { error: errorMsg, data: [] };
+    });
 };
 
 const clinicRequest = { get, post, del };
