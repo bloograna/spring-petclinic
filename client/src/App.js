@@ -64,7 +64,7 @@ class App extends Component {
             showAddOwnerModal={showAddModal}
             onHideAddOwnerModal={hideAddOwnerModal}
             shouldValidateOwnerModalData={shouldValidateModalData}
-            onOwnerFormChange={this.onFormChange}
+            onAddButtonClick={this.onFormChange}
           />
         }
         {this.renderVets()}

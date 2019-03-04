@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 
-const LargeModal = ({ show, onHide, onClick, title, children }) => (
+const LargeModal = ({ show, title, children }) => (
   <Modal
     size="lg"
     show={show}
@@ -14,17 +14,11 @@ const LargeModal = ({ show, onHide, onClick, title, children }) => (
       <Modal.Title id="modal-title-lg">{title}</Modal.Title>
     </Modal.Header>
     <Modal.Body id="modal-body-lg">{children}</Modal.Body>
-    <Modal.Footer>
-      <Button onClick={onHide}>Cancel</Button>
-      <Button onClick={onClick}>Add</Button>
-    </Modal.Footer>
   </Modal>
 );
 
 LargeModal.propTypes = {
   show: PropTypes.bool.isRequired,
-  onHide: PropTypes.func.isRequired,
-  onClick: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired
 };
 

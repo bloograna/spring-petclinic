@@ -7,19 +7,18 @@ const AddOwnerModal = ({
   showAddOwnerModal,
   shouldValidateOwnerModalData,
   onHideAddOwnerModal,
-  onAddNewOwner,
-  onOwnerFormChange
+  onAddButtonClick
 }) => {
   return (
     <LargeModal
       show={showAddOwnerModal}
       onHide={onHideAddOwnerModal}
-      onClick={onAddNewOwner}
       title={'Add an owner'}
     >
       <AddOwnerForm
         formValidated={shouldValidateOwnerModalData}
-        onChange={onOwnerFormChange}
+        onAddButtonClick={onAddButtonClick}
+        onHideAddOwnerModal={onHideAddOwnerModal}
       />
     </LargeModal>
   );
@@ -29,8 +28,7 @@ AddOwnerModal.propTypes = {
   showAddOwnerModal: PropTypes.bool.isRequired,
   shouldValidateOwnerModalData: PropTypes.bool.isRequired,
   onHideAddOwnerModal: PropTypes.func.isRequired,
-  onAddNewOwner: PropTypes.func.isRequired,
-  onOwnerFormChange: PropTypes.func.isRequired
+  onAddButtonClick: PropTypes.func.isRequired
 };
 
 export default AddOwnerModal;

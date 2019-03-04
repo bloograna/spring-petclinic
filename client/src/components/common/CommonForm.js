@@ -10,14 +10,16 @@ class CommonForm extends React.Component {
   };
 
   onSubmit = e => {
+    const { onSubmit } = this.props;
     e.preventDefault();
     const formData = form2js(e.currentTarget) || {};
-    this.props.onSubmit(formData, e);
+    onSubmit(formData, e);
   };
 
   onChange = e => {
+    const { onChange } = this.props;
     const formData = form2js(e.currentTarget) || {};
-    this.props.onChange(formData, e);
+    onChange(formData, e);
   };
 
   render() {
