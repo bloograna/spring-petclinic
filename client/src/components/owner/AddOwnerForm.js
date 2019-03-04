@@ -8,11 +8,7 @@ const AddOwnerForm = ({
   onHideAddOwnerModal,
   onAddButtonClick
 }) => (
-  <CommonForm
-    // onChange={onSubmit}
-    onSubmit={onAddButtonClick}
-    formValidated={formValidated}
-  >
+  <CommonForm onSubmit={onAddButtonClick} formValidated={formValidated}>
     <Form.Row>
       {renderGroup(
         'firstName',

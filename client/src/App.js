@@ -5,17 +5,26 @@ import NavigationBar from './components/navbar/NavigationBar';
 import VetsContainer from './components/vet/VetsContainer';
 import OwnersContainer from './components/owner/OwnersContainer';
 import AddOwnerModal from './components/owner/AddOwnerModal';
+import AddPetModal from './components/pet/AddPetModal';
 import {
+  saveOwner,
   openAddOwnerModal,
   hideAddOwnerModal,
-  validateOwnerModalData,
-  validateOwnerModalDataCompleted
+  validateOwnerModalData
 } from './state/owner';
+import {
+  savePet,
+  openAddPetModal,
+  hideAddPetModal,
+  validatePetModalData,
+  getPetTypes
+} from './state/pet';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = { activePanel: 'home' };
+    this.props.getPetTypes();
   }
 
   onHomeClick = () => {
@@ -39,8 +48,22 @@ class App extends Component {
     return activePanel === 'vets' ? <VetsContainer /> : null;
   };
 
-  onFormChange = formObj => {
-    console.log(`change: ${JSON.stringify(formObj)}`);
+  handleAddOwnerFormData = (formObj, event) => {
+    const { validateOwnerModalData, saveOwner } = this.props;
+    const currentTarget = event.currentTarget;
+    validateOwnerModalData();
+    if (currentTarget.checkValidity() === true) {
+      saveOwner(formObj);
+    }
+  };
+
+  handleAddPetFormData = (formObj, event) => {
+    const { validatePetModalData, savePet } = this.props;
+    const currentTarget = event.currentTarget;
+    validatePetModalData();
+    if (currentTarget.checkValidity() === true) {
+      savePet(formObj);
+    }
   };
 
   renderOwners = () => {
@@ -49,8 +72,16 @@ class App extends Component {
   };
 
   render() {
-    const { showAddModal, shouldValidateModalData } = this.props.ownerState;
-    const { hideAddOwnerModal } = this.props;
+    const {
+      shouldValidateOwnerModalData,
+      showAddOwnerModal,
+      showAddPetModal,
+      shouldValidatePetModalData,
+      hideAddOwnerModal,
+      hideAddPetModal,
+      petTypes
+    } = this.props;
+
     return (
       <div className="App">
         <NavigationBar
@@ -59,14 +90,19 @@ class App extends Component {
           onVetClick={this.onVetClick}
           onAppointmentClick={this.onAppointmentClick}
         />
-        {
-          <AddOwnerModal
-            showAddOwnerModal={showAddModal}
-            onHideAddOwnerModal={hideAddOwnerModal}
-            shouldValidateOwnerModalData={shouldValidateModalData}
-            onAddButtonClick={this.onFormChange}
-          />
-        }
+        <AddOwnerModal
+          showAddOwnerModal={showAddOwnerModal}
+          onHideAddOwnerModal={hideAddOwnerModal}
+          shouldValidateOwnerModalData={shouldValidateOwnerModalData}
+          onAddButtonClick={this.handleAddOwnerFormData}
+        />
+        <AddPetModal
+          showAddPetModal={showAddPetModal}
+          onHideAddPetModal={hideAddPetModal}
+          shouldValidatePetModalData={shouldValidatePetModalData}
+          onAddButtonClick={this.handleAddPetFormData}
+          petTypes={petTypes}
+        />
         {this.renderVets()}
         {this.renderOwners()}
       </div>
@@ -75,14 +111,17 @@ class App extends Component {
 }
 
 App.protoTypes = {
-  onVetsClicked: PropTypes.func.isRequired,
-  loadSpecialties: PropTypes.func.isRequired
+  getPetTypes: PropTypes.func.isRequired
+  // loadSpecialties: PropTypes.func.isRequired
 };
 
 /* istanbul ignore next */
 const mapStateToProps = state => ({
-  ownerState: state.ownerReducer,
-  petState: state.petReducer
+  showAddOwnerModal: state.ownerReducer.showAddOwnerModal,
+  shouldValidateOwnerModalData: state.ownerReducer.shouldValidateOwnerModalData,
+  showAddPetModal: state.petReducer.showAddPetModal,
+  shouldValidatePetModalData: state.petReducer.shouldValidatePetModalData,
+  petTypes: state.petReducer.petTypes
 });
 
 /* istanbul ignore next */
@@ -96,8 +135,23 @@ const mapDispatchToProps = dispatch => ({
   validateOwnerModalData: () => {
     dispatch(validateOwnerModalData());
   },
-  validateOwnerModalDataCompleted: () => {
-    dispatch(validateOwnerModalDataCompleted());
+  saveOwner: owner => {
+    dispatch(saveOwner(owner));
+  },
+  openAddPetModal: () => {
+    dispatch(openAddPetModal());
+  },
+  hideAddPetModal: () => {
+    dispatch(hideAddPetModal());
+  },
+  validatePetModalData: () => {
+    dispatch(validatePetModalData());
+  },
+  savePet: pet => {
+    dispatch(savePet(pet));
+  },
+  getPetTypes: () => {
+    dispatch(getPetTypes());
   }
 });
 

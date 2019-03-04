@@ -22,20 +22,20 @@ const constructTableRows = (owners, onAdd) => {
   return rows;
 };
 
-const constructAddButton = (ownerId, onAddPet) => (
-  <Button variant="link" size="sm" onClick={onAddPet}>
-    Add
-  </Button>
-);
+const attachOwnerId = (ownerId, onAdd) => {
+  onAdd(ownerId);
+};
 
 const constructTableRow = (id, firstName, lastName, pets, onAdd) => (
-  <tr>
+  <tr key={`owner-table-row-${id}`}>
     <td>{id}</td>
     <td>{firstName}</td>
     <td>{lastName}</td>
     <td>
       {pets}
-      {constructAddButton(id, onAdd)}
+      <Button variant="link" size="sm" onClick={() => attachOwnerId(id, onAdd)}>
+        Add
+      </Button>
     </td>
   </tr>
 );

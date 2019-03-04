@@ -3,7 +3,7 @@ import clinicRequest from '../clinicRequest';
 const endpoint = '/pet';
 
 const getPetsbyOwnerId = ownerId => {
-  return clinicRequest.get(endpoint + `owner/${ownerId}`, ownerId);
+  return clinicRequest.get(endpoint + `/owner/${ownerId}`);
 };
 
 const savePet = pet => {

@@ -18,8 +18,12 @@ const GET_OWNERS_BY_LASTNAME_SUCCESS = 'owner/GET_OWNERS_BY_LASTNAME_SUCCESS';
 // render/modal
 const OPEN_ADD_MODAL = 'owner/OPEN_ADD_MODAL';
 const HIDE_ADD_MODAL = 'owner/HIDE_ADD_MODAL';
-const VALIDATE_MODAL_DATA = 'owner/VALIDATE_MODA_DATA';
-const VALIDATE_MODAL_DATA_COMPLETED = 'owner/VALIDATE_MODA_DATA_COMPLETED';
+const VALIDATE_MODAL_DATA = 'owner/VALIDATE_MODAL_DATA';
+const VALIDATE_MODAL_DATA_COMPLETED = 'owner/VALIDATE_MODAL_DATA_COMPLETED';
+
+// misc
+const SET_ACTIVE_OWNER = 'owner/SET_ACTIVE_OWNER';
+const CLEAR_ACTIVE_OWNER = 'owner/CLEAR_ACTIVE_OWNER';
 
 /* ----- ACTIONS ----- */
 const saveOwner = mac(SAVE_OWNER, 'owner');
@@ -32,6 +36,9 @@ const hideAddOwnerModal = mac(HIDE_ADD_MODAL);
 const validateOwnerModalData = mac(VALIDATE_MODAL_DATA);
 const validateOwnerModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
+const setActiveOwner = mac(SET_ACTIVE_OWNER, 'ownerId');
+const clearActiveOwner = mac(CLEAR_ACTIVE_OWNER);
+
 /* ----- REDUCER ----- */
 const ownerInitialState = initialState.owner;
 
@@ -39,19 +46,26 @@ const ownerReducer = (state = ownerInitialState, action) => {
   switch (action.type) {
     case GET_OWNERS_BY_LASTNAME_SUCCESS: {
       const { owners } = action;
-      return { owners };
+      return { ...state, owners };
     }
     case OPEN_ADD_MODAL: {
-      return { ...state, showAddModal: true };
+      return { ...state, showAddOwnerModal: true };
     }
     case HIDE_ADD_MODAL: {
-      return { ...state, showAddModal: false };
+      return { ...state, showAddOwnerModal: false };
     }
     case VALIDATE_MODAL_DATA: {
-      return { ...state, shouldValidateModalData: true };
+      return { ...state, shouldValidateOwnerModalData: true };
     }
     case VALIDATE_MODAL_DATA_COMPLETED: {
-      return { ...state, showAdshouldValidateModalDatadModal: false };
+      return { ...state, shouldValidateOwnerModalData: false };
+    }
+    case SET_ACTIVE_OWNER: {
+      const { ownerId } = action;
+      return { ...state, activeOwner: ownerId };
+    }
+    case CLEAR_ACTIVE_OWNER: {
+      return { ...state, activeOwner: null };
     }
     default:
       return state;
@@ -82,6 +96,8 @@ const getOwnersEpic = action$ =>
 const saveOwnerEpic = action$ =>
   action$.ofType(SAVE_OWNER).mergeMap(action =>
     concat(
+      of(validateOwnerModalDataCompleted()),
+      of(hideAddOwnerModal()),
       fromPromise(ownerService.saveOwner(action.owner)).map(result => {
         if (result.error) {
           return addMessage('An error occurred while saving owner');
@@ -102,5 +118,6 @@ export {
   openAddOwnerModal,
   hideAddOwnerModal,
   validateOwnerModalData,
-  validateOwnerModalDataCompleted
+  setActiveOwner,
+  clearActiveOwner
 };

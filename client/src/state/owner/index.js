@@ -7,7 +7,8 @@ import ownerReducer, {
   openAddOwnerModal,
   hideAddOwnerModal,
   validateOwnerModalData,
-  validateOwnerModalDataCompleted
+  setActiveOwner,
+  clearActiveOwner
 } from './ownerStore';
 
 export {
@@ -18,5 +19,6 @@ export {
   openAddOwnerModal,
   hideAddOwnerModal,
   validateOwnerModalData,
-  validateOwnerModalDataCompleted
+  setActiveOwner,
+  clearActiveOwner
 };

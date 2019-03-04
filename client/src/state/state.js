@@ -1,18 +1,17 @@
 /* ---- INITIAL STATE ---- */
 const initialState = {
-  pet: { pets: {}, petTypes: [] },
+  pet: {
+    pets: {},
+    petTypes: [],
+    showAddPetModal: false,
+    shouldValidatePetModalData: false
+  },
   vet: { vets: [], specialties: [] },
   owner: {
     owners: [],
-    showAddModal: false,
-    shouldValidateModalData: false,
-    newOwner: {
-      firstName: '',
-      lastName: '',
-      address: '',
-      city: '',
-      telephone: ''
-    }
+    showAddOwnerModal: false,
+    shouldValidateOwnerModalData: false,
+    activeOwner: null
   },
   visit: [],
   message: []
