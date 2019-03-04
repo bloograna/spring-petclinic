@@ -3,9 +3,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button, Form, Col } from 'react-bootstrap';
 import { isEmpty } from 'lodash';
-import { saveOwner, getOwnerByLastName } from '../../state/owner/ownerStore';
+import {
+  saveOwner,
+  getOwnerByLastName,
+  openAddOwnerModal
+} from '../../state/owner/ownerStore';
+import { savePet, getPetTypes } from '../../state/pet/petStore';
 import Owners from './Owners';
 import AddOwnerForm from './AddOwnerForm';
+import AddPetForm from '../pet/AddPetForm';
 import LargeModal from '../common/LargeModal';
 
 class OwnersContainer extends Component {
@@ -19,32 +25,62 @@ class OwnersContainer extends Component {
         city: '',
         telephone: ''
       },
+      newPet: {
+        petName: '',
+        petBirthdate: '',
+        petType: ''
+      },
+      selectedOwnerId: null,
       validatedNewOwner: false,
+      validatedNewPet: false,
       showAddOwnerModal: false,
+      showAddPetModal: false,
       formRef: null
     };
   }
 
-  onChange = event => {
+  componentWillMount() {
+    const { getPetTypes } = this.props;
+    getPetTypes();
+  }
+
+  onOwnerFormChange = event => {
     const field = event.target.id;
     const value = event.target.value;
     const { newOwner } = this.state;
     newOwner[field] = value;
 
-    this.setState({ newOwner: newOwner });
+    this.setState({ newOwner });
   };
 
-  onHideModal = () => {
+  onPetFormChange = event => {
+    const field = event.target.id;
+    const value = event.target.value;
+    const { newPet } = this.state;
+    newPet[field] = value;
+
+    this.setState({ newPet });
+  };
+
+  onHideAddOwnerModal = () => {
     this.setState({ showAddOwnerModal: false, validatedNewOwner: false });
   };
 
-  onShowModal = () => {
+  onShowAddOwnerModal = () => {
     this.setState({ showAddOwnerModal: true });
+  };
+
+  onHideAddPetModal = () => {
+    this.setState({ showAddPetModal: false, validatedNewPet: false });
+  };
+
+  onShowAddPetModal = () => {
+    this.setState({ showAddPetModal: true });
   };
 
   setAddFormRef = ref => this.setState({ formRef: ref });
 
-  onSubmit = event => {
+  onAddNewOwner = event => {
     const { addOwner } = this.props;
     const { formRef } = this.state;
     if (formRef.checkValidity() === false) {
@@ -58,6 +94,20 @@ class OwnersContainer extends Component {
     }
   };
 
+  onAddNewPet = event => {
+    const { addPet } = this.props;
+    const { formRef } = this.state;
+    if (formRef.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.setState({ validatedNewPet: true });
+    } else {
+      const { newPet } = this.state;
+      addPet(newPet);
+      this.setState({ showAddPetModal: false, validatedNewPet: false });
+    }
+  };
+
   onSearch = event => {
     const { searchByLastName } = this.props;
     const form = event.currentTarget.form[0];
@@ -66,6 +116,7 @@ class OwnersContainer extends Component {
   };
 
   renderSearchButton = () => {
+    const { openAddOwnerModal } = this.props;
     return (
       <Form noValidate>
         <Form.Row>
@@ -77,44 +128,40 @@ class OwnersContainer extends Component {
             </Button>
           </Form.Group>
         </Form.Row>
-        <Button variant="primary" onClick={this.onShowModal}>
+        <Button variant="primary" onClick={openAddOwnerModal}>
           Add an owner
         </Button>
       </Form>
     );
   };
 
-  renderOwnersList = owners =>
-    isEmpty(owners) ? null : <Owners owners={owners} />;
-
-  renderAddOwnerModal = () => {
-    const { showAddOwnerModal, validatedNewOwner } = this.state;
-    if (showAddOwnerModal) {
-      return (
-        <LargeModal
-          show={showAddOwnerModal}
-          onHide={this.onHideModal}
-          onClick={this.onSubmit}
-          title={'Add an owner'}
-        >
-          <AddOwnerForm
-            formValidated={validatedNewOwner}
-            onChange={this.onChange}
-            getRef={this.setAddFormRef}
-          />
-        </LargeModal>
-      );
-    }
-    return null;
+  renderAddPetModal = () => {
+    const { petTypes } = this.props;
+    const { showAddPetModal, validatedNewPet } = this.state;
+    return (
+      <LargeModal
+        show={showAddPetModal}
+        onHide={this.onHideAddPetModal}
+        onClick={this.onAddNewPet}
+        title={'Add a pet'}
+      >
+        <AddPetForm
+          formValidated={validatedNewPet}
+          onChange={this.onPetFormChange}
+          petTypes={petTypes}
+          getRef={this.setAddFormRef}
+        />
+      </LargeModal>
+    );
   };
 
   render() {
     const { owners } = this.props;
     return (
       <div>
-        {this.renderAddOwnerModal()}
         {this.renderSearchButton()}
-        {this.renderOwnersList(owners)}
+        <Owners owners={owners} onAddPet={this.onShowAddPetModal} />
+        {this.renderAddPetModal()}
       </div>
     );
   }
@@ -122,12 +169,16 @@ class OwnersContainer extends Component {
 
 OwnersContainer.protoTypes = {
   searchByLastName: PropTypes.func.isRequired,
-  addOwner: PropTypes.func.isRequired
+  addOwner: PropTypes.func.isRequired,
+  addPet: PropTypes.func.isRequired,
+  getPetTypes: PropTypes.func.isRequired,
+  openAddOwnerModal: PropTypes.func.isRequired
 };
 
 /* istanbul ignore next */
 const mapStateToProps = state => ({
-  owners: state.ownerReducer.owners
+  owners: state.ownerReducer.owners,
+  petTypes: state.petReducer.petTypes
 });
 
 /* istanbul ignore next */
@@ -137,6 +188,15 @@ const mapDispatchToProps = dispatch => ({
   },
   addOwner: owner => {
     dispatch(saveOwner(owner));
+  },
+  addPet: pet => {
+    dispatch(savePet(pet));
+  },
+  getPetTypes: () => {
+    dispatch(getPetTypes());
+  },
+  openAddOwnerModal: () => {
+    dispatch(openAddOwnerModal());
   }
 });
 

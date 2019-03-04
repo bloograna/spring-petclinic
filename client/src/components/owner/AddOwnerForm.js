@@ -1,39 +1,32 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Col } from 'react-bootstrap';
+import { FormGroup, FormControl, Col, Form } from 'react-bootstrap';
+import CommonForm from '../common/CommonForm';
 
 class AddOwnerForm extends Component {
   // I FUCKING NEED THE REF
 
-  renderGroup = (
-    controlId,
-    type,
-    pattern,
-    label,
-    placeHolder,
-    feedBack,
-    onChange
-  ) => {
+  renderGroup = (controlId, type, pattern, label, placeHolder, feedBack) => {
     return (
-      <Form.Group as={Col} md="4" controlId={controlId}>
+      <FormGroup as={Col} md="4" controlId={controlId}>
         <Form.Label>{label}</Form.Label>
-        <Form.Control
+        <FormControl
+          name={controlId}
           required
           type={type ? type : 'text'}
           pattern={pattern ? pattern : '[A-Za-z]+'}
           placeholder={placeHolder}
-          onChange={onChange}
         />
-        <Form.Control.Feedback type="invalid">{feedBack}</Form.Control.Feedback>
-      </Form.Group>
+        <FormControl.Feedback type="invalid">{feedBack}</FormControl.Feedback>
+      </FormGroup>
     );
   };
 
   render() {
-    const { formValidated, onChange, getRef } = this.props;
+    const { formValidated, onChange } = this.props;
     // <Form noValidate validated={formValidated} onSubmit={onSubmit}>
     return (
-      <Form noValidate validated={formValidated} ref={getRef}>
+      <CommonForm onChange={onChange} formValidated={formValidated}>
         <Form.Row>
           {this.renderGroup(
             'firstName',
@@ -41,8 +34,7 @@ class AddOwnerForm extends Component {
             null,
             'First Name',
             'First Name',
-            'Please enter a first name, no space allowed',
-            onChange
+            'Please enter a first name, no space allowed'
           )}
           {this.renderGroup(
             'lastName',
@@ -50,8 +42,7 @@ class AddOwnerForm extends Component {
             null,
             'Last Name',
             'Last Name',
-            'Please enter a last name, no space allowed',
-            onChange
+            'Please enter a last name, no space allowed'
           )}
         </Form.Row>
         <Form.Row>
@@ -61,8 +52,7 @@ class AddOwnerForm extends Component {
             '[A-Za-z 0-9]+',
             'Address',
             '',
-            'Please enter an address',
-            onChange
+            'Please enter an address'
           )}
           {this.renderGroup(
             'city',
@@ -70,8 +60,7 @@ class AddOwnerForm extends Component {
             '[A-Za-z ]+',
             'City',
             '',
-            'Please enter a city',
-            onChange
+            'Please enter a city'
           )}
         </Form.Row>
         <Form.Row>
@@ -81,19 +70,17 @@ class AddOwnerForm extends Component {
             '[0-9]{10}',
             'Telephone',
             '',
-            'Please enter a valid pohne number (10 digits)',
-            onChange
+            'Please enter a valid pohne number (10 digits)'
           )}
         </Form.Row>
-      </Form>
+      </CommonForm>
     );
   }
 }
 
 AddOwnerForm.propTypes = {
   formValidated: PropTypes.bool.isRequired,
-  onChange: PropTypes.func.isRequired,
-  getRef: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired
 };
 
 export default AddOwnerForm;

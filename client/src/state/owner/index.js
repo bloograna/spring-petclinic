@@ -3,7 +3,20 @@
 import ownerReducer, {
   ownerEpics,
   saveOwner,
-  getOwnerByLastName
+  getOwnerByLastName,
+  openAddOwnerModal,
+  hideAddOwnerModal,
+  validateOwnerModalData,
+  validateOwnerModalDataCompleted
 } from './ownerStore';
 
-export { ownerReducer, ownerEpics, saveOwner, getOwnerByLastName };
+export {
+  ownerReducer,
+  ownerEpics,
+  saveOwner,
+  getOwnerByLastName,
+  openAddOwnerModal,
+  hideAddOwnerModal,
+  validateOwnerModalData,
+  validateOwnerModalDataCompleted
+};

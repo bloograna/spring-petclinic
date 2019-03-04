@@ -1,34 +1,46 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table } from 'react-bootstrap';
-import { capitalize } from 'lodash';
+import { Table, Button } from 'react-bootstrap';
+import { isEmpty, capitalize } from 'lodash';
 
-const Owners = ({ owners }) => (
-  <Table striped bordered hover variant="dark">
-    {TableHeader()}
-    <tbody>{constructTableRows(owners)}</tbody>
-  </Table>
-);
+const Owners = ({ owners, onAddPet }) =>
+  isEmpty(owners) ? null : (
+    <Table striped bordered hover variant="dark">
+      {constructTableHeader()}
+      <tbody>{constructTableRows(owners, onAddPet)}</tbody>
+    </Table>
+  );
 
-const constructTableRows = owners => {
+const constructTableRows = (owners, onAdd) => {
   const rows = [];
   owners.forEach(owner => {
     const pets = owner.pets.map(pet => capitalize(pet.name)).join(', ');
-    rows.push(TableRow(owner.id, owner.firstName, owner.lastName, pets));
+    rows.push(
+      constructTableRow(owner.id, owner.firstName, owner.lastName, pets, onAdd)
+    );
   });
   return rows;
 };
 
-const TableRow = (id, firstName, lastName, pets) => (
+const constructAddButton = (ownerId, onAddPet) => (
+  <Button variant="link" size="sm" onClick={onAddPet}>
+    Add
+  </Button>
+);
+
+const constructTableRow = (id, firstName, lastName, pets, onAdd) => (
   <tr>
     <td>{id}</td>
     <td>{firstName}</td>
     <td>{lastName}</td>
-    <td>{pets}</td>
+    <td>
+      {pets}
+      {constructAddButton(id, onAdd)}
+    </td>
   </tr>
 );
 
-const TableHeader = () => (
+const constructTableHeader = () => (
   <thead>
     <tr>
       <th>#</th>
@@ -40,7 +52,8 @@ const TableHeader = () => (
 );
 
 Owners.propTypes = {
-  owners: PropTypes.array.isRequired
+  owners: PropTypes.array.isRequired,
+  onAddPet: PropTypes.func.isRequired
 };
 
 export default Owners;
