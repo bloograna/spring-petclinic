@@ -18,14 +18,15 @@ package org.springframework.samples.petclinic.v1.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
-import org.springframework.samples.petclinic.dtos.VetDTO;
-import org.springframework.samples.petclinic.dtos.VisitDTO;
+import org.springframework.samples.petclinic.exceptions.ServiceException;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.dtos.ResponseData;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.interfaces.VetService;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Set;
 
@@ -48,12 +49,12 @@ class VetController {
     }
 
     @PostMapping
-    public ResponseData<String> saveVet(@RequestBody @NonNull VetDTO vetDTO) {
-        return vetService.saveVet(vetDTO);
+    public ResponseData<String> saveVet(@RequestBody @Valid Vet vet) {
+        return vetService.saveVet(vet);
     }
 
     @GetMapping
-    public ResponseData<Collection<VetDTO>> getVets() {
+    public ResponseData<Collection<Vet>> getVets() {
         return vetService.getVets();
     }
 
@@ -63,12 +64,12 @@ class VetController {
     }
 
     @GetMapping("/{vetId}")
-    public ResponseData<VetDTO> getVetById(@PathVariable int vetId) {
+    public ResponseData<Vet> getVetById(@PathVariable int vetId) {
         return vetService.getVetById(vetId);
     }
 
     @PostMapping("/{vetId}/specialty")
-    public ResponseData<String> addSpecialty(@PathVariable int vetId, @RequestBody Collection<Specialty> specialty) {
+    public ResponseData<String> addSpecialty(@PathVariable int vetId, @RequestBody @Valid Collection<Specialty> specialty) {
         return vetService.addSpecialtyToVet(vetId, specialty);
     }
 

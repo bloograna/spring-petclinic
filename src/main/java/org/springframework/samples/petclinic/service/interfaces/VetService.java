@@ -1,8 +1,8 @@
 package org.springframework.samples.petclinic.service.interfaces;
 
 import org.springframework.samples.petclinic.dtos.ResponseData;
-import org.springframework.samples.petclinic.dtos.VetDTO;
 import org.springframework.samples.petclinic.model.Specialty;
+import org.springframework.samples.petclinic.model.Vet;
 
 import java.util.Collection;
 import java.util.Set;
@@ -10,11 +10,11 @@ import java.util.Set;
 
 public interface VetService {
 
-    ResponseData<Collection<VetDTO>> getVets();
+    ResponseData<Collection<Vet>> getVets();
 
-    ResponseData<VetDTO> getVetById(int vetId);
+    ResponseData<Vet> getVetById(int vetId);
 
-    ResponseData<String> saveVet(VetDTO vetDTO);
+    ResponseData<String> saveVet(Vet vet);
 
     ResponseData<Set<Specialty>> getSpecialties();
 

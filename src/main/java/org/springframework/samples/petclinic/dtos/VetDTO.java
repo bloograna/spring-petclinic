@@ -13,5 +13,4 @@ public class VetDTO {
     private String firstName;
     private String lastName;
     private Set<Specialty> specialties;
-    private Set<VisitDTO> visits;
 }

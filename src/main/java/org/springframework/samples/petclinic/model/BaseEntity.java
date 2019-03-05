@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.samples.petclinic.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 
@@ -43,6 +46,7 @@ public class BaseEntity implements Serializable {
         this.id = id;
     }
 
+    @JsonIgnore
     public boolean isNew() {
         return this.id == null;
     }

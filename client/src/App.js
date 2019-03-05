@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import NavigationBar from './components/navbar/NavigationBar';
-import VetsContainer from './components/vet/VetsContainer';
-import OwnersContainer from './components/owner/OwnersContainer';
+import VetsContainer from './components/vet/Vets.container';
+import OwnersContainer from './components/owner/Owners.container';
 import AddOwnerModal from './components/owner/AddOwnerModal';
 import AddPetModal from './components/pet/AddPetModal';
+import AddVetModal from './components/vet/AddVetModal';
 import {
   saveOwner,
   openAddOwnerModal,
@@ -19,12 +20,20 @@ import {
   validatePetModalData,
   getPetTypes
 } from './state/pet';
+import {
+  saveVet,
+  getVetSpecialties,
+  openAddVetModal,
+  hideAddVetModal,
+  validateVetModalData
+} from './state/vet';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = { activePanel: 'home' };
     this.props.getPetTypes();
+    this.props.getVetSpecialties();
   }
 
   onHomeClick = () => {
@@ -66,6 +75,15 @@ class App extends Component {
     }
   };
 
+  handleAddVetFormData = (formObj, event) => {
+    const { validateVetModalData, saveVet } = this.props;
+    const currentTarget = event.currentTarget;
+    validateVetModalData();
+    if (currentTarget.checkValidity() === true) {
+      saveVet(formObj);
+    }
+  };
+
   renderOwners = () => {
     const { activePanel } = this.state;
     return activePanel === 'owners' ? <OwnersContainer /> : null;
@@ -73,13 +91,17 @@ class App extends Component {
 
   render() {
     const {
-      shouldValidateOwnerModalData,
+      showAddVetModal,
       showAddOwnerModal,
       showAddPetModal,
+      shouldValidateOwnerModalData,
       shouldValidatePetModalData,
+      shouldValidateVetModalData,
       hideAddOwnerModal,
       hideAddPetModal,
-      petTypes
+      hideAddVetModal,
+      petTypes,
+      specialties
     } = this.props;
 
     return (
@@ -103,6 +125,13 @@ class App extends Component {
           onAddButtonClick={this.handleAddPetFormData}
           petTypes={petTypes}
         />
+        <AddVetModal
+          showAddVetModal={showAddVetModal}
+          onHideAddVetModal={hideAddVetModal}
+          shouldValidateVetModalData={shouldValidateVetModalData}
+          onAddButtonClick={this.handleAddVetFormData}
+          specialties={specialties}
+        />
         {this.renderVets()}
         {this.renderOwners()}
       </div>
@@ -111,8 +140,8 @@ class App extends Component {
 }
 
 App.protoTypes = {
-  getPetTypes: PropTypes.func.isRequired
-  // loadSpecialties: PropTypes.func.isRequired
+  getPetTypes: PropTypes.func.isRequired,
+  getVetSpecialties: PropTypes.func.isRequired
 };
 
 /* istanbul ignore next */
@@ -121,7 +150,10 @@ const mapStateToProps = state => ({
   shouldValidateOwnerModalData: state.ownerReducer.shouldValidateOwnerModalData,
   showAddPetModal: state.petReducer.showAddPetModal,
   shouldValidatePetModalData: state.petReducer.shouldValidatePetModalData,
-  petTypes: state.petReducer.petTypes
+  petTypes: state.petReducer.petTypes,
+  showAddVetModal: state.vetReducer.showAddVetModal,
+  shouldValidateVetModalData: state.vetReducer.shouldValidateVetModalData,
+  specialties: state.vetReducer.specialties
 });
 
 /* istanbul ignore next */
@@ -152,6 +184,21 @@ const mapDispatchToProps = dispatch => ({
   },
   getPetTypes: () => {
     dispatch(getPetTypes());
+  },
+  openAddVetModal: () => {
+    dispatch(openAddVetModal());
+  },
+  hideAddVetModal: () => {
+    dispatch(hideAddVetModal());
+  },
+  validateVetModalData: () => {
+    dispatch(validateVetModalData());
+  },
+  saveVet: vet => {
+    dispatch(saveVet(vet));
+  },
+  getVetSpecialties: () => {
+    dispatch(getVetSpecialties());
   }
 });
 

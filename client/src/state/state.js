@@ -6,7 +6,12 @@ const initialState = {
     showAddPetModal: false,
     shouldValidatePetModalData: false
   },
-  vet: { vets: [], specialties: [] },
+  vet: {
+    vets: [],
+    specialties: [],
+    showAddVetModal: false,
+    shouldValidateVetModalData: false
+  },
   owner: {
     owners: [],
     showAddOwnerModal: false,

@@ -40,31 +40,21 @@ public class Vet extends Person {
     @JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"), inverseJoinColumns = @JoinColumn(name = "specialty_id"))
     private Set<Specialty> specialties;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vetId", fetch = FetchType.EAGER)
-    private Set<Visit> visits = new LinkedHashSet<>();
 
-    protected Set<org.springframework.samples.petclinic.model.Specialty> getSpecialtiesInternal() {
+    protected Set<Specialty> getSpecialtiesInternal() {
         if (this.specialties == null) {
             this.specialties = new HashSet<>();
         }
         return this.specialties;
     }
 
-    protected void setSpecialtiesInternal(Set<org.springframework.samples.petclinic.model.Specialty> specialties) {
+    protected void setSpecialtiesInternal(Set<Specialty> specialties) {
         this.specialties = specialties;
-    }
-
-    public void setSpecialties(Set<Specialty> specialties) {
-        this.specialties = specialties;
-    }
-
-    public void setVisits(Set<Visit> visits) {
-        this.visits = visits;
     }
 
     @XmlElement
-    public List<org.springframework.samples.petclinic.model.Specialty> getSpecialties() {
-        List<org.springframework.samples.petclinic.model.Specialty> sortedSpecs = new ArrayList<>(getSpecialtiesInternal());
+    public List<Specialty> getSpecialties() {
+        List<Specialty> sortedSpecs = new ArrayList<>(getSpecialtiesInternal());
         PropertyComparator.sort(sortedSpecs,
             new MutableSortDefinition("name", true, true));
         return Collections.unmodifiableList(sortedSpecs);
@@ -74,30 +64,8 @@ public class Vet extends Person {
         return getSpecialtiesInternal().size();
     }
 
-    public void addSpecialty(org.springframework.samples.petclinic.model.Specialty specialty) {
+    public void addSpecialty(Specialty specialty) {
         getSpecialtiesInternal().add(specialty);
     }
 
-    protected Set<org.springframework.samples.petclinic.model.Visit> getVisitsInternal() {
-        if (this.visits == null) {
-            this.visits = new HashSet<>();
-        }
-        return this.visits;
-    }
-
-    protected void setVisitsInternal(Set<org.springframework.samples.petclinic.model.Visit> visits) {
-        this.visits = visits;
-    }
-
-    public List<org.springframework.samples.petclinic.model.Visit> getVisits() {
-        List<Visit> sortedVisits = new ArrayList<>(getVisitsInternal());
-        PropertyComparator.sort(sortedVisits,
-            new MutableSortDefinition("date", false, false));
-        return Collections.unmodifiableList(sortedVisits);
-    }
-
-    public void addVisit(org.springframework.samples.petclinic.model.Visit visit) {
-        getVisitsInternal().add(visit);
-        visit.setVetId(this.getId());
-    }
 }

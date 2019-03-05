@@ -34,28 +34,29 @@ public class VetServiceImpl implements VetService {
 
 
     @Override
-    public ResponseData<Collection<VetDTO>> getVets() {
-        return new ResponseData<>(convertToVisitDTO(vets.findAll()));
+    public ResponseData<Collection<Vet>> getVets() {
+        return new ResponseData<>(vets.findAll());
     }
 
     @Override
-    public ResponseData<VetDTO> getVetById(int vetId) {
+    public ResponseData<Vet> getVetById(int vetId) {
         Vet result = vets.findById(vetId);
         if (result != null) {
-            return new ResponseData<>(modelMapper.map(vets.findById(vetId), VetDTO.class));
+            return new ResponseData<>(vets.findById(vetId));
         } else {
             throw new InvalidIdException("Invalid vet id, this vet does not exist");
         }
     }
 
     @Override
-    public ResponseData<String> saveVet(VetDTO vetDto) {
+    public ResponseData<String> saveVet(Vet vet) {
         try {
-            // for some fucking reason I can ONLY ADD ONE VET. THATS IT, NO MORE ADDING VETS. WHAT THE ACTUAL FUCK
+            // BECAUSE FUCK FK AND INDEXING ON THE TABLE!!
             // if want to add new visit or vet, id must be null
             // "id" : null
             // if want to add specialty must include id otherwise shit.
-            Vet vet = modelMapper.map(vetDto, Vet.class);
+//            Vet vet = modelMapper.map(vetDto, Vet.class);
+//            vetDto.getSpecialties().forEach(specialty -> vet.addSpecialty(specialty));
             vets.save(vet);
             return new ResponseData<>("ok");
         } catch (ConstraintViolationException exception) {
@@ -80,10 +81,10 @@ public class VetServiceImpl implements VetService {
         }
     }
 
-
-    private Collection<VetDTO> convertToVisitDTO(Collection<Vet> vets) {
-        List<VetDTO> convertedResults = new ArrayList<>(vets.size());
-        vets.forEach(vet -> convertedResults.add(modelMapper.map(vet, VetDTO.class)));
-        return convertedResults;
-    }
+//
+//    private Collection<VetDTO> convertToVisitDTO(Collection<Vet> vets) {
+//        List<VetDTO> convertedResults = new ArrayList<>(vets.size());
+//        vets.forEach(vet -> convertedResults.add(modelMapper.map(vet, VetDTO.class)));
+//        return convertedResults;
+//    }
 }

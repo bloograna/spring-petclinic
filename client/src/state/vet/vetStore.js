@@ -1,5 +1,6 @@
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
+import _ from 'lodash';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { concat } from 'rxjs/observable/concat';
@@ -18,6 +19,13 @@ const GET_VETS_SUCCESS = 'vet/GET_VETS_SUCCESS';
 const GET_VET_BY_ID = 'vet/GET_VET_BY_ID';
 const GET_VET_BY_ID_SUCCESS = 'vet/GET_VET_BY_ID_SUCCESS';
 
+// render/modal
+
+const OPEN_ADD_MODAL = 'vet/OPEN_ADD_MODAL';
+const HIDE_ADD_MODAL = 'vet/HIDE_ADD_MODAL';
+const VALIDATE_MODAL_DATA = 'vet/VALIDATE_MODAL_DATA';
+const VALIDATE_MODAL_DATA_COMPLETED = 'vet/VALIDATE_MODAL_DATA_COMPLETED';
+
 /* ----- ACTIONS ----- */
 const saveVet = mac(SAVE_VET, 'vet', 'add');
 const saveVetSuccess = mac(SAVE_VET_SUCCESS, 'vet');
@@ -31,9 +39,14 @@ const getVetsSuccess = mac(GET_VETS_SUCCESS, 'vets');
 const getVetById = mac(GET_VET_BY_ID, 'vetId');
 const getVetByIdSuccess = mac(GET_VET_BY_ID_SUCCESS, 'vetId');
 
+// render/modal
+const openAddVetModal = mac(OPEN_ADD_MODAL);
+const hideAddVetModal = mac(HIDE_ADD_MODAL);
+const validateVetModalData = mac(VALIDATE_MODAL_DATA);
+const validateVetModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
+
 /* ----- REDUCER ----- */
 const vetInitialState = initialState.vet;
-
 const vetReducer = (state = vetInitialState, action) => {
   switch (action.type) {
     case GET_VETS_SUCCESS: {
@@ -44,9 +57,18 @@ const vetReducer = (state = vetInitialState, action) => {
       const { specialties } = action;
       return { ...state, specialties: specialties };
     }
-    // case START_SEARCHING: {
-    //   return { ...state, done: false };
-    // }
+    case OPEN_ADD_MODAL: {
+      return { ...state, showAddVetModal: true };
+    }
+    case HIDE_ADD_MODAL: {
+      return { ...state, showAddVetModal: false };
+    }
+    case VALIDATE_MODAL_DATA: {
+      return { ...state, shouldValidateVetModalData: true };
+    }
+    case VALIDATE_MODAL_DATA_COMPLETED: {
+      return { ...state, shouldValidateVetModalData: false };
+    }
     default:
       return state;
   }
@@ -56,14 +78,14 @@ const vetReducer = (state = vetInitialState, action) => {
 const getVetRequestBody = vet => {
   const { specialties, firstName, lastName } = vet;
   const mappedSpecialties = specialties.map(value => {
-    const specialtyWithId = { id: `${value}` };
+    const intValue = _.parseInt(value);
+    const specialtyWithId = { id: intValue };
     return specialtyWithId;
   });
   return {
     firstName,
     lastName,
-    specialties: mappedSpecialties,
-    visits: []
+    specialties: mappedSpecialties
   };
 };
 
@@ -84,6 +106,8 @@ const getVetsEpic = action$ =>
 const saveVetEpic = action$ =>
   action$.ofType(SAVE_VET).mergeMap(action =>
     concat(
+      of(validateVetModalDataCompleted()),
+      of(hideAddVetModal()),
       fromPromise(vetService.saveVet(getVetRequestBody(action.vet))).map(
         result => {
           if (result.error) {
@@ -118,5 +142,9 @@ export {
   saveVet,
   getVetSpecialties,
   getVets,
-  getVetById
+  getVetById,
+  openAddVetModal,
+  hideAddVetModal,
+  validateVetModalData,
+  validateVetModalDataCompleted
 };
