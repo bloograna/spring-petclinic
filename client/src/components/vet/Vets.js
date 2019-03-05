@@ -29,7 +29,7 @@ const constructTableRows = vets => {
 };
 
 const TableRow = (id, firstName, lastName, specialties) => (
-  <tr>
+  <tr key={`vet-${id}`}>
     <td>{id}</td>
     <td>{firstName}</td>
     <td>{lastName}</td>

@@ -82,6 +82,8 @@ const getVetRequestBody = vet => {
     const specialtyWithId = { id: intValue };
     return specialtyWithId;
   });
+  // for some odd reason server only allows one add vet to go through and then the rest of them makes
+  // the special thing stuck in a "transient state" pet the log message.
   return {
     firstName,
     lastName,

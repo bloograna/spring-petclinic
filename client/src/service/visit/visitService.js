@@ -18,10 +18,15 @@ const getVisitsByDate = dateString => {
   return clinicRequest.get(endpoint + `/visit-date/${dateString}`);
 };
 
+const getVisitsByDateRange = dateRange => {
+  return clinicRequest.get(endpoint + '/visit-date', dateRange);
+};
+
 const visitService = {
   getVisitsByPetId,
   saveVisit,
   getVisitsByVetId,
-  getVisitsByDate
+  getVisitsByDate,
+  getVisitsByDateRange
 };
 export default visitService;

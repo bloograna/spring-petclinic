@@ -18,7 +18,11 @@ const initialState = {
     shouldValidateOwnerModalData: false,
     activeOwner: null
   },
-  visit: [],
+  visit: {
+    visits: [],
+    showAddVisitModal: false,
+    shouldValidateVisitModalData: false
+  },
   message: []
 };
 

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import NavigationBar from './components/navbar/NavigationBar';
+import HomeContainer from './components/home/Home.container';
 import VetsContainer from './components/vet/Vets.container';
 import OwnersContainer from './components/owner/Owners.container';
 import AddOwnerModal from './components/owner/AddOwnerModal';
@@ -37,7 +38,7 @@ class App extends Component {
   }
 
   onHomeClick = () => {
-    console.log('home click!');
+    this.setState({ activePanel: 'home' });
   };
 
   onOwnerClick = () => {
@@ -88,6 +89,10 @@ class App extends Component {
     const { activePanel } = this.state;
     return activePanel === 'owners' ? <OwnersContainer /> : null;
   };
+  renderHomePage = () => {
+    const { activePanel } = this.state;
+    return activePanel === 'home' ? <HomeContainer /> : null;
+  };
 
   render() {
     const {
@@ -132,6 +137,7 @@ class App extends Component {
           onAddButtonClick={this.handleAddVetFormData}
           specialties={specialties}
         />
+        {this.renderHomePage()}
         {this.renderVets()}
         {this.renderOwners()}
       </div>
