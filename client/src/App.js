@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import NavigationBar from './components/navbar/NavigationBar';
 import HomeContainer from './components/home/Home.container';
 import VetsContainer from './components/vet/Vets.container';
 import OwnersContainer from './components/owner/Owners.container';
+import VisitsContainer from './components/visit/Visits.container';
 import AddOwnerModal from './components/owner/AddOwnerModal';
 import AddPetModal from './components/pet/AddPetModal';
 import AddVetModal from './components/vet/AddVetModal';
@@ -28,6 +30,7 @@ import {
   hideAddVetModal,
   validateVetModalData
 } from './state/vet';
+import { getVisitsByDateRange } from './state/visit';
 
 class App extends Component {
   constructor(props) {
@@ -35,6 +38,7 @@ class App extends Component {
     this.state = { activePanel: 'home' };
     this.props.getPetTypes();
     this.props.getVetSpecialties();
+    this.props.getVisitsByDateRange();
   }
 
   onHomeClick = () => {
@@ -50,12 +54,7 @@ class App extends Component {
   };
 
   onAppointmentClick = () => {
-    console.log('appt click!');
-  };
-
-  renderVets = () => {
-    const { activePanel } = this.state;
-    return activePanel === 'vets' ? <VetsContainer /> : null;
+    this.setState({ activePanel: 'visits' });
   };
 
   handleAddOwnerFormData = (formObj, event) => {
@@ -85,13 +84,20 @@ class App extends Component {
     }
   };
 
-  renderOwners = () => {
+  renderActivePanel = () => {
     const { activePanel } = this.state;
-    return activePanel === 'owners' ? <OwnersContainer /> : null;
-  };
-  renderHomePage = () => {
-    const { activePanel } = this.state;
-    return activePanel === 'home' ? <HomeContainer /> : null;
+    switch (activePanel) {
+      case 'home':
+        return <HomeContainer />;
+      case 'owners':
+        return <OwnersContainer />;
+      case 'vets':
+        return <VetsContainer />;
+      case 'visits':
+        return <VisitsContainer />;
+      default:
+        return null;
+    }
   };
 
   render() {
@@ -137,9 +143,7 @@ class App extends Component {
           onAddButtonClick={this.handleAddVetFormData}
           specialties={specialties}
         />
-        {this.renderHomePage()}
-        {this.renderVets()}
-        {this.renderOwners()}
+        {this.renderActivePanel()}
       </div>
     );
   }
@@ -147,7 +151,8 @@ class App extends Component {
 
 App.protoTypes = {
   getPetTypes: PropTypes.func.isRequired,
-  getVetSpecialties: PropTypes.func.isRequired
+  getVetSpecialties: PropTypes.func.isRequired,
+  getVisitsByDateRange: PropTypes.func.isRequired
 };
 
 /* istanbul ignore next */
@@ -205,6 +210,15 @@ const mapDispatchToProps = dispatch => ({
   },
   getVetSpecialties: () => {
     dispatch(getVetSpecialties());
+  },
+  getVisitsByDateRange: () => {
+    const startOfCurrentMonth = moment()
+      .startOf('month')
+      .format('YYYY-MM-DD');
+    const endOfOfCurrentMonth = moment()
+      .endOf('month')
+      .format('YYYY-MM-DD');
+    dispatch(getVisitsByDateRange(startOfCurrentMonth, endOfOfCurrentMonth));
   }
 });
 

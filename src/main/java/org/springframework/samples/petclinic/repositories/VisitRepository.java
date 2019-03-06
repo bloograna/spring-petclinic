@@ -49,5 +49,7 @@ public interface VisitRepository extends Repository<Visit, Integer> {
 
     Collection<Visit> findByDate(LocalDate visitDate);
 
+    Collection<Visit> findByDateBetween(LocalDate startDate, LocalDate endDate);
+
     Collection<Visit> findByVetId(Integer vetId);
 }

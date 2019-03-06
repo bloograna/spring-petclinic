@@ -1,6 +1,7 @@
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
 import _ from 'lodash';
+import moment from 'moment';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { concat } from 'rxjs/observable/concat';
@@ -13,10 +14,10 @@ import visitService from '../../service/visit/visitService';
 const SAVE_VISIT = 'visit/SAVE_VISIT';
 const SAVE_VISIT_SUCCESS = 'visit/SAVE_VISIT_SUCCESS';
 const GET_VISITS_BY_DATE = 'visit/GET_VISITS_BY_DATE';
-const GET_VISITS_BY_DATE_SUCCESS = 'visit/GET_VISITS__BY_DATE_SUCCESS';
+const GET_VISITS_BY_DATE_SUCCESS = 'visit/GET_VISITS_BY_DATE_SUCCESS';
 const GET_VISITS_BY_DATE_RANGE = 'visit/GET_VISITS_BY_DATE_RANGE';
 const GET_VISITS_BY_DATE_RANGE_SUCCESS =
-  'visit/GET_VISITS__BY_DATE_RANGE_SUCCESS';
+  'visit/GET_VISITS_BY_DATE_RANGE_SUCCESS';
 const GET_VISIT_BY_VET_ID = 'visit/GET_VISIT_BY_VET_ID';
 const GET_VISIT_BY_VET_ID_SUCCESS = 'visit/GET_VISIT_BY_VET_ID_SUCCESS';
 const GET_VISIT_BY_PET_ID = 'visit/GET_VISIT_BY_PET_ID';
@@ -55,16 +56,33 @@ const validateVisitModalData = mac(VALIDATE_MODAL_DATA);
 const validateVisitModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
 /* ----- REDUCER ----- */
+
+const getDateTimeFromStrings = (dateString, startTimeString) =>
+  moment(dateString + ' ' + startTimeString).toDate();
+
+const parseVisitResponse = newVisitData =>
+  newVisitData.map(visit => {
+    const start = getDateTimeFromStrings(visit.date, visit.startTime);
+    const end = getDateTimeFromStrings(visit.date, visit.endTime);
+    return {
+      id: visit.id,
+      title: 'visit with someone todo fill this in',
+      start: start,
+      end: end,
+      desc: visit.description,
+      petId: visit.petId,
+      vetId: visit.vetId
+    };
+  });
+
 const visitInitialState = initialState.visit;
 const visitReducer = (state = visitInitialState, action) => {
   switch (action.type) {
-    case GET_VISITS_BY_DATE_SUCCESS: {
-      const { visits } = action;
-      return { ...state, visits: visits };
-    }
+    case GET_VISITS_BY_DATE_SUCCESS:
     case GET_VISITS_BY_DATE_RANGE_SUCCESS: {
       const { visits } = action;
-      return { ...state, visits: visits };
+      const parsedVisits = parseVisitResponse(visits);
+      return { ...state, visits: parsedVisits };
     }
     case GET_VISIT_BY_VET_ID_SUCCESS: {
       const { visits } = action;
@@ -108,6 +126,8 @@ const getVisitRequestBody = visit => {
   };
 };
 
+const getDateString = date => moment(date).format('YYYY-MM-DD');
+
 /* -------- EPICS ------- */
 
 const saveVisitEpic = action$ =>
@@ -127,40 +147,50 @@ const saveVisitEpic = action$ =>
     )
   );
 
-const getVisitsEpic = action$ =>
-  action$.ofType(SAVE_VISIT).mergeMap(action =>
+const getVisitsByDateEpic = action$ =>
+  action$.ofType(GET_VISITS_BY_DATE).mergeMap(action =>
     concat(
-      fromPromise(visitService.saveVisit(action.visit)).map(result => {
+      fromPromise(visitService.getVisitsByDate(getDateString(action.date))).map(
+        result => {
+          if (result.error) {
+            return addMessage(
+              'An error occurred while getting visit from server'
+            );
+          }
+          return getVisitsByDateSuccess(result.data);
+        }
+      )
+    )
+  );
+
+const getVisitsByDateRangeEpic = action$ =>
+  action$.ofType(GET_VISITS_BY_DATE_RANGE).mergeMap(action =>
+    concat(
+      fromPromise(
+        visitService.getVisitsByDateRange(action.startDate, action.endDate)
+      ).map(result => {
         if (result.error) {
           return addMessage(
             'An error occurred while getting visit from server'
           );
         }
-        return saveVisitSuccess(result.data);
+        return getVisitsByDateRangeSuccess(result.data);
       })
     )
   );
 
-// const getSpecialtiesEpic = action$ =>
-//   action$.ofType(GET_VISIT_SPECIALTIES).mergeMap(() =>
-//     concat(
-//       fromPromise(visitService.getVisitSpecialties()).map(result => {
-//         if (result.error) {
-//           return addMessage(
-//             'An error occured while getting visit specialities from server'
-//           );
-//         }
-//         return getVisitSpecialtiesSuccess(result.data);
-//       })
-//     )
-//   );
-
-const visitEpics = [getVisitsEpic, saveVisitEpic];
+const visitEpics = [
+  getVisitsByDateEpic,
+  saveVisitEpic,
+  getVisitsByDateRangeEpic
+];
 
 export {
   visitReducer as default,
   visitEpics,
   saveVisit,
+  getVisitsByDate,
+  getVisitsByDateRange,
   openAddVisitModal,
   hideAddVisitModal,
   validateVisitModalData,

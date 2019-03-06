@@ -14,5 +14,7 @@ public interface VisitService {
 
     ResponseData<Collection<VisitDTO>> getVisitsByDate(String dateString);
 
+    ResponseData<Collection<VisitDTO>> getVisitsByDateRange(String startDate, String endDate);
+
     ResponseData<Collection<VisitDTO>> getVisitsByVetId(int vetId);
 }

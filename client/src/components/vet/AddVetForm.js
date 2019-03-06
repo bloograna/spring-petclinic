@@ -12,7 +12,7 @@ const AddVetForm = ({
 }) => (
   <CommonForm onSubmit={onAddButtonClick} formValidated={formValidated}>
     <Form.Row>
-      <Form.Group as={Col} md="4">
+      <Form.Group as={Col} md="4" controlId="firstName">
         <Form.Label id="vet-form-firstname">First Name</Form.Label>
         <Form.Control
           required
@@ -25,7 +25,7 @@ const AddVetForm = ({
           Please enter a first name with no spaces
         </Form.Control.Feedback>
       </Form.Group>
-      <Form.Group as={Col} md="4">
+      <Form.Group as={Col} md="4" controlId="lastName">
         <Form.Label id="vet-form-lastname">Last Name</Form.Label>
         <Form.Control
           required

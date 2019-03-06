@@ -79,6 +79,11 @@ class VisitController {
         return visitService.getVisitsByDate(dateString);
     }
 
+    @GetMapping("/visit-date")
+    public ResponseData<Collection<VisitDTO>> getVisitsByDateRange(@RequestParam String startDate, @RequestParam String endDate) {
+        return visitService.getVisitsByDateRange(startDate, endDate);
+    }
+
     @GetMapping("/vet-id/{vetId}")
     public ResponseData<Collection<VisitDTO>> getVisitsVetId(@PathVariable int vetId) {
         return visitService.getVisitsByVetId(vetId);

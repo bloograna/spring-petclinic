@@ -18,7 +18,8 @@ const getVisitsByDate = dateString => {
   return clinicRequest.get(endpoint + `/visit-date/${dateString}`);
 };
 
-const getVisitsByDateRange = dateRange => {
+const getVisitsByDateRange = (startDate, endDate) => {
+  const dateRange = { startDate, endDate };
   return clinicRequest.get(endpoint + '/visit-date', dateRange);
 };
 

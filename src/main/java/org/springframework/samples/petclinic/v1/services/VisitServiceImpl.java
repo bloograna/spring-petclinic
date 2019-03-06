@@ -86,6 +86,18 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
+    public ResponseData<Collection<VisitDTO>> getVisitsByDateRange(String startDateString, String endDateString) {
+        //date should be in "yyyy-MM-dd" format
+        try {
+            LocalDate startDate = LocalDate.parse(startDateString);
+            LocalDate endDate = LocalDate.parse(endDateString);
+            return new ResponseData<>(convertToVisitDTO(visits.findByDateBetween(startDate, endDate)));
+        } catch (DateTimeParseException exception) {
+            throw new InvalidFormatException("Unable to parse date, please supply date string in yyyy-MM-dd format");
+        }
+    }
+
+    @Override
     public ResponseData<Collection<VisitDTO>> getVisitsByVetId(int vetId) {
         return new ResponseData<>(convertToVisitDTO(visits.findByVetId(vetId)));
     }
