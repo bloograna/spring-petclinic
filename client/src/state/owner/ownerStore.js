@@ -1,5 +1,6 @@
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
+import { cloneDeep } from 'lodash';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { concat } from 'rxjs/observable/concat';
@@ -46,7 +47,9 @@ const ownerReducer = (state = ownerInitialState, action) => {
   switch (action.type) {
     case GET_OWNERS_BY_LASTNAME_SUCCESS: {
       const { owners } = action;
-      return { ...state, owners };
+      const stateOwners = cloneDeep(state.owners);
+      owners.forEach(owner => (stateOwners[owner.id] = owner));
+      return { ...state, owners: stateOwners, searchResults: owners };
     }
     case OPEN_ADD_MODAL: {
       return { ...state, showAddOwnerModal: true };

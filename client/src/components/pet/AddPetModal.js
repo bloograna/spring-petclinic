@@ -4,6 +4,7 @@ import AddPetForm from './AddPetForm';
 import PropTypes from 'prop-types';
 
 const AddPetModal = ({
+  pet,
   showAddPetModal,
   shouldValidatePetModalData,
   onHideAddPetModal,
@@ -14,13 +15,14 @@ const AddPetModal = ({
     <LargeModal
       show={showAddPetModal}
       onHide={onHideAddPetModal}
-      title={'Add an owner'}
+      title={'Add a Pet'}
     >
       <AddPetForm
         formValidated={shouldValidatePetModalData}
         onAddButtonClick={onAddButtonClick}
         petTypes={petTypes}
         onHideAddPetModal={onHideAddPetModal}
+        pet={pet}
       />
     </LargeModal>
   );
@@ -31,7 +33,11 @@ AddPetModal.propTypes = {
   shouldValidatePetModalData: PropTypes.bool.isRequired,
   onHideAddPetModal: PropTypes.func.isRequired,
   onAddButtonClick: PropTypes.func.isRequired,
-  petTypes: PropTypes.array.isRequired
+  petTypes: PropTypes.array.isRequired,
+  pet: PropTypes.shape({})
+};
+AddPetModal.defaultProps = {
+  pet: {}
 };
 
 export default AddPetModal;

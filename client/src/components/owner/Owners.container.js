@@ -6,7 +6,11 @@ import {
   getOwnerByLastName,
   openAddOwnerModal
 } from '../../state/owner/ownerStore';
-import { openAddPetModal } from '../../state/pet/petStore';
+import {
+  openAddPetModal,
+  getPetsByOwner,
+  setActivePet
+} from '../../state/pet/petStore';
 import Owners from './Owners';
 
 class OwnersContainer extends Component {
@@ -52,11 +56,23 @@ class OwnersContainer extends Component {
   };
 
   render() {
-    const { owners, openAddPetModal } = this.props;
+    const {
+      searchResults,
+      openAddPetModal,
+      setActivePet,
+      getPetsByOwner,
+      pets
+    } = this.props;
     return (
       <div>
         {this.renderSearchButton()}
-        <Owners owners={owners} onAddPet={openAddPetModal} />
+        <Owners
+          owners={searchResults}
+          pets={pets}
+          onAddPet={openAddPetModal}
+          setActivePet={setActivePet}
+          getPetsByOwnerId={getPetsByOwner}
+        />
       </div>
     );
   }
@@ -65,12 +81,14 @@ class OwnersContainer extends Component {
 OwnersContainer.protoTypes = {
   searchByLastName: PropTypes.func.isRequired,
   openAddOwnerModal: PropTypes.func.isRequired,
-  openAddPetModal: PropTypes.func.isRequired
+  openAddPetModal: PropTypes.func.isRequired,
+  getPetsByOwner: PropTypes.func.isRequired
 };
 
 /* istanbul ignore next */
 const mapStateToProps = state => ({
-  owners: state.ownerReducer.owners,
+  searchResults: state.ownerReducer.searchResults,
+  pets: state.petReducer.pets,
   petTypes: state.petReducer.petTypes
 });
 
@@ -84,6 +102,12 @@ const mapDispatchToProps = dispatch => ({
   },
   openAddPetModal: ownerId => {
     dispatch(openAddPetModal(ownerId));
+  },
+  setActivePet: pet => {
+    dispatch(setActivePet(pet));
+  },
+  getPetsByOwner: ownerId => {
+    dispatch(getPetsByOwner(ownerId));
   }
 });
 

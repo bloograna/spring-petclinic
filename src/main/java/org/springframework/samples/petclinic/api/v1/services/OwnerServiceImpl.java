@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.v1.services;
+package org.springframework.samples.petclinic.api.v1.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.samples.petclinic.dtos.OwnerDTO;

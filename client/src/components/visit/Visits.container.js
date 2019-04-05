@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { getVisitsByDate } from '../../state/visit/visitStore';
+import {
+  getVisitsByDate,
+  openAddVisitModal as openAddVisitModalAction
+} from '../../state/visit/visitStore';
 
 const localizer = BigCalendar.momentLocalizer(moment);
 
@@ -18,7 +21,7 @@ const calendarContainerStyle = {
   alignContent: 'center'
 };
 
-const VisitsContainer = ({ visits }) => {
+const VisitsContainer = ({ visits, openAddVisitModal }) => {
   return (
     <div style={calendarContainerStyle}>
       <BigCalendar
@@ -28,10 +31,10 @@ const VisitsContainer = ({ visits }) => {
         min={minTime}
         max={maxTime}
         defaultView={BigCalendar.Views.WORK_WEEK}
-        scrollToTime={new Date(1970, 1, 1, 6)}
+        scrollToTime={new Date(2019, 1, 1, 6)}
         defaultDate={new Date()}
         onSelectEvent={event => console.log('event', event)}
-        onSelectSlot={() => console.log('selected slot')}
+        onSelectSlot={openAddVisitModal}
         views={{ month: true, work_week: true, day: true }}
       />
     </div>
@@ -39,7 +42,8 @@ const VisitsContainer = ({ visits }) => {
 };
 
 VisitsContainer.propTypes = {
-  visits: PropTypes.array.isRequired
+  visits: PropTypes.array.isRequired,
+  openAddVisitModal: PropTypes.func.isRequired
 };
 const mapStateToProps = state => ({
   visits: state.visitReducer.visits
@@ -49,13 +53,13 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getVisitsByDate: dateString => {
     dispatch(getVisitsByDate(dateString));
-  }
+  },
   // getVetSpecialties: () => {
   //   dispatch(getVetSpecialties());
   // },
-  // openAddVetModal: () => {
-  //   dispatch(openAddVetModal());
-  // }
+  openAddVisitModal: () => {
+    dispatch(openAddVisitModalAction());
+  }
 });
 
 export default connect(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.samples.petclinic.v1.controllers;
+package org.springframework.samples.petclinic.api.v1.controllers;
 
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -33,7 +33,7 @@ import java.util.Collection;
  * @author Dave Syer
  */
 @RestController
-@RequestMapping(path = "/v1/visit", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "api/v1/visit", produces = MediaType.APPLICATION_JSON_VALUE)
 class VisitController {
 
     private final VisitService visitService;

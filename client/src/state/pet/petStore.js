@@ -1,9 +1,10 @@
-import { makeActionCreator as mac } from '../common/makeActionCreator';
+import { cloneDeep } from 'lodash';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { concat } from 'rxjs/observable/concat';
+import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
 import { addMessage } from '../message/messageStore';
 import petService from '../../service/pet/petService';
@@ -14,8 +15,8 @@ const SAVE_PET = 'pet/SAVE_PET';
 const SAVE_PET_SUCCESS = 'pet/SAVE_PET_SUCCESS';
 const GET_PET_TYPES = 'pet/GET_PET_TYPES';
 const GET_PET_TYPES_SUCCESS = 'pet/GET_PET_TYPES_SUCCESS';
-const GET_PET_BY_OWNER = 'pet/GET_PET_BY_OWNER';
-const GET_PET_BY_OWNER_SUCCESS = 'pet/GET_PET_BY_OWNER_SUCCESS';
+const GET_PETS_BY_OWNER = 'pet/GET_PETS_BY_OWNER';
+const GET_PETS_BY_OWNER_SUCCESS = 'pet/GET_PETS_BY_OWNER_SUCCESS';
 const GET_PET_BY_ID = 'pet/GET_PET_BY_ID';
 const GET_PET_BY_ID_SUCCESS = 'pet/GET_PET_BY_ID_SUCCESS';
 
@@ -25,13 +26,16 @@ const HIDE_ADD_MODAL = 'pet/HIDE_ADD_MODAL';
 const VALIDATE_MODAL_DATA = 'pet/VALIDATE_MODAL_DATA';
 const VALIDATE_MODAL_DATA_COMPLETED = 'pet/VALIDATE_MODAL_DATA_COMPLETED';
 
+// misc
+const SET_ACTIVE_PET = 'pet/SET_ACTIVE_PET';
+
 /* ----- ACTIONS ----- */
 const savePet = mac(SAVE_PET, 'pet');
 const savePetSuccess = mac(SAVE_PET_SUCCESS);
 const getPetTypes = mac(GET_PET_TYPES);
 const getPetTypesSuccess = mac(GET_PET_TYPES_SUCCESS, 'petTypes');
-const getPetsByOwner = mac(GET_PET_BY_OWNER, 'ownerId');
-const getPetsByOwnerSuccess = mac(GET_PET_BY_OWNER_SUCCESS, 'pets');
+const getPetsByOwner = mac(GET_PETS_BY_OWNER, 'ownerId');
+const getPetsByOwnerSuccess = mac(GET_PETS_BY_OWNER_SUCCESS, 'pets');
 const getPetById = mac(GET_PET_BY_ID, 'petId');
 const getPetByIdSuccess = mac(GET_PET_BY_ID_SUCCESS, 'pet');
 
@@ -40,13 +44,25 @@ const hideAddPetModal = mac(HIDE_ADD_MODAL);
 const validatePetModalData = mac(VALIDATE_MODAL_DATA);
 const validatePetModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
+const setActivePet = mac(SET_ACTIVE_PET, 'pet');
+
 /* ----- REDUCER ----- */
 const petInitialState = initialState.pet;
 
 const attachActiveOwnerId = (ownerId, pet) => {
   return { ...pet, ownerId, type: { id: pet.type } };
 };
-
+const stitchPetsArray = (existingPets, updatedPets) => {
+  const statePets = cloneDeep(existingPets);
+  updatedPets.forEach(pet => {
+    let petByOwnerId = statePets[pet.ownerId];
+    if (!petByOwnerId) {
+      statePets[pet.ownerId] = {};
+    }
+    statePets[pet.ownerId][pet.id] = pet;
+  });
+  return statePets;
+};
 /* ----- REDUCER ----- */
 
 const petReducer = (state = petInitialState, action) => {
@@ -55,15 +71,21 @@ const petReducer = (state = petInitialState, action) => {
       const { petTypes } = action;
       return { ...state, petTypes };
     }
-    case GET_PET_BY_OWNER_SUCCESS: {
+    case GET_PETS_BY_OWNER_SUCCESS: {
       const { pets } = action;
-      return { ...state, pets };
+      const updatedPets = stitchPetsArray(state.pets, pets);
+      return { ...state, pets: updatedPets };
+    }
+    case GET_PET_BY_ID_SUCCESS: {
+      const { pet } = action;
+      const { pets } = state;
+      return { ...state };
     }
     case OPEN_ADD_MODAL: {
       return { ...state, showAddPetModal: true };
     }
     case HIDE_ADD_MODAL: {
-      return { ...state, showAddPetModal: false };
+      return { ...state, showAddPetModal: false, activePet: undefined };
     }
     case VALIDATE_MODAL_DATA: {
       return { ...state, shouldValidatePetModalData: true };
@@ -71,19 +93,36 @@ const petReducer = (state = petInitialState, action) => {
     case VALIDATE_MODAL_DATA_COMPLETED: {
       return { ...state, shouldValidatePetModalData: false };
     }
+    case SET_ACTIVE_PET: {
+      const { pet } = action;
+      return { ...state, activePet: pet };
+    }
+
     default:
       return state;
   }
 };
 
 const getPetsByOwnerEpic = action$ =>
-  action$.ofType(GET_PET_BY_OWNER).mergeMap(action =>
+  action$.ofType(GET_PETS_BY_OWNER).mergeMap(action =>
     concat(
       fromPromise(petService.getPetsbyOwnerId(action.ownerId)).map(result => {
         if (result.error) {
           return addMessage('An error occurred while getting pets from server');
         }
         return getPetsByOwnerSuccess(result.data);
+      })
+    )
+  );
+
+const getPetByIdEpic = action$ =>
+  action$.ofType(GET_PET_BY_ID).mergeMap(action =>
+    concat(
+      fromPromise(petService.getPetById(action.petId)).map(result => {
+        if (result.error) {
+          return addMessage('An error occurred while getting pets from server');
+        }
+        return getPetByIdSuccess(result.data);
       })
     )
   );
@@ -127,12 +166,19 @@ const openAddModalEpic = action$ =>
 const closeAddModalEpic = action$ =>
   action$.ofType(HIDE_ADD_MODAL).mergeMap(() => of(clearActiveOwner()));
 
+const setActivePetEpic = action$ =>
+  action$
+    .ofType(SET_ACTIVE_PET)
+    .mergeMap(action => of(openAddPetModal(action.pet.ownerId)));
+
 const petEpics = [
   getPetsByOwnerEpic,
+  getPetByIdEpic,
   savePetEpic,
   getPetTypesEpic,
   openAddModalEpic,
-  closeAddModalEpic
+  closeAddModalEpic,
+  setActivePetEpic
 ];
 
 export {
@@ -144,5 +190,6 @@ export {
   getPetById,
   openAddPetModal,
   hideAddPetModal,
-  validatePetModalData
+  validatePetModalData,
+  setActivePet
 };

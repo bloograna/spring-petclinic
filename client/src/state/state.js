@@ -1,10 +1,12 @@
 /* ---- INITIAL STATE ---- */
 const initialState = {
   pet: {
-    pets: {},
+    pets: [],
+    searchResults: [],
     petTypes: [],
     showAddPetModal: false,
-    shouldValidatePetModalData: false
+    shouldValidatePetModalData: false,
+    activePet: undefined
   },
   vet: {
     vets: [],
@@ -14,6 +16,7 @@ const initialState = {
   },
   owner: {
     owners: [],
+    searchResults: [],
     showAddOwnerModal: false,
     shouldValidateOwnerModalData: false,
     activeOwner: null
@@ -22,8 +25,8 @@ const initialState = {
     visits: [
       {
         id: 4,
-        start: new Date(2019, 2, 4, 15, 15),
-        end: new Date(2019, 2, 4, 16, 30),
+        start: new Date(2019, 4, 3, 15, 15),
+        end: new Date(2019, 4, 3, 16, 30),
 
         // date: '2019-03-04',
         // startTime: '15:15:00',

@@ -3,27 +3,75 @@ import PropTypes from 'prop-types';
 import { Table, Button } from 'react-bootstrap';
 import { isEmpty, capitalize } from 'lodash';
 
-const Owners = ({ owners, onAddPet }) =>
+const Owners = ({ owners, pets, onAddPet, setActivePet, getPetsByOwnerId }) =>
   isEmpty(owners) ? null : (
     <Table striped bordered hover variant="dark">
       {constructTableHeader()}
-      <tbody>{constructTableRows(owners, onAddPet)}</tbody>
+      <tbody>
+        {constructTableRows(
+          owners,
+          pets,
+          onAddPet,
+          setActivePet,
+          getPetsByOwnerId
+        )}
+      </tbody>
     </Table>
   );
 
-const constructTableRows = (owners, onAdd) => {
+const constructTableRows = (owners, pets, onAdd, setActivePet, onLookUp) => {
   const rows = [];
   owners.forEach(owner => {
-    const pets = owner.pets.map(pet => capitalize(pet.name)).join(', ');
-    rows.push(
-      constructTableRow(owner.id, owner.firstName, owner.lastName, pets, onAdd)
-    );
+    if (owner) {
+      const petButtons = contructPetButtons(
+        owner,
+        pets,
+        setActivePet,
+        onLookUp
+      );
+      rows.push(
+        constructTableRow(
+          owner.id,
+          owner.firstName,
+          owner.lastName,
+          petButtons,
+          onAdd
+        )
+      );
+    }
   });
   return rows;
 };
 
-const attachOwnerId = (ownerId, onAdd) => {
-  onAdd(ownerId);
+const attachOwnerId = (ownerId, action) => {
+  action(ownerId);
+};
+
+const contructPetButtons = (owner, pets, setActivePet, onLookUp) => {
+  return pets && pets[owner.id] ? (
+    Object.values(pets[owner.id]).map(pet => {
+      const petName = capitalize(pet.name);
+      return (
+        <Button
+          variant="link"
+          size="sm"
+          key={`pet-info-${pet.id}`}
+          onClick={() => setActivePet(pet)}
+        >
+          {petName}
+        </Button>
+      );
+    })
+  ) : (
+    <Button
+      variant="link"
+      size="sm"
+      key="pet-info-search"
+      onClick={() => attachOwnerId(owner.id, onLookUp)}
+    >
+      View Pets
+    </Button>
+  );
 };
 
 const constructTableRow = (id, firstName, lastName, pets, onAdd) => (
@@ -53,7 +101,10 @@ const constructTableHeader = () => (
 
 Owners.propTypes = {
   owners: PropTypes.array.isRequired,
-  onAddPet: PropTypes.func.isRequired
+  pets: PropTypes.array.isRequired,
+  onAddPet: PropTypes.func.isRequired,
+  setActivePet: PropTypes.func.isRequired,
+  getPetsByOwnerId: PropTypes.func.isRequired
 };
 
 export default Owners;

@@ -31,7 +31,8 @@ const mapDispatchToProps = dispatch => ({
   },
   openAddVetModal: () => {
     dispatch(openAddVetModal());
-  }
+  },
+  onAddVisit: () => console.log('fake adding visit')
 });
 
 export default connect(

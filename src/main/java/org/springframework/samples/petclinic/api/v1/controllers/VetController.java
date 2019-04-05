@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.samples.petclinic.v1.controllers;
+package org.springframework.samples.petclinic.api.v1.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -39,7 +39,7 @@ import java.util.Set;
  */
 @Slf4j
 @RestController
-@RequestMapping(path = "/v1/vet", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "api/v1/vet", produces = MediaType.APPLICATION_JSON_VALUE)
 class VetController {
 
     private final VetService vetService;

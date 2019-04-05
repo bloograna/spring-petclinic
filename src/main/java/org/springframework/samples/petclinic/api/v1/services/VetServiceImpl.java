@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.v1.services;
+package org.springframework.samples.petclinic.api.v1.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

@@ -5,6 +5,7 @@ import { capitalize } from 'lodash';
 import CommonForm from '../common/CommonForm';
 
 const AddPetForm = ({
+  pet,
   formValidated,
   petTypes,
   onAddButtonClick,
@@ -18,8 +19,9 @@ const AddPetForm = ({
           name="name"
           required
           type="text"
-          placeholder="Name"
+          placeholder={'Name'}
           pattern={'[A-Za-z]+'}
+          defaultValue={pet.name ? pet.name : ''}
         />
         <Form.Control.Feedback type="invalid">
           Please enter a name with no spaces
@@ -32,25 +34,27 @@ const AddPetForm = ({
           required
           type="date"
           pattern={'[0-9]{4}-[0-9]{2}-[0-9]{2}'}
+          defaultValue={pet.birthDate ? pet.birthDate : ''}
         />
         <Form.Control.Feedback type="invalid">
           Invalidate date. yyyy-MM-dd
         </Form.Control.Feedback>
       </Form.Group>
     </Form.Row>
-    <Form.Row>{constructSpecialtiesSelect(petTypes)}</Form.Row>
+    <Form.Row>{constructSpecialtiesSelect(pet, petTypes)}</Form.Row>
+    <Form.Control hidden name="id" defaultValue={pet.id ? pet.id : null} />
     <Form.Row>
       <Button onClick={onHideAddPetModal}>Cancel</Button>
-      <Button type="submit">Add</Button>
+      <Button type="submit">{pet.id ? 'Update' : 'Add'}</Button>
     </Form.Row>
   </CommonForm>
 );
 
-const constructSpecialtiesSelect = species => {
+const constructSpecialtiesSelect = (pet, species) => {
   const specieOptions = [];
   species.forEach(specie => {
     specieOptions.push(
-      <option value={specie.id} id={`specie-option-${specie}`}>
+      <option value={specie.id} key={`specie-option-${specie.id}`}>
         {capitalize(specie.name)}
       </option>
     );
@@ -59,7 +63,12 @@ const constructSpecialtiesSelect = species => {
   return (
     <Form.Group controlId="petType">
       <Form.Label>Pet Type</Form.Label>
-      <Form.Control required as="select" name="type">
+      <Form.Control
+        required
+        as="select"
+        name="type"
+        defaultValue={pet && pet.type ? pet.type.id : ''}
+      >
         {specieOptions}
       </Form.Control>
     </Form.Group>
@@ -70,7 +79,12 @@ AddPetForm.propTypes = {
   formValidated: PropTypes.bool.isRequired,
   petTypes: PropTypes.array.isRequired,
   onAddButtonClick: PropTypes.func.isRequired,
-  onHideAddPetModal: PropTypes.func.isRequired
+  onHideAddPetModal: PropTypes.func.isRequired,
+  pet: PropTypes.shape({})
+};
+
+AddPetForm.defaultProps = {
+  pet: {}
 };
 
 export default AddPetForm;
