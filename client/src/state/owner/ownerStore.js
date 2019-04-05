@@ -40,6 +40,13 @@ const validateOwnerModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 const setActiveOwner = mac(SET_ACTIVE_OWNER, 'ownerId');
 const clearActiveOwner = mac(CLEAR_ACTIVE_OWNER);
 
+/* ----- REDUCER HELPER FUNCTIONS ----- */
+const stitchOwnersArray = (existingOwners, newOwners) => {
+  const updatedOwners = cloneDeep(existingOwners);
+  newOwners.forEach(owner => (updatedOwners[owner.id] = owner));
+  return updatedOwners;
+};
+
 /* ----- REDUCER ----- */
 const ownerInitialState = initialState.owner;
 
@@ -47,9 +54,8 @@ const ownerReducer = (state = ownerInitialState, action) => {
   switch (action.type) {
     case GET_OWNERS_BY_LASTNAME_SUCCESS: {
       const { owners } = action;
-      const stateOwners = cloneDeep(state.owners);
-      owners.forEach(owner => (stateOwners[owner.id] = owner));
-      return { ...state, owners: stateOwners, searchResults: owners };
+      const updatedOwners = stitchOwnersArray(state.owners, owners);
+      return { ...state, owners: updatedOwners, searchResults: owners };
     }
     case OPEN_ADD_MODAL: {
       return { ...state, showAddOwnerModal: true };

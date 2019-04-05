@@ -53,7 +53,7 @@ const contructPetButtons = (owner, pets, setActivePet, onLookUp) => {
       const petName = capitalize(pet.name);
       return (
         <Button
-          variant="link"
+          variant="outline-light"
           size="sm"
           key={`pet-info-${pet.id}`}
           onClick={() => setActivePet(pet)}
@@ -64,7 +64,7 @@ const contructPetButtons = (owner, pets, setActivePet, onLookUp) => {
     })
   ) : (
     <Button
-      variant="link"
+      variant="outline-info"
       size="sm"
       key="pet-info-search"
       onClick={() => attachOwnerId(owner.id, onLookUp)}

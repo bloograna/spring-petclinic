@@ -46,24 +46,24 @@ const validatePetModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
 const setActivePet = mac(SET_ACTIVE_PET, 'pet');
 
-/* ----- REDUCER ----- */
-const petInitialState = initialState.pet;
-
+/* ----- REDUCER HELPER FUNCTIONS ----- */
 const attachActiveOwnerId = (ownerId, pet) => {
   return { ...pet, ownerId, type: { id: pet.type } };
 };
-const stitchPetsArray = (existingPets, updatedPets) => {
-  const statePets = cloneDeep(existingPets);
-  updatedPets.forEach(pet => {
-    let petByOwnerId = statePets[pet.ownerId];
+const stitchPetsArray = (existingPets, newPets) => {
+  const updatedPets = cloneDeep(existingPets);
+  newPets.forEach(pet => {
+    let petByOwnerId = updatedPets[pet.ownerId];
     if (!petByOwnerId) {
-      statePets[pet.ownerId] = {};
+      updatedPets[pet.ownerId] = {};
     }
-    statePets[pet.ownerId][pet.id] = pet;
+    updatedPets[pet.ownerId][pet.id] = pet;
   });
-  return statePets;
+  return updatedPets;
 };
+
 /* ----- REDUCER ----- */
+const petInitialState = initialState.pet;
 
 const petReducer = (state = petInitialState, action) => {
   switch (action.type) {
