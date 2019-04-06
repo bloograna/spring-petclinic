@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { FormControl, Dropdown, Button } from 'react-bootstrap';
 
 class CustomToggle extends Component {
@@ -77,27 +76,12 @@ class DropdownSearch extends Component {
     return (
       <Dropdown>
         <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-          {/* Custom toggle */}
           {title}
         </Dropdown.Toggle>
-
-        <Dropdown.Menu as={CustomMenu}>
-          {this.renderItems()}
-          {/* <Dropdown.Item eventKey="1">Red</Dropdown.Item>
-          <Dropdown.Item eventKey="2">Blue</Dropdown.Item>
-          <Dropdown.Item eventKey="3" active>
-            Orange
-          </Dropdown.Item>
-          <Dropdown.Item eventKey="1">Red-Orange</Dropdown.Item> */}
-        </Dropdown.Menu>
+        <Dropdown.Menu as={CustomMenu}>{this.renderItems()}</Dropdown.Menu>
       </Dropdown>
     );
   }
 }
-
-// DropdownSearch.propTypes = {
-//   dropdownOptions: PropTypes.array.isRequired,
-//   title: PropTypes.string.isRequired
-// };
 
 export default DropdownSearch;

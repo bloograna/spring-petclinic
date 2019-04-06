@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { isEmpty } from 'lodash';
 import { connect } from 'react-redux';
 import { Button, Form, Col } from 'react-bootstrap';
 import {
@@ -7,7 +8,8 @@ import {
   openAddOwnerModal as openAddOwnerModalAction,
   closeAddOwnerModal as closeAddOwnerModalAction,
   validateOwnerModalData,
-  saveOwner
+  saveOwner,
+  setActiveOwner
 } from '../../state/owner';
 import {
   getPetsByOwner as getPetsByOwnerAction,
@@ -41,6 +43,21 @@ class OwnersContainer extends Component {
     const form = event.currentTarget.form[0];
     const lastName = form.value;
     searchByLastName(lastName);
+  };
+
+  onPetClick = petObject => {
+    const { setActivePet, openAddPetModal } = this.props;
+    const { ownerId, id } = petObject;
+    setActivePet(id);
+    openAddPetModal(ownerId);
+  };
+
+  getActivePetObject = () => {
+    const { pets, activeOwner, activePet } = this.props;
+    if (activeOwner && activePet && !isEmpty(pets)) {
+      return pets[activeOwner][activePet];
+    }
+    return null;
   };
 
   handleAddOwnerFormData = (formObj, event) => {
@@ -93,9 +110,7 @@ class OwnersContainer extends Component {
       openAddPetModal,
       closeAddPetModal,
       shouldValidatePetModalData,
-      setActivePet,
       getPetsByOwner,
-      activePet,
       petTypes
     } = this.props;
     return (
@@ -112,14 +127,14 @@ class OwnersContainer extends Component {
           shouldValidatePetModalData={shouldValidatePetModalData}
           onAddButtonClick={this.handleAddPetFormData}
           petTypes={petTypes}
-          pet={activePet}
+          pet={this.getActivePetObject()}
         />
         {this.renderSearchButton()}
         <Owners
           owners={searchResults}
           pets={pets}
           onAddPet={openAddPetModal}
-          setActivePet={setActivePet}
+          setActivePet={this.onPetClick}
           getPetsByOwnerId={getPetsByOwner}
         />
       </div>
@@ -156,6 +171,7 @@ const mapStateToProps = state => ({
   searchResults: state.ownerReducer.searchResults,
   showAddOwnerModal: state.ownerReducer.showAddOwnerModal,
   shouldValidateOwnerModalData: state.ownerReducer.shouldValidateOwnerModalData,
+  activeOwner: state.ownerReducer.activeOwner,
   /*----- pets -----*/
   pets: state.petReducer.pets,
   petTypes: state.petReducer.petTypes,
@@ -181,6 +197,9 @@ const mapDispatchToProps = dispatch => ({
   },
   saveOwner: owner => {
     dispatch(saveOwner(owner));
+  },
+  setActiveOwner: ownerId => {
+    dispatch(setActiveOwner(ownerId));
   },
   /*----- pets -----*/
   openAddPetModal: ownerId => {

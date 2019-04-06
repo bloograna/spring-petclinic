@@ -9,8 +9,13 @@ import {
   saveVisit,
   closeAddVisitModal as closeAddVisitModalAction,
   validateVisitModalData
-} from '../../state/visit/visitStore';
-import { getPetsByOwner as getPetsByOwnerAction } from '../../state/pet/petStore';
+} from '../../state/visit';
+import { setActiveOwner, clearActiveOwner } from '../../state/owner';
+import {
+  getPetsByOwner as getPetsByOwnerAction,
+  setActivePet,
+  clearActivePet
+} from '../../state/pet';
 import DropdownSearch from './DropdownSearch';
 import AddVisitModal from './AddVisitModal';
 
@@ -29,9 +34,16 @@ const calendarContainerStyle = {
 
 class VisitsContainer extends Component {
   searchPetsByOwnerId = event => {
-    const { getPetsByOwner } = this.props;
+    const { getPetsByOwner, setActiveOwner } = this.props;
     const ownerId = event.currentTarget.getAttribute('name');
+    setActiveOwner(parseInt(ownerId, 10));
     getPetsByOwner(ownerId);
+  };
+
+  onSelectPet = event => {
+    const { setActivePet } = this.props;
+    const petId = event.currentTarget.getAttribute('name');
+    setActivePet(parseInt(petId, 10));
   };
 
   render() {
@@ -43,7 +55,9 @@ class VisitsContainer extends Component {
       shouldValidateVisitModalData,
       owners,
       pets,
-      vets
+      vets,
+      activeOwner,
+      activePet
     } = this.props;
 
     return (
@@ -57,6 +71,9 @@ class VisitsContainer extends Component {
           owners={owners}
           pets={pets}
           searchPetsByOwnerId={this.searchPetsByOwnerId}
+          selectPet={this.onSelectPet}
+          activeOwner={activeOwner}
+          activePet={activePet}
         />
         <BigCalendar
           selectable
@@ -81,12 +98,16 @@ VisitsContainer.propTypes = {
   pets: PropTypes.array.isRequired,
   vets: PropTypes.array.isRequired,
   visits: PropTypes.array.isRequired,
-  showAddVisitModal: PropTypes.func.isRequired,
-  shouldValidateVisitModalData: PropTypes.bool.isRequired
+  showAddVisitModal: PropTypes.bool.isRequired,
+  shouldValidateVisitModalData: PropTypes.bool.isRequired,
+  activeOwner: PropTypes.number,
+  activePet: PropTypes.number
 };
 const mapStateToProps = state => ({
   owners: state.ownerReducer.owners,
+  activeOwner: state.ownerReducer.activeOwner,
   pets: state.petReducer.pets,
+  activePet: state.petReducer.activePet,
   vets: state.vetReducer.vets,
   visits: state.visitReducer.visits,
   showAddVisitModal: state.visitReducer.showAddVisitModal,
@@ -112,6 +133,18 @@ const mapDispatchToProps = dispatch => ({
   },
   getPetsByOwner: ownerId => {
     dispatch(getPetsByOwnerAction(ownerId));
+  },
+  setActiveOwner: ownerId => {
+    dispatch(setActiveOwner(ownerId));
+  },
+  clearActiveOwner: () => {
+    dispatch(clearActiveOwner());
+  },
+  setActivePet: petId => {
+    dispatch(setActivePet(petId));
+  },
+  clearActivePet: () => {
+    dispatch(clearActivePet());
   }
 });
 

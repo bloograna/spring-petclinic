@@ -21,7 +21,7 @@ const AddPetForm = ({
           type="text"
           placeholder={'Name'}
           pattern={'[A-Za-z]+'}
-          defaultValue={pet.name ? pet.name : ''}
+          defaultValue={pet && pet.name ? pet.name : ''}
         />
         <Form.Control.Feedback type="invalid">
           Please enter a name with no spaces
@@ -34,7 +34,7 @@ const AddPetForm = ({
           required
           type="date"
           pattern={'[0-9]{4}-[0-9]{2}-[0-9]{2}'}
-          defaultValue={pet.birthDate ? pet.birthDate : ''}
+          defaultValue={pet && pet.birthDate ? pet.birthDate : ''}
         />
         <Form.Control.Feedback type="invalid">
           Invalidate date. yyyy-MM-dd
@@ -42,10 +42,14 @@ const AddPetForm = ({
       </Form.Group>
     </Form.Row>
     <Form.Row>{constructSpecialtiesSelect(pet, petTypes)}</Form.Row>
-    <Form.Control hidden name="id" defaultValue={pet.id ? pet.id : null} />
+    <Form.Control
+      hidden
+      name="id"
+      defaultValue={pet && pet.id ? pet.id : null}
+    />
     <Form.Row>
       <Button onClick={onHideAddPetModal}>Cancel</Button>
-      <Button type="submit">{pet.id ? 'Update' : 'Add'}</Button>
+      <Button type="submit">{pet && pet.id ? 'Update' : 'Add'}</Button>
     </Form.Row>
   </CommonForm>
 );
@@ -81,10 +85,6 @@ AddPetForm.propTypes = {
   onAddButtonClick: PropTypes.func.isRequired,
   onHideAddPetModal: PropTypes.func.isRequired,
   pet: PropTypes.shape({})
-};
-
-AddPetForm.defaultProps = {
-  pet: {}
 };
 
 export default AddPetForm;

@@ -11,8 +11,10 @@ const AddVisitModal = ({
   owners,
   vets,
   pets,
-  searchOwnerByLastName,
-  searchPetsByOwnerId
+  searchPetsByOwnerId,
+  activeOwner,
+  activePet,
+  selectPet
 }) => {
   return (
     <LargeModal
@@ -27,8 +29,10 @@ const AddVisitModal = ({
         pets={pets}
         onAddButtonClick={onAddButtonClick}
         onHideAddVisitModal={onHideAddVisitModal}
-        searchOwnerByLastName={searchOwnerByLastName}
         searchPetsByOwnerId={searchPetsByOwnerId}
+        activeOwner={activeOwner}
+        activePet={activePet}
+        selectPet={selectPet}
       />
     </LargeModal>
   );
@@ -42,8 +46,10 @@ AddVisitModal.propTypes = {
   owners: PropTypes.array.isRequired,
   vets: PropTypes.array.isRequired,
   pets: PropTypes.array.isRequired,
-  searchOwnerByLastName: PropTypes.func.isRequired,
-  searchPetsByOwnerId: PropTypes.func.isRequired
+  searchPetsByOwnerId: PropTypes.func.isRequired,
+  selectPet: PropTypes.func.isRequired,
+  activeOwner: PropTypes.number,
+  activePet: PropTypes.number
 };
 
 export default AddVisitModal;

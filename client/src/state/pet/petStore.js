@@ -28,6 +28,7 @@ const VALIDATE_MODAL_DATA_COMPLETED = 'pet/VALIDATE_MODAL_DATA_COMPLETED';
 
 // misc
 const SET_ACTIVE_PET = 'pet/SET_ACTIVE_PET';
+const CLEAR_ACTIVE_PET = 'pet/CLEAR_ACTIVE_PET';
 
 /* ----- ACTIONS ----- */
 const savePet = mac(SAVE_PET, 'pet');
@@ -45,6 +46,7 @@ const validatePetModalData = mac(VALIDATE_MODAL_DATA);
 const validatePetModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
 const setActivePet = mac(SET_ACTIVE_PET, 'pet');
+const clearActivePet = mac(CLEAR_ACTIVE_PET);
 
 /* ----- REDUCER HELPER FUNCTIONS ----- */
 const attachActiveOwnerId = (ownerId, pet) => {
@@ -87,7 +89,7 @@ const petReducer = (state = petInitialState, action) => {
       return { ...state, showAddPetModal: true };
     }
     case CLOSE_ADD_MODAL: {
-      return { ...state, showAddPetModal: false, activePet: undefined };
+      return { ...state, showAddPetModal: false, activePet: null };
     }
     case VALIDATE_MODAL_DATA: {
       return { ...state, shouldValidatePetModalData: true };
@@ -99,7 +101,9 @@ const petReducer = (state = petInitialState, action) => {
       const { pet } = action;
       return { ...state, activePet: pet };
     }
-
+    case CLEAR_ACTIVE_PET: {
+      return { ...state, activePet: null };
+    }
     default:
       return state;
   }
@@ -166,12 +170,9 @@ const openAddModalEpic = action$ =>
     .mergeMap(action => of(setActiveOwner(action.ownerId)));
 
 const closeAddModalEpic = action$ =>
-  action$.ofType(CLOSE_ADD_MODAL).mergeMap(() => of(clearActiveOwner()));
-
-const setActivePetEpic = action$ =>
   action$
-    .ofType(SET_ACTIVE_PET)
-    .mergeMap(action => of(openAddPetModal(action.pet.ownerId)));
+    .ofType(CLOSE_ADD_MODAL)
+    .mergeMap(() => concat(of(clearActiveOwner()), of(clearActivePet())));
 
 const petEpics = [
   getPetsByOwnerEpic,
@@ -179,8 +180,7 @@ const petEpics = [
   savePetEpic,
   getPetTypesEpic,
   openAddModalEpic,
-  closeAddModalEpic,
-  setActivePetEpic
+  closeAddModalEpic
 ];
 
 export {
@@ -193,5 +193,6 @@ export {
   openAddPetModal,
   closeAddPetModal,
   validatePetModalData,
-  setActivePet
+  setActivePet,
+  clearActivePet
 };

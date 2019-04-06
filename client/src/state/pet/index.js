@@ -9,7 +9,8 @@ import petReducer, {
   openAddPetModal,
   closeAddPetModal,
   validatePetModalData,
-  setActivePet
+  setActivePet,
+  clearActivePet
 } from './petStore';
 
 export {
@@ -22,5 +23,6 @@ export {
   openAddPetModal,
   closeAddPetModal,
   validatePetModalData,
-  setActivePet
+  setActivePet,
+  clearActivePet
 };

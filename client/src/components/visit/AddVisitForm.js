@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Col, Button, FormControl } from 'react-bootstrap';
-import { capitalize } from 'lodash';
+import { Form, Col, Button } from 'react-bootstrap';
+import { isEmpty } from 'lodash';
 import CommonForm from '../common/CommonForm';
 import DropdownSearch from './DropdownSearch';
 
@@ -11,56 +11,69 @@ const formatOwnerData = owners =>
     return { id, name: lastName + ', ' + firstName };
   });
 
-const formatPetData = petsByOwner => {
+const formatPetData = (petsByOwner, activeOwner) => {
   const cleanArray = [];
-  petsByOwner.forEach(owner => {
-    if (owner) {
-      const pets = Object.values(owner);
-
-      pets.forEach(pet => {
+  if (isEmpty(petsByOwner) || !activeOwner) {
+    return [];
+  } else {
+    // need another check in the case data hasnt returned
+    const pets = petsByOwner[activeOwner];
+    if (pets) {
+      Object.values(pets).forEach(pet => {
         const { name, id } = pet;
         cleanArray.push({ name, id });
       });
     }
-  });
-  return cleanArray;
-  // const cleaned = petsByOwner.flatMap(petByOwner => {
-  //   if (petByOwner) {
-  //     const pets = Object.values(petByOwner);
-  //     return pets.flatMap(pet => {
-  //       const { name, id } = pet;
-  //       return { id, name };
-  //     });
-  //   }
-  //   return;
-  // });
-  // return cleaned;
+    return cleanArray;
+  }
+};
+
+const getActiveOwnerInfo = (owners, activeOwnerId) => {
+  const owner = formatOwnerData(
+    owners.filter(owner => owner.id === activeOwnerId)
+  )[0].name;
+  return owner;
+};
+
+const getActivePetInfo = (pets, activeOwnerId, activePetId) => {
+  const pet = formatPetData(pets, activeOwnerId).filter(
+    pet => pet.id === activePetId
+  )[0].name;
+  return pet;
 };
 
 const AddVisitForm = ({
   formValidated,
   owners,
+  activeOwner,
+  activePet,
   vets,
   pets,
   onAddButtonClick,
   onHideAddVisitModal,
-  searchOwnerByLastName,
-  searchPetsByOwnerId
+  searchPetsByOwnerId,
+  selectPet
 }) => (
   <CommonForm onSubmit={onAddButtonClick} formValidated={formValidated}>
     <Form.Row>
       <Form.Group as={Col} md="4" controlId="firstName">
         <DropdownSearch
-          title="Owner"
+          title={
+            activeOwner ? getActiveOwnerInfo(owners, activeOwner) : 'Owner'
+          }
           dropdownOptions={formatOwnerData(owners)}
           onClick={searchPetsByOwnerId}
         />
       </Form.Group>
       <Form.Group as={Col} md="4" controlId="lastName">
         <DropdownSearch
-          title="Pet"
-          dropdownOptions={formatPetData(pets)}
-          onClick={() => console.log('on select pet')}
+          title={
+            activeOwner && activePet
+              ? getActivePetInfo(pets, activeOwner, activePet)
+              : 'Pet'
+          }
+          dropdownOptions={activeOwner ? formatPetData(pets, activeOwner) : []}
+          onClick={selectPet}
         />
       </Form.Group>
       <Form.Group>
@@ -87,8 +100,10 @@ AddVisitForm.propTypes = {
   pets: PropTypes.array.isRequired,
   onAddButtonClick: PropTypes.func.isRequired,
   onHideAddVisitModal: PropTypes.func.isRequired,
-  searchOwnerByLastName: PropTypes.func.isRequired,
-  searchPetsByOwnerId: PropTypes.func.isRequired
+  searchPetsByOwnerId: PropTypes.func.isRequired,
+  selectPet: PropTypes.func.isRequired,
+  activeOwner: PropTypes.number,
+  activePet: PropTypes.number
 };
 
 export default AddVisitForm;

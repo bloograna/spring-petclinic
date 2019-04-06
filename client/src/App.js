@@ -24,20 +24,8 @@ class App extends Component {
     this.props.searchByLastName('');
   }
 
-  onHomeClick = () => {
-    this.setState({ activePanel: 'home' });
-  };
-
-  onOwnerClick = () => {
-    this.setState({ activePanel: 'owners' });
-  };
-
-  onVetClick = () => {
-    this.setState({ activePanel: 'vets' });
-  };
-
-  onAppointmentClick = () => {
-    this.setState({ activePanel: 'visits' });
+  onTabClick = tabName => {
+    this.setState({ activePanel: tabName });
   };
 
   handleAddVisitFormData = (formObj, event) => {
@@ -69,10 +57,10 @@ class App extends Component {
     return (
       <div className="App">
         <NavigationBar
-          onHomeClick={this.onHomeClick}
-          onOwnerClick={this.onOwnerClick}
-          onVetClick={this.onVetClick}
-          onAppointmentClick={this.onAppointmentClick}
+          onHomeClick={() => this.onTabClick('home')}
+          onOwnerClick={() => this.onTabClick('owners')}
+          onVetClick={() => this.onTabClick('vets')}
+          onAppointmentClick={() => this.onTabClick('visits')}
         />
 
         {this.renderActivePanel()}
@@ -86,16 +74,6 @@ App.protoTypes = {
   getVetSpecialties: PropTypes.func.isRequired,
   getVisitsByDateRange: PropTypes.func.isRequired
 };
-
-// /* istanbul ignore next */
-// const mapStateToProps = state => ({
-//   showAddOwnerModal: state.ownerReducer.showAddOwnerModal,
-//   shouldValidateOwnerModalData: state.ownerReducer.shouldValidateOwnerModalData,
-//   showAddPetModal: state.petReducer.showAddPetModal,
-//   shouldValidatePetModalData: state.petReducer.shouldValidatePetModalData,
-//   petTypes: state.petReducer.petTypes,
-//   activePet: state.petReducer.activePet
-// });
 
 /* istanbul ignore next */
 const mapDispatchToProps = dispatch => ({

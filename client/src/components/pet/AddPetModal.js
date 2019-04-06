@@ -36,8 +36,5 @@ AddPetModal.propTypes = {
   petTypes: PropTypes.array.isRequired,
   pet: PropTypes.shape({})
 };
-AddPetModal.defaultProps = {
-  pet: {}
-};
 
 export default AddPetModal;

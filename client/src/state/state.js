@@ -6,7 +6,7 @@ const initialState = {
     petTypes: [],
     showAddPetModal: false,
     shouldValidatePetModalData: false,
-    activePet: undefined
+    activePet: null
   },
   vet: {
     vets: [],
