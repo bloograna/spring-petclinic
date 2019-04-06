@@ -7,7 +7,7 @@ import vetReducer, {
   getVets,
   getVetById,
   openAddVetModal,
-  hideAddVetModal,
+  closeAddVetModal,
   validateVetModalData,
   validateVetModalDataCompleted
 } from './vetStore';
@@ -20,7 +20,7 @@ export {
   getVets,
   getVetById,
   openAddVetModal,
-  hideAddVetModal,
+  closeAddVetModal,
   validateVetModalData,
   validateVetModalDataCompleted
 };

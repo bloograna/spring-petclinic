@@ -22,7 +22,7 @@ const GET_VET_BY_ID_SUCCESS = 'vet/GET_VET_BY_ID_SUCCESS';
 // render/modal
 
 const OPEN_ADD_MODAL = 'vet/OPEN_ADD_MODAL';
-const HIDE_ADD_MODAL = 'vet/HIDE_ADD_MODAL';
+const CLOSE_ADD_MODAL = 'vet/CLOSE_ADD_MODAL';
 const VALIDATE_MODAL_DATA = 'vet/VALIDATE_MODAL_DATA';
 const VALIDATE_MODAL_DATA_COMPLETED = 'vet/VALIDATE_MODAL_DATA_COMPLETED';
 
@@ -41,7 +41,7 @@ const getVetByIdSuccess = mac(GET_VET_BY_ID_SUCCESS, 'vetId');
 
 // render/modal
 const openAddVetModal = mac(OPEN_ADD_MODAL);
-const hideAddVetModal = mac(HIDE_ADD_MODAL);
+const closeAddVetModal = mac(CLOSE_ADD_MODAL);
 const validateVetModalData = mac(VALIDATE_MODAL_DATA);
 const validateVetModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
@@ -60,7 +60,7 @@ const vetReducer = (state = vetInitialState, action) => {
     case OPEN_ADD_MODAL: {
       return { ...state, showAddVetModal: true };
     }
-    case HIDE_ADD_MODAL: {
+    case CLOSE_ADD_MODAL: {
       return { ...state, showAddVetModal: false };
     }
     case VALIDATE_MODAL_DATA: {
@@ -109,7 +109,7 @@ const saveVetEpic = action$ =>
   action$.ofType(SAVE_VET).mergeMap(action =>
     concat(
       of(validateVetModalDataCompleted()),
-      of(hideAddVetModal()),
+      of(closeAddVetModal()),
       fromPromise(vetService.saveVet(getVetRequestBody(action.vet))).map(
         result => {
           if (result.error) {
@@ -146,7 +146,7 @@ export {
   getVets,
   getVetById,
   openAddVetModal,
-  hideAddVetModal,
+  closeAddVetModal,
   validateVetModalData,
   validateVetModalDataCompleted
 };

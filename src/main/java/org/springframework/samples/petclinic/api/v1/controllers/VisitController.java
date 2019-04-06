@@ -43,7 +43,6 @@ class VisitController {
         this.visitService = visitService;
     }
 
-    // in an ideal world add/update would be separate endpoints
     @PostMapping
     public ResponseData<String> saveVisit(@RequestBody @NonNull VisitDTO visit) {
         return visitService.saveVisit(visit);
@@ -57,16 +56,16 @@ class VisitController {
     // again.. in an ideal world I would do /v1/visits?petId=1&vetId=2&dateString=2019-03-04
     // to handle the 3 different gets, and visitService would have DAO that construct the
     // sql statement from a db with something like
-    // SQLStatement = SELECT * FROM VISITS WHERE PET_ID = ? AND VET_ID = ? AND SOMETHING ELSE ORDER BY DATE;
+    // PreparedStatement = SELECT * FROM VISITS WHERE PET_ID = ? AND VET_ID = ? AND SOMETHING ELSE ORDER BY DATE;
     //    if (petId != null) {
-    //        SQLStatement . set (? ) at index to be pet Id
+    //        PreparedStatement . set (? ) at index to be pet Id
     //    }
     //
     //    if (vetId != null) {
-    //        SQLStatement . set (? ) at index to be vet Id
+    //        PreparedStatement . set (? ) at index to be vet Id
     //    }
     //
-    //    results = SQLStatement.executeQuery();
+    //    results = PreparedStatement.executeQuery();
     // and returns the result set.
 
     @GetMapping("/pet-id/{petId}")
@@ -85,7 +84,7 @@ class VisitController {
     }
 
     @GetMapping("/vet-id/{vetId}")
-    public ResponseData<Collection<VisitDTO>> getVisitsVetId(@PathVariable int vetId) {
+    public ResponseData<Collection<VisitDTO>> getVisitsByVetId(@PathVariable int vetId) {
         return visitService.getVisitsByVetId(vetId);
     }
 

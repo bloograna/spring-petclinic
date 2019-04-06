@@ -3,17 +3,24 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
 import {
-  getVets,
   getVetSpecialties,
-  openAddVetModal
+  openAddVetModal as openAddVetModalAction,
+  closeAddVetModal as closeAddVetModalAction,
+  validateVetModalData as validateVetModalDataAction,
+  saveVet as saveVetAction
 } from '../../state/vet/vetStore';
 import Vets from './Vets';
+import AddVetModal from './AddVetModal';
 
 class VetsContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.props.getVets();
-  }
+  handleAddVetFormData = (formObj, event) => {
+    const { validateVetModalData, saveVet } = this.props;
+    const currentTarget = event.currentTarget;
+    validateVetModalData();
+    if (currentTarget.checkValidity() === true) {
+      saveVet(formObj);
+    }
+  };
 
   onChange = event => {
     const field = event.target.id;
@@ -47,9 +54,22 @@ class VetsContainer extends Component {
   };
 
   render() {
-    const { vets, specialties } = this.props;
+    const {
+      vets,
+      specialties,
+      showAddVetModal,
+      closeAddVetModal,
+      shouldValidateVetModalData
+    } = this.props;
     return (
       <div>
+        <AddVetModal
+          showAddVetModal={showAddVetModal}
+          onHideAddVetModal={closeAddVetModal}
+          shouldValidateVetModalData={shouldValidateVetModalData}
+          onAddButtonClick={this.handleAddVetFormData}
+          specialties={specialties}
+        />
         {this.renderAddButton()}
         <Vets vets={vets} specialties={specialties} />
       </div>
@@ -58,27 +78,42 @@ class VetsContainer extends Component {
 }
 
 VetsContainer.protoTypes = {
+  vets: PropTypes.array.isRequired,
+  specialties: PropTypes.array.isRequired,
+  showAddVetModal: PropTypes.bool.isRequired,
+  shouldValidateVetModalData: PropTypes.bool.isRequired,
   getVets: PropTypes.func.isRequired,
   getVetSpecialties: PropTypes.func.isRequired,
-  addVet: PropTypes.func.isRequired
+  openAddVetModal: PropTypes.func.isRequired,
+  closeAddVetModal: PropTypes.func.isRequired,
+  validateVetModalData: PropTypes.func.isRequired,
+  saveVet: PropTypes.func.isRequired
 };
 
 /* istanbul ignore next */
 const mapStateToProps = state => ({
   vets: state.vetReducer.vets,
-  specialties: state.vetReducer.specialties
+  specialties: state.vetReducer.specialties,
+  showAddVetModal: state.vetReducer.showAddVetModal,
+  shouldValidateVetModalData: state.vetReducer.shouldValidateVetModalData
 });
 
 /* istanbul ignore next */
 const mapDispatchToProps = dispatch => ({
-  getVets: () => {
-    dispatch(getVets());
-  },
   getVetSpecialties: () => {
     dispatch(getVetSpecialties());
   },
   openAddVetModal: () => {
-    dispatch(openAddVetModal());
+    dispatch(openAddVetModalAction());
+  },
+  closeAddVetModal: () => {
+    dispatch(closeAddVetModalAction());
+  },
+  validateVetModalData: () => {
+    dispatch(validateVetModalDataAction());
+  },
+  saveVet: vet => {
+    dispatch(saveVetAction(vet));
   }
 });
 

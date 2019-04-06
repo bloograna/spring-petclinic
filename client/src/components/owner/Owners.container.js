@@ -4,14 +4,22 @@ import { connect } from 'react-redux';
 import { Button, Form, Col } from 'react-bootstrap';
 import {
   getOwnerByLastName,
-  openAddOwnerModal
-} from '../../state/owner/ownerStore';
+  openAddOwnerModal as openAddOwnerModalAction,
+  closeAddOwnerModal as closeAddOwnerModalAction,
+  validateOwnerModalData,
+  saveOwner
+} from '../../state/owner';
 import {
-  openAddPetModal,
-  getPetsByOwner,
+  getPetsByOwner as getPetsByOwnerAction,
+  openAddPetModal as openAddPetModalAction,
+  closeAddPetModal as closeAddPetModalAction,
+  validatePetModalData,
+  savePet,
   setActivePet
-} from '../../state/pet/petStore';
+} from '../../state/pet';
 import Owners from './Owners';
+import AddOwnerModal from './AddOwnerModal';
+import AddPetModal from '../pet/AddPetModal';
 
 class OwnersContainer extends Component {
   constructor(props) {
@@ -33,6 +41,24 @@ class OwnersContainer extends Component {
     const form = event.currentTarget.form[0];
     const lastName = form.value;
     searchByLastName(lastName);
+  };
+
+  handleAddOwnerFormData = (formObj, event) => {
+    const { validateOwnerModalData, saveOwner } = this.props;
+    const currentTarget = event.currentTarget;
+    validateOwnerModalData();
+    if (currentTarget.checkValidity() === true) {
+      saveOwner(formObj);
+    }
+  };
+
+  handleAddPetFormData = (formObj, event) => {
+    const { validatePetModalData, savePet } = this.props;
+    const currentTarget = event.currentTarget;
+    validatePetModalData();
+    if (currentTarget.checkValidity() === true) {
+      savePet(formObj);
+    }
   };
 
   renderSearchButton = () => {
@@ -58,13 +84,36 @@ class OwnersContainer extends Component {
   render() {
     const {
       searchResults,
+      showAddOwnerModal,
+      closeAddOwnerModal,
+      shouldValidateOwnerModalData,
+      //pets
+      pets,
+      showAddPetModal,
       openAddPetModal,
+      closeAddPetModal,
+      shouldValidatePetModalData,
       setActivePet,
       getPetsByOwner,
-      pets
+      activePet,
+      petTypes
     } = this.props;
     return (
       <div>
+        <AddOwnerModal
+          showAddOwnerModal={showAddOwnerModal}
+          onHideAddOwnerModal={closeAddOwnerModal}
+          shouldValidateOwnerModalData={shouldValidateOwnerModalData}
+          onAddButtonClick={this.handleAddOwnerFormData}
+        />
+        <AddPetModal
+          showAddPetModal={showAddPetModal}
+          onHideAddPetModal={closeAddPetModal}
+          shouldValidatePetModalData={shouldValidatePetModalData}
+          onAddButtonClick={this.handleAddPetFormData}
+          petTypes={petTypes}
+          pet={activePet}
+        />
         {this.renderSearchButton()}
         <Owners
           owners={searchResults}
@@ -79,35 +128,78 @@ class OwnersContainer extends Component {
 }
 
 OwnersContainer.protoTypes = {
+  searchResults: PropTypes.array.isRequired,
+  showAddOwnerModal: PropTypes.bool.isRequired,
+  shouldValidateOwnerModalData: PropTypes.bool.isRequired,
+  pets: PropTypes.array.isRequired,
+  petTypes: PropTypes.array.isRequired,
+  showAddPetModal: PropTypes.bool.isRequired,
+  shouldValidatePetModalData: PropTypes.bool.isRequired,
+  activePet: PropTypes.shape({}).isRequired,
+  // actions
   searchByLastName: PropTypes.func.isRequired,
   openAddOwnerModal: PropTypes.func.isRequired,
+  closeAddOwnerModal: PropTypes.func.isRequired,
+  validateOwnerModalData: PropTypes.func.isRequired,
+  saveOwner: PropTypes.func.isRequired,
   openAddPetModal: PropTypes.func.isRequired,
-  getPetsByOwner: PropTypes.func.isRequired
+  closeAddPetModal: PropTypes.func.isRequired,
+  setActivePet: PropTypes.func.isRequired,
+  getPetsByOwner: PropTypes.func.isRequired,
+  validatePetModalData: PropTypes.func.isRequired,
+  savePet: PropTypes.func.isRequired
 };
 
 /* istanbul ignore next */
 const mapStateToProps = state => ({
+  /*----- owners -----*/
   searchResults: state.ownerReducer.searchResults,
+  showAddOwnerModal: state.ownerReducer.showAddOwnerModal,
+  shouldValidateOwnerModalData: state.ownerReducer.shouldValidateOwnerModalData,
+  /*----- pets -----*/
   pets: state.petReducer.pets,
-  petTypes: state.petReducer.petTypes
+  petTypes: state.petReducer.petTypes,
+  showAddPetModal: state.petReducer.showAddPetModal,
+  shouldValidatePetModalData: state.petReducer.shouldValidatePetModalData,
+  activePet: state.petReducer.activePet
 });
 
 /* istanbul ignore next */
 const mapDispatchToProps = dispatch => ({
+  /*----- owners -----*/
   searchByLastName: lastName => {
     dispatch(getOwnerByLastName(lastName));
   },
   openAddOwnerModal: () => {
-    dispatch(openAddOwnerModal());
+    dispatch(openAddOwnerModalAction());
   },
+  closeAddOwnerModal: () => {
+    dispatch(closeAddOwnerModalAction());
+  },
+  validateOwnerModalData: () => {
+    dispatch(validateOwnerModalData());
+  },
+  saveOwner: owner => {
+    dispatch(saveOwner(owner));
+  },
+  /*----- pets -----*/
   openAddPetModal: ownerId => {
-    dispatch(openAddPetModal(ownerId));
+    dispatch(openAddPetModalAction(ownerId));
+  },
+  closeAddPetModal: () => {
+    dispatch(closeAddPetModalAction());
   },
   setActivePet: pet => {
     dispatch(setActivePet(pet));
   },
   getPetsByOwner: ownerId => {
-    dispatch(getPetsByOwner(ownerId));
+    dispatch(getPetsByOwnerAction(ownerId));
+  },
+  validatePetModalData: () => {
+    dispatch(validatePetModalData());
+  },
+  savePet: pet => {
+    dispatch(savePet(pet));
   }
 });
 

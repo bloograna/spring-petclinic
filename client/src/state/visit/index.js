@@ -6,7 +6,7 @@ import visitReducer, {
   getVisitsByDate,
   getVisitsByDateRange,
   openAddVisitModal,
-  hideAddVisitModal,
+  closeAddVisitModal,
   validateVisitModalData,
   validateVisitModalDataCompleted
 } from './visitStore';
@@ -18,7 +18,7 @@ export {
   getVisitsByDate,
   getVisitsByDateRange,
   openAddVisitModal,
-  hideAddVisitModal,
+  closeAddVisitModal,
   validateVisitModalData,
   validateVisitModalDataCompleted
 };

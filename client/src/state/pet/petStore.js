@@ -22,7 +22,7 @@ const GET_PET_BY_ID_SUCCESS = 'pet/GET_PET_BY_ID_SUCCESS';
 
 // render/modal
 const OPEN_ADD_MODAL = 'pet/OPEN_ADD_MODAL';
-const HIDE_ADD_MODAL = 'pet/HIDE_ADD_MODAL';
+const CLOSE_ADD_MODAL = 'pet/CLOSE_ADD_MODAL';
 const VALIDATE_MODAL_DATA = 'pet/VALIDATE_MODAL_DATA';
 const VALIDATE_MODAL_DATA_COMPLETED = 'pet/VALIDATE_MODAL_DATA_COMPLETED';
 
@@ -40,7 +40,7 @@ const getPetById = mac(GET_PET_BY_ID, 'petId');
 const getPetByIdSuccess = mac(GET_PET_BY_ID_SUCCESS, 'pet');
 
 const openAddPetModal = mac(OPEN_ADD_MODAL, 'ownerId');
-const hideAddPetModal = mac(HIDE_ADD_MODAL);
+const closeAddPetModal = mac(CLOSE_ADD_MODAL);
 const validatePetModalData = mac(VALIDATE_MODAL_DATA);
 const validatePetModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
@@ -50,6 +50,7 @@ const setActivePet = mac(SET_ACTIVE_PET, 'pet');
 const attachActiveOwnerId = (ownerId, pet) => {
   return { ...pet, ownerId, type: { id: pet.type } };
 };
+
 const stitchPetsArray = (existingPets, newPets) => {
   const updatedPets = cloneDeep(existingPets);
   newPets.forEach(pet => {
@@ -74,17 +75,18 @@ const petReducer = (state = petInitialState, action) => {
     case GET_PETS_BY_OWNER_SUCCESS: {
       const { pets } = action;
       const updatedPets = stitchPetsArray(state.pets, pets);
-      return { ...state, pets: updatedPets };
+      return { ...state, pets: updatedPets, searchResults: pets };
     }
     case GET_PET_BY_ID_SUCCESS: {
       const { pet } = action;
       const { pets } = state;
-      return { ...state };
+      const updatedPets = stitchPetsArray(pets, [pet]);
+      return { ...state, pets: updatedPets };
     }
     case OPEN_ADD_MODAL: {
       return { ...state, showAddPetModal: true };
     }
-    case HIDE_ADD_MODAL: {
+    case CLOSE_ADD_MODAL: {
       return { ...state, showAddPetModal: false, activePet: undefined };
     }
     case VALIDATE_MODAL_DATA: {
@@ -133,7 +135,7 @@ const savePetEpic = (action$, store) =>
     const ownerStore = store.value.ownerReducer;
     return concat(
       of(validatePetModalDataCompleted()),
-      of(hideAddPetModal()),
+      of(closeAddPetModal()),
       fromPromise(
         petService.savePet(
           attachActiveOwnerId(ownerStore.activeOwner, action.pet)
@@ -164,7 +166,7 @@ const openAddModalEpic = action$ =>
     .mergeMap(action => of(setActiveOwner(action.ownerId)));
 
 const closeAddModalEpic = action$ =>
-  action$.ofType(HIDE_ADD_MODAL).mergeMap(() => of(clearActiveOwner()));
+  action$.ofType(CLOSE_ADD_MODAL).mergeMap(() => of(clearActiveOwner()));
 
 const setActivePetEpic = action$ =>
   action$
@@ -189,7 +191,7 @@ export {
   getPetsByOwner,
   getPetById,
   openAddPetModal,
-  hideAddPetModal,
+  closeAddPetModal,
   validatePetModalData,
   setActivePet
 };

@@ -5,7 +5,7 @@ import ownerReducer, {
   saveOwner,
   getOwnerByLastName,
   openAddOwnerModal,
-  hideAddOwnerModal,
+  closeAddOwnerModal,
   validateOwnerModalData,
   setActiveOwner,
   clearActiveOwner
@@ -17,7 +17,7 @@ export {
   saveOwner,
   getOwnerByLastName,
   openAddOwnerModal,
-  hideAddOwnerModal,
+  closeAddOwnerModal,
   validateOwnerModalData,
   setActiveOwner,
   clearActiveOwner

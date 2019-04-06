@@ -26,7 +26,7 @@ const GET_VISIT_BY_PET_ID_SUCCESS = 'visit/GET_VISIT_BY_PET_ID_SUCCESS';
 // render/modal
 
 const OPEN_ADD_MODAL = 'visit/OPEN_ADD_MODAL';
-const HIDE_ADD_MODAL = 'visit/HIDE_ADD_MODAL';
+const CLOSE_ADD_MODAL = 'visit/CLOSE_ADD_MODAL';
 const VALIDATE_MODAL_DATA = 'visit/VALIDATE_MODAL_DATA';
 const VALIDATE_MODAL_DATA_COMPLETED = 'visit/VALIDATE_MODAL_DATA_COMPLETED';
 
@@ -51,7 +51,7 @@ const getVisitByPetIdSuccess = mac(GET_VISIT_BY_PET_ID_SUCCESS, 'visits');
 
 // render/modal
 const openAddVisitModal = mac(OPEN_ADD_MODAL);
-const hideAddVisitModal = mac(HIDE_ADD_MODAL);
+const closeAddVisitModal = mac(CLOSE_ADD_MODAL);
 const validateVisitModalData = mac(VALIDATE_MODAL_DATA);
 const validateVisitModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
@@ -95,7 +95,7 @@ const visitReducer = (state = visitInitialState, action) => {
     case OPEN_ADD_MODAL: {
       return { ...state, showAddVisitModal: true };
     }
-    case HIDE_ADD_MODAL: {
+    case CLOSE_ADD_MODAL: {
       return { ...state, showAddVisitModal: false };
     }
     case VALIDATE_MODAL_DATA: {
@@ -134,7 +134,7 @@ const saveVisitEpic = action$ =>
   action$.ofType(SAVE_VISIT).mergeMap(action =>
     concat(
       of(validateVisitModalDataCompleted()),
-      of(hideAddVisitModal()),
+      of(closeAddVisitModal()),
       fromPromise(
         visitService.saveVisit(getVisitRequestBody(action.visit))
       ).map(result => {
@@ -192,7 +192,7 @@ export {
   getVisitsByDate,
   getVisitsByDateRange,
   openAddVisitModal,
-  hideAddVisitModal,
+  closeAddVisitModal,
   validateVisitModalData,
   validateVisitModalDataCompleted
 };

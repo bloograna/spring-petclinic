@@ -18,7 +18,7 @@ const GET_OWNERS_BY_LASTNAME_SUCCESS = 'owner/GET_OWNERS_BY_LASTNAME_SUCCESS';
 
 // render/modal
 const OPEN_ADD_MODAL = 'owner/OPEN_ADD_MODAL';
-const HIDE_ADD_MODAL = 'owner/HIDE_ADD_MODAL';
+const CLOSE_ADD_MODAL = 'owner/CLOSE_ADD_MODAL';
 const VALIDATE_MODAL_DATA = 'owner/VALIDATE_MODAL_DATA';
 const VALIDATE_MODAL_DATA_COMPLETED = 'owner/VALIDATE_MODAL_DATA_COMPLETED';
 
@@ -33,7 +33,7 @@ const getOwnerByLastName = mac(GET_OWNERS_BY_LASTNAME, 'lastName');
 const getOwnerByLastNameSuccess = mac(GET_OWNERS_BY_LASTNAME_SUCCESS, 'owners');
 
 const openAddOwnerModal = mac(OPEN_ADD_MODAL);
-const hideAddOwnerModal = mac(HIDE_ADD_MODAL);
+const closeAddOwnerModal = mac(CLOSE_ADD_MODAL);
 const validateOwnerModalData = mac(VALIDATE_MODAL_DATA);
 const validateOwnerModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
@@ -60,7 +60,7 @@ const ownerReducer = (state = ownerInitialState, action) => {
     case OPEN_ADD_MODAL: {
       return { ...state, showAddOwnerModal: true };
     }
-    case HIDE_ADD_MODAL: {
+    case CLOSE_ADD_MODAL: {
       return { ...state, showAddOwnerModal: false };
     }
     case VALIDATE_MODAL_DATA: {
@@ -106,7 +106,7 @@ const saveOwnerEpic = action$ =>
   action$.ofType(SAVE_OWNER).mergeMap(action =>
     concat(
       of(validateOwnerModalDataCompleted()),
-      of(hideAddOwnerModal()),
+      of(closeAddOwnerModal()),
       fromPromise(ownerService.saveOwner(action.owner)).map(result => {
         if (result.error) {
           return addMessage('An error occurred while saving owner');
@@ -125,7 +125,7 @@ export {
   saveOwner,
   getOwnerByLastName,
   openAddOwnerModal,
-  hideAddOwnerModal,
+  closeAddOwnerModal,
   validateOwnerModalData,
   setActiveOwner,
   clearActiveOwner

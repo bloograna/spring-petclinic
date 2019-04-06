@@ -8,7 +8,11 @@ const AddVisitModal = ({
   shouldValidateVisitModalData,
   onHideAddVisitModal,
   onAddButtonClick,
-  vets
+  owners,
+  vets,
+  pets,
+  searchOwnerByLastName,
+  searchPetsByOwnerId
 }) => {
   return (
     <LargeModal
@@ -18,9 +22,13 @@ const AddVisitModal = ({
     >
       <AddVisitForm
         formValidated={shouldValidateVisitModalData}
+        owners={owners}
         vets={vets}
+        pets={pets}
         onAddButtonClick={onAddButtonClick}
         onHideAddVisitModal={onHideAddVisitModal}
+        searchOwnerByLastName={searchOwnerByLastName}
+        searchPetsByOwnerId={searchPetsByOwnerId}
       />
     </LargeModal>
   );
@@ -31,7 +39,11 @@ AddVisitModal.propTypes = {
   shouldValidateVisitModalData: PropTypes.bool.isRequired,
   onHideAddVisitModal: PropTypes.func.isRequired,
   onAddButtonClick: PropTypes.func.isRequired,
-  vets: PropTypes.array.isRequired
+  owners: PropTypes.array.isRequired,
+  vets: PropTypes.array.isRequired,
+  pets: PropTypes.array.isRequired,
+  searchOwnerByLastName: PropTypes.func.isRequired,
+  searchPetsByOwnerId: PropTypes.func.isRequired
 };
 
 export default AddVisitModal;

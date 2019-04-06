@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import {
   getVisitsByDate,
-  openAddVisitModal as openAddVisitModalAction
+  openAddVisitModal as openAddVisitModalAction,
+  saveVisit,
+  closeAddVisitModal as closeAddVisitModalAction,
+  validateVisitModalData
 } from '../../state/visit/visitStore';
+import { getPetsByOwner as getPetsByOwnerAction } from '../../state/pet/petStore';
+import DropdownSearch from './DropdownSearch';
+import AddVisitModal from './AddVisitModal';
 
 const localizer = BigCalendar.momentLocalizer(moment);
 
@@ -16,37 +22,75 @@ const maxTime = new Date();
 maxTime.setHours(17, 0, 0);
 
 const calendarContainerStyle = {
-  width: '90%',
-  height: '90%',
-  alignContent: 'center'
+  width: 'calc(90vw)',
+  height: 'calc(90vh)',
+  alignSelf: 'center'
 };
 
-const VisitsContainer = ({ visits, openAddVisitModal }) => {
-  return (
-    <div style={calendarContainerStyle}>
-      <BigCalendar
-        selectable
-        localizer={localizer}
-        events={visits}
-        min={minTime}
-        max={maxTime}
-        defaultView={BigCalendar.Views.WORK_WEEK}
-        scrollToTime={new Date(2019, 1, 1, 6)}
-        defaultDate={new Date()}
-        onSelectEvent={event => console.log('event', event)}
-        onSelectSlot={openAddVisitModal}
-        views={{ month: true, work_week: true, day: true }}
-      />
-    </div>
-  );
-};
+class VisitsContainer extends Component {
+  searchPetsByOwnerId = event => {
+    const { getPetsByOwner } = this.props;
+    const ownerId = event.currentTarget.getAttribute('name');
+    getPetsByOwner(ownerId);
+  };
+
+  render() {
+    const {
+      visits,
+      showAddVisitModal,
+      openAddVisitModal,
+      closeAddVisitModal,
+      shouldValidateVisitModalData,
+      owners,
+      pets,
+      vets
+    } = this.props;
+
+    return (
+      <div style={calendarContainerStyle}>
+        <AddVisitModal
+          showAddVisitModal={showAddVisitModal}
+          onHideAddVisitModal={closeAddVisitModal}
+          shouldValidateVisitModalData={shouldValidateVisitModalData}
+          onAddButtonClick={this.handleAddVisitFormData}
+          vets={vets}
+          owners={owners}
+          pets={pets}
+          searchPetsByOwnerId={this.searchPetsByOwnerId}
+        />
+        <BigCalendar
+          selectable
+          localizer={localizer}
+          events={visits}
+          min={minTime}
+          max={maxTime}
+          defaultView={BigCalendar.Views.WORK_WEEK}
+          scrollToTime={new Date(2019, 1, 1, 6)}
+          defaultDate={new Date()}
+          onSelectEvent={event => console.log('event', event)}
+          onSelectSlot={openAddVisitModal}
+          views={{ month: true, work_week: true, day: true }}
+        />
+      </div>
+    );
+  }
+}
 
 VisitsContainer.propTypes = {
+  owners: PropTypes.array.isRequired,
+  pets: PropTypes.array.isRequired,
+  vets: PropTypes.array.isRequired,
   visits: PropTypes.array.isRequired,
-  openAddVisitModal: PropTypes.func.isRequired
+  showAddVisitModal: PropTypes.func.isRequired,
+  shouldValidateVisitModalData: PropTypes.bool.isRequired
 };
 const mapStateToProps = state => ({
-  visits: state.visitReducer.visits
+  owners: state.ownerReducer.owners,
+  pets: state.petReducer.pets,
+  vets: state.vetReducer.vets,
+  visits: state.visitReducer.visits,
+  showAddVisitModal: state.visitReducer.showAddVisitModal,
+  shouldValidateVisitModalData: state.visitReducer.shouldValidateVisitModalData
 });
 
 /* istanbul ignore next */
@@ -54,11 +98,20 @@ const mapDispatchToProps = dispatch => ({
   getVisitsByDate: dateString => {
     dispatch(getVisitsByDate(dateString));
   },
-  // getVetSpecialties: () => {
-  //   dispatch(getVetSpecialties());
-  // },
+  saveVisit: visit => {
+    dispatch(saveVisit(visit));
+  },
   openAddVisitModal: () => {
     dispatch(openAddVisitModalAction());
+  },
+  closeAddVisitModal: () => {
+    dispatch(closeAddVisitModalAction());
+  },
+  validateVisitModalData: () => {
+    dispatch(validateVisitModalData());
+  },
+  getPetsByOwner: ownerId => {
+    dispatch(getPetsByOwnerAction(ownerId));
   }
 });
 

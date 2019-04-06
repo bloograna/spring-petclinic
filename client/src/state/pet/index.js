@@ -7,8 +7,9 @@ import petReducer, {
   getPetsByOwner,
   getPetById,
   openAddPetModal,
-  hideAddPetModal,
-  validatePetModalData
+  closeAddPetModal,
+  validatePetModalData,
+  setActivePet
 } from './petStore';
 
 export {
@@ -19,6 +20,7 @@ export {
   getPetsByOwner,
   getPetById,
   openAddPetModal,
-  hideAddPetModal,
-  validatePetModalData
+  closeAddPetModal,
+  validatePetModalData,
+  setActivePet
 };
