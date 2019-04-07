@@ -1,89 +1,74 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Col, Button } from 'react-bootstrap';
-import { isEmpty } from 'lodash';
+import { Form, ButtonGroup, Button, FormControl } from 'react-bootstrap';
+
 import CommonForm from '../common/CommonForm';
 import DropdownSearch from './DropdownSearch';
-
-const formatOwnerData = owners =>
-  owners.map(owner => {
-    const { firstName, lastName, id } = owner;
-    return { id, name: lastName + ', ' + firstName };
-  });
-
-const formatPetData = (petsByOwner, activeOwner) => {
-  const cleanArray = [];
-  if (isEmpty(petsByOwner) || !activeOwner) {
-    return [];
-  } else {
-    // need another check in the case data hasnt returned
-    const pets = petsByOwner[activeOwner];
-    if (pets) {
-      Object.values(pets).forEach(pet => {
-        const { name, id } = pet;
-        cleanArray.push({ name, id });
-      });
-    }
-    return cleanArray;
-  }
-};
-
-const getActiveOwnerInfo = (owners, activeOwnerId) => {
-  const owner = formatOwnerData(
-    owners.filter(owner => owner.id === activeOwnerId)
-  )[0].name;
-  return owner;
-};
-
-const getActivePetInfo = (pets, activeOwnerId, activePetId) => {
-  const pet = formatPetData(pets, activeOwnerId).filter(
-    pet => pet.id === activePetId
-  )[0].name;
-  return pet;
-};
+import VisitDatePicker from './VisitDatePicker';
+import VisitTimePicker from './VisitTimePicker';
 
 const AddVisitForm = ({
   formValidated,
   owners,
-  activeOwner,
-  activePet,
-  vets,
+  selectedOwner,
   pets,
-  onAddButtonClick,
+  selectedPet,
+  vets,
+  onSubmit,
   onHideAddVisitModal,
-  searchPetsByOwnerId,
-  selectPet
+  selectOwner,
+  selectPet,
+  selectDate,
+  selectedDate,
+  selectStartTime,
+  selectedStartTime,
+  selectEndTime,
+  selectedEndTime,
+  visitDesc,
+  selectVet,
+  selectedVet
 }) => (
-  <CommonForm onSubmit={onAddButtonClick} formValidated={formValidated}>
+  <CommonForm onSubmit={onSubmit} formValidated={formValidated}>
     <Form.Row>
-      <Form.Group as={Col} md="4" controlId="firstName">
+      <ButtonGroup aria-label="Owner Pet Vet Info">
         <DropdownSearch
-          title={
-            activeOwner ? getActiveOwnerInfo(owners, activeOwner) : 'Owner'
-          }
-          dropdownOptions={formatOwnerData(owners)}
-          onClick={searchPetsByOwnerId}
+          title={selectedOwner}
+          dropdownOptions={owners}
+          onClick={selectOwner}
         />
-      </Form.Group>
-      <Form.Group as={Col} md="4" controlId="lastName">
         <DropdownSearch
-          title={
-            activeOwner && activePet
-              ? getActivePetInfo(pets, activeOwner, activePet)
-              : 'Pet'
-          }
-          dropdownOptions={activeOwner ? formatPetData(pets, activeOwner) : []}
+          title={selectedPet}
+          dropdownOptions={pets}
           onClick={selectPet}
         />
-      </Form.Group>
-      <Form.Group>
-        <Form.Label id="visit-form-time">Appointment Time</Form.Label>
-        <Form.Control
-          name="birthDate"
-          required
-          type="datetime-local"
-          // pattern={'[0-9]{4}-[0-9]{2}-[0-9]{2}'}
+        <DropdownSearch
+          title={selectedVet}
+          dropdownOptions={vets}
+          onClick={selectVet}
         />
+      </ButtonGroup>
+    </Form.Row>
+    <Form.Row>
+      <Form.Group>
+        <VisitDatePicker onSelectDate={selectDate} visitDate={selectedDate} />
+        <VisitTimePicker
+          onSelectTime={selectStartTime}
+          visitTime={selectedStartTime}
+          placeholderText="Select a start time"
+        />
+        <VisitTimePicker
+          onSelectTime={selectEndTime}
+          visitTime={selectedEndTime}
+          minTime={selectedStartTime}
+          placeholderText="Select an end time"
+        />
+      </Form.Group>
+      <Form.Group />
+    </Form.Row>
+    <Form.Row>
+      <Form.Group>
+        <Form.Label>Description</Form.Label>
+        <FormControl name="desc" type="text" defaultValue={visitDesc} />
       </Form.Group>
     </Form.Row>
     <Form.Row>
@@ -98,12 +83,21 @@ AddVisitForm.propTypes = {
   owners: PropTypes.array.isRequired,
   vets: PropTypes.array.isRequired,
   pets: PropTypes.array.isRequired,
-  onAddButtonClick: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
   onHideAddVisitModal: PropTypes.func.isRequired,
-  searchPetsByOwnerId: PropTypes.func.isRequired,
+  selectOwner: PropTypes.func.isRequired,
   selectPet: PropTypes.func.isRequired,
-  activeOwner: PropTypes.number,
-  activePet: PropTypes.number
+  selectDate: PropTypes.func.isRequired,
+  selectStartTime: PropTypes.func.isRequired,
+  selectEndTime: PropTypes.func.isRequired,
+  selectVet: PropTypes.func.isRequired,
+  selectedOwner: PropTypes.string,
+  selectedPet: PropTypes.string,
+  selectedDate: PropTypes.shape({}),
+  selectedStartTime: PropTypes.shape({}),
+  selectedEndTime: PropTypes.shape({}),
+  selectedVet: PropTypes.string,
+  visitDesc: PropTypes.string
 };
 
 export default AddVisitForm;

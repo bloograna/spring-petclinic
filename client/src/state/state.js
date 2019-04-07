@@ -24,7 +24,18 @@ const initialState = {
   visit: {
     visits: [],
     showAddVisitModal: false,
-    shouldValidateVisitModalData: false
+    shouldValidateVisitModalData: false,
+    newVisit: {
+      id: null,
+      date: null,
+      start: null,
+      end: null,
+      petId: null,
+      vetId: null,
+      desc: null
+    },
+    isNewVisitValid: false,
+    visitVetSearchResult: []
   },
   message: []
 };

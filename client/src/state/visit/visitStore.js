@@ -1,7 +1,10 @@
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
-import _ from 'lodash';
+import { cloneDeep } from 'lodash';
 import moment from 'moment';
+import isDate from 'date-fns/isDate';
+import isAfter from 'date-fns/isAfter';
+import format from 'date-fns/format';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { concat } from 'rxjs/observable/concat';
@@ -9,6 +12,9 @@ import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
 import { addMessage } from '../message/messageStore';
 import visitService from '../../service/visit/visitService';
+
+const DATE_FORMAT = 'yyyy-MM-dd';
+const TIME_FORMAT = 'HH:mm:ss';
 
 /* ----- TYPES ----- */
 const SAVE_VISIT = 'visit/SAVE_VISIT';
@@ -22,6 +28,15 @@ const GET_VISIT_BY_VET_ID = 'visit/GET_VISIT_BY_VET_ID';
 const GET_VISIT_BY_VET_ID_SUCCESS = 'visit/GET_VISIT_BY_VET_ID_SUCCESS';
 const GET_VISIT_BY_PET_ID = 'visit/GET_VISIT_BY_PET_ID';
 const GET_VISIT_BY_PET_ID_SUCCESS = 'visit/GET_VISIT_BY_PET_ID_SUCCESS';
+
+// appointments related
+const SET_VISIT_DATE = 'visit/SET_VISIT_DATE';
+const SET_VISIT_START_TIME = 'visit/SET_VISIT_START_TIME';
+const SET_VISIT_END_TIME = 'visit/SET_VISIT_END_TIME';
+const SET_VISIT_PET = 'visit/SET_VISIT_PET';
+const SET_VISIT_VET = 'visit/SET_VISIT_VET';
+const SET_VISIT_DESCRIPTION = 'visit/SET_VISIT_DESCRIPTION';
+const CLEAR_NEW_VISIT_DATA = 'visit/CLEAR_NEW_VISIT_DATA';
 
 // render/modal
 
@@ -49,6 +64,15 @@ const getVisitByVetIdSuccess = mac(GET_VISIT_BY_VET_ID_SUCCESS, 'visits');
 const getVisitByaPetId = mac(GET_VISIT_BY_PET_ID, 'petId');
 const getVisitByPetIdSuccess = mac(GET_VISIT_BY_PET_ID_SUCCESS, 'visits');
 
+// add new data
+const setVisitDate = mac(SET_VISIT_DATE, 'date');
+const setVisitStartTime = mac(SET_VISIT_START_TIME, 'start');
+const setVisitEndTime = mac(SET_VISIT_END_TIME, 'end');
+const setVisitPetId = mac(SET_VISIT_PET, 'petId');
+const setVisitVetId = mac(SET_VISIT_VET, 'vetId');
+const setVisitDescription = mac(SET_VISIT_DESCRIPTION, 'desc');
+const clearNewVisitData = mac(CLEAR_NEW_VISIT_DATA);
+
 // render/modal
 const openAddVisitModal = mac(OPEN_ADD_MODAL);
 const closeAddVisitModal = mac(CLOSE_ADD_MODAL);
@@ -74,6 +98,30 @@ const parseVisitResponse = newVisitData =>
       vetId: visit.vetId
     };
   });
+
+const validateVisit = newVisit => {
+  const { vetId, petId, date, start, end } = newVisit;
+  const hasSubjects = vetId && petId;
+  const validDates = isDate(date) && isDate(start) && isDate(end);
+  const endAfterStart = isAfter(end, start);
+  return hasSubjects && validDates && endAfterStart;
+};
+
+const constructVisitRequestBody = newVisit => {
+  const { id, vetId, petId, date, start, end, desc } = newVisit;
+  const startTime = format(start, TIME_FORMAT);
+  const endTime = format(end, TIME_FORMAT);
+  const newDate = format(date, DATE_FORMAT);
+  return {
+    id,
+    vetId,
+    petId,
+    date: newDate,
+    startTime,
+    endTime,
+    description: desc
+  };
+};
 
 const visitInitialState = initialState.visit;
 const visitReducer = (state = visitInitialState, action) => {
@@ -104,29 +152,50 @@ const visitReducer = (state = visitInitialState, action) => {
     case VALIDATE_MODAL_DATA_COMPLETED: {
       return { ...state, shouldValidateVisitModalData: false };
     }
+    case SET_VISIT_DATE: {
+      const { date } = action;
+      const newVisit = cloneDeep(state.newVisit);
+      newVisit.date = date;
+      return { ...state, newVisit };
+    }
+    case SET_VISIT_START_TIME: {
+      const { start } = action;
+      const newVisit = cloneDeep(state.newVisit);
+      newVisit.start = start;
+      return { ...state, newVisit };
+    }
+    case SET_VISIT_END_TIME: {
+      const { end } = action;
+      const newVisit = cloneDeep(state.newVisit);
+      newVisit.end = end;
+      return { ...state, newVisit };
+    }
+    case SET_VISIT_PET: {
+      const { petId } = action;
+      const newVisit = cloneDeep(state.newVisit);
+      newVisit.petId = petId;
+      return { ...state, newVisit };
+    }
+    case SET_VISIT_VET: {
+      const { vetId } = action;
+      const newVisit = cloneDeep(state.newVisit);
+      newVisit.vetId = vetId;
+      return { ...state, newVisit };
+    }
+    case SET_VISIT_DESCRIPTION: {
+      const { desc } = action;
+      const newVisit = cloneDeep(state.newVisit);
+      newVisit.desc = desc;
+      return { ...state, newVisit };
+    }
+    case CLEAR_NEW_VISIT_DATA: {
+      const { newVisit } = visitInitialState;
+      return { ...state, newVisit };
+    }
     default:
       return state;
   }
 };
-
-/* -------- HELPERS ------- */
-const getVisitRequestBody = visit => {
-  const { specialties, firstName, lastName } = visit;
-  const mappedSpecialties = specialties.map(value => {
-    const intValue = _.parseInt(value);
-    const specialtyWithId = { id: intValue };
-    return specialtyWithId;
-  });
-  // for some odd reason server only allows one add visit to go through and then the rest of them makes
-  // the special thing stuck in a "transient state" pet the log message.
-  return {
-    firstName,
-    lastName,
-    specialties: mappedSpecialties
-  };
-};
-
-const getDateString = date => moment(date).format('YYYY-MM-DD');
 
 /* -------- EPICS ------- */
 
@@ -135,9 +204,7 @@ const saveVisitEpic = action$ =>
     concat(
       of(validateVisitModalDataCompleted()),
       of(closeAddVisitModal()),
-      fromPromise(
-        visitService.saveVisit(getVisitRequestBody(action.visit))
-      ).map(result => {
+      fromPromise(visitService.saveVisit(action.visit)).map(result => {
         if (result.error) {
           return addMessage('An error occurred while saving visit');
         }
@@ -150,16 +217,18 @@ const saveVisitEpic = action$ =>
 const getVisitsByDateEpic = action$ =>
   action$.ofType(GET_VISITS_BY_DATE).mergeMap(action =>
     concat(
-      fromPromise(visitService.getVisitsByDate(getDateString(action.date))).map(
-        result => {
-          if (result.error) {
-            return addMessage(
-              'An error occurred while getting visit from server'
-            );
-          }
-          return getVisitsByDateSuccess(result.data);
+      fromPromise(
+        visitService.getVisitsByDate(
+          isDate(action.date) ? format(action.date, DATE_FORMAT) : action.date
+        )
+      ).map(result => {
+        if (result.error) {
+          return addMessage(
+            'An error occurred while getting visit from server'
+          );
         }
-      )
+        return getVisitsByDateSuccess(result.data);
+      })
     )
   );
 
@@ -179,10 +248,29 @@ const getVisitsByDateRangeEpic = action$ =>
     )
   );
 
+const closeAddModalEpic = action$ =>
+  action$.ofType(CLOSE_ADD_MODAL).mergeMap(() => of(clearNewVisitData()));
+
+const validateVisitDataEpic = (action$, store) =>
+  action$.ofType(VALIDATE_MODAL_DATA).mergeMap(() => {
+    const newVisit = store.value.visitReducer.newVisit;
+    const validVisit = validateVisit(newVisit);
+    if (validVisit) {
+      return concat(
+        of(saveVisit(constructVisitRequestBody(newVisit))),
+        of(clearNewVisitData())
+      );
+    }
+    console.log(validVisit);
+    return [];
+  });
+
 const visitEpics = [
   getVisitsByDateEpic,
   saveVisitEpic,
-  getVisitsByDateRangeEpic
+  getVisitsByDateRangeEpic,
+  closeAddModalEpic,
+  validateVisitDataEpic
 ];
 
 export {
@@ -194,5 +282,11 @@ export {
   openAddVisitModal,
   closeAddVisitModal,
   validateVisitModalData,
-  validateVisitModalDataCompleted
+  validateVisitModalDataCompleted,
+  setVisitDate,
+  setVisitStartTime,
+  setVisitEndTime,
+  setVisitPetId,
+  setVisitVetId,
+  setVisitDescription
 };

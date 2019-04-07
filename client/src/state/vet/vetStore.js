@@ -1,6 +1,6 @@
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
-import _ from 'lodash';
+import { cloneDeep } from 'lodash';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { concat } from 'rxjs/observable/concat';
@@ -45,13 +45,21 @@ const closeAddVetModal = mac(CLOSE_ADD_MODAL);
 const validateVetModalData = mac(VALIDATE_MODAL_DATA);
 const validateVetModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
+/* ----- REDUCER HELPER FUNCTIONS ----- */
+const stitchVetsArray = (existingVets, newVets) => {
+  const updatedVets = cloneDeep(existingVets);
+  newVets.forEach(owner => (updatedVets[owner.id] = owner));
+  return updatedVets;
+};
+
 /* ----- REDUCER ----- */
 const vetInitialState = initialState.vet;
 const vetReducer = (state = vetInitialState, action) => {
   switch (action.type) {
     case GET_VETS_SUCCESS: {
       const { vets } = action;
-      return { ...state, vets: vets };
+      const updatedVets = stitchVetsArray(state.vets, vets);
+      return { ...state, vets: updatedVets };
     }
     case GET_VET_SPECIALTIES_SUCCESS: {
       const { specialties } = action;
@@ -78,7 +86,7 @@ const vetReducer = (state = vetInitialState, action) => {
 const getVetRequestBody = vet => {
   const { specialties, firstName, lastName } = vet;
   const mappedSpecialties = specialties.map(value => {
-    const intValue = _.parseInt(value);
+    const intValue = parseInt(value);
     const specialtyWithId = { id: intValue };
     return specialtyWithId;
   });

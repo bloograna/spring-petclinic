@@ -6,16 +6,9 @@ import { connect } from 'react-redux';
 import {
   getVisitsByDate,
   openAddVisitModal as openAddVisitModalAction,
-  saveVisit,
-  closeAddVisitModal as closeAddVisitModalAction,
-  validateVisitModalData
+  saveVisit as saveVisitAction
 } from '../../state/visit';
-import { setActiveOwner, clearActiveOwner } from '../../state/owner';
-import {
-  getPetsByOwner as getPetsByOwnerAction,
-  setActivePet,
-  clearActivePet
-} from '../../state/pet';
+
 import DropdownSearch from './DropdownSearch';
 import AddVisitModal from './AddVisitModal';
 
@@ -33,48 +26,12 @@ const calendarContainerStyle = {
 };
 
 class VisitsContainer extends Component {
-  searchPetsByOwnerId = event => {
-    const { getPetsByOwner, setActiveOwner } = this.props;
-    const ownerId = event.currentTarget.getAttribute('name');
-    setActiveOwner(parseInt(ownerId, 10));
-    getPetsByOwner(ownerId);
-  };
-
-  onSelectPet = event => {
-    const { setActivePet } = this.props;
-    const petId = event.currentTarget.getAttribute('name');
-    setActivePet(parseInt(petId, 10));
-  };
-
   render() {
-    const {
-      visits,
-      showAddVisitModal,
-      openAddVisitModal,
-      closeAddVisitModal,
-      shouldValidateVisitModalData,
-      owners,
-      pets,
-      vets,
-      activeOwner,
-      activePet
-    } = this.props;
+    const { visits, showAddVisitModal, openAddVisitModal } = this.props;
 
     return (
       <div style={calendarContainerStyle}>
-        <AddVisitModal
-          showAddVisitModal={showAddVisitModal}
-          onHideAddVisitModal={closeAddVisitModal}
-          shouldValidateVisitModalData={shouldValidateVisitModalData}
-          onAddButtonClick={this.handleAddVisitFormData}
-          vets={vets}
-          owners={owners}
-          pets={pets}
-          searchPetsByOwnerId={this.searchPetsByOwnerId}
-          selectPet={this.onSelectPet}
-          activeOwner={activeOwner}
-          activePet={activePet}
-        />
+        <AddVisitModal showAddVisitModal={showAddVisitModal} />
         <BigCalendar
           selectable
           localizer={localizer}
@@ -94,24 +51,13 @@ class VisitsContainer extends Component {
 }
 
 VisitsContainer.propTypes = {
-  owners: PropTypes.array.isRequired,
-  pets: PropTypes.array.isRequired,
-  vets: PropTypes.array.isRequired,
   visits: PropTypes.array.isRequired,
-  showAddVisitModal: PropTypes.bool.isRequired,
-  shouldValidateVisitModalData: PropTypes.bool.isRequired,
-  activeOwner: PropTypes.number,
-  activePet: PropTypes.number
+  showAddVisitModal: PropTypes.bool.isRequired
 };
+
 const mapStateToProps = state => ({
-  owners: state.ownerReducer.owners,
-  activeOwner: state.ownerReducer.activeOwner,
-  pets: state.petReducer.pets,
-  activePet: state.petReducer.activePet,
-  vets: state.vetReducer.vets,
   visits: state.visitReducer.visits,
-  showAddVisitModal: state.visitReducer.showAddVisitModal,
-  shouldValidateVisitModalData: state.visitReducer.shouldValidateVisitModalData
+  showAddVisitModal: state.visitReducer.showAddVisitModal
 });
 
 /* istanbul ignore next */
@@ -120,31 +66,10 @@ const mapDispatchToProps = dispatch => ({
     dispatch(getVisitsByDate(dateString));
   },
   saveVisit: visit => {
-    dispatch(saveVisit(visit));
+    dispatch(saveVisitAction(visit));
   },
   openAddVisitModal: () => {
     dispatch(openAddVisitModalAction());
-  },
-  closeAddVisitModal: () => {
-    dispatch(closeAddVisitModalAction());
-  },
-  validateVisitModalData: () => {
-    dispatch(validateVisitModalData());
-  },
-  getPetsByOwner: ownerId => {
-    dispatch(getPetsByOwnerAction(ownerId));
-  },
-  setActiveOwner: ownerId => {
-    dispatch(setActiveOwner(ownerId));
-  },
-  clearActiveOwner: () => {
-    dispatch(clearActiveOwner());
-  },
-  setActivePet: petId => {
-    dispatch(setActivePet(petId));
-  },
-  clearActivePet: () => {
-    dispatch(clearActivePet());
   }
 });
 

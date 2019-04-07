@@ -9,6 +9,7 @@ import { store } from './state';
 import 'bootstrap/dist/css/bootstrap-reboot.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-datepicker/dist/react-datepicker.css';
 
 ReactDOM.render(
   <Provider store={store}>

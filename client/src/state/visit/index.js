@@ -8,7 +8,13 @@ import visitReducer, {
   openAddVisitModal,
   closeAddVisitModal,
   validateVisitModalData,
-  validateVisitModalDataCompleted
+  validateVisitModalDataCompleted,
+  setVisitDate,
+  setVisitStartTime,
+  setVisitEndTime,
+  setVisitPetId,
+  setVisitVetId,
+  setVisitDescription
 } from './visitStore';
 
 export {
@@ -20,5 +26,11 @@ export {
   openAddVisitModal,
   closeAddVisitModal,
   validateVisitModalData,
-  validateVisitModalDataCompleted
+  validateVisitModalDataCompleted,
+  setVisitDate,
+  setVisitStartTime,
+  setVisitEndTime,
+  setVisitPetId,
+  setVisitVetId,
+  setVisitDescription
 };
