@@ -3,6 +3,7 @@
 import visitReducer, {
   visitEpics,
   saveVisit,
+  deleteVisit,
   getVisitsByDate,
   getVisitsByDateRange,
   openAddVisitModal,
@@ -21,6 +22,7 @@ export {
   visitReducer,
   visitEpics,
   saveVisit,
+  deleteVisit,
   getVisitsByDate,
   getVisitsByDateRange,
   openAddVisitModal,

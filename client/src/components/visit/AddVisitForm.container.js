@@ -6,7 +6,7 @@ import { isEmpty } from 'lodash';
 import { setActiveOwner, clearActiveOwner } from '../../state/owner';
 import { getPetsByOwner as getPetsByOwnerAction } from '../../state/pet';
 import {
-  saveVisit as saveVisitAction,
+  deleteVisit as deleteVisitAction,
   closeAddVisitModal as closeAddVisitModalAction,
   setVisitDate as setVisitDateAction,
   setVisitStartTime as setVisitStartTimeAction,
@@ -78,14 +78,21 @@ class AddVisitFormContainer extends Component {
   };
 
   onAddModalSubmit = formObj => {
-    const {
-      saveVisitAction,
-      validateVisitModalData,
-      setVisitDescription
-    } = this.props;
+    const { validateVisitModalData, setVisitDescription } = this.props;
     const { desc } = formObj;
     setVisitDescription(desc);
     validateVisitModalData();
+  };
+
+  getPetSelectionString = (activeOwner, newVisit, pets, petById) => {
+    if (activeOwner && newVisit.petId) {
+      return this.getActivePetInfo(pets, activeOwner, newVisit.petId);
+    }
+    if (newVisit.petId && newVisit.id && !isEmpty(petById)) {
+      const pet = petById[0];
+      return pet.id === newVisit.petId ? pet.name : newVisit.petId;
+    }
+    return 'Pet';
   };
 
   render() {
@@ -99,7 +106,9 @@ class AddVisitFormContainer extends Component {
       newVisit,
       setVisitDate,
       setVisitStartTime,
-      setVisitEndTime
+      setVisitEndTime,
+      petById,
+      deleteVisit
     } = this.props;
 
     return (
@@ -115,11 +124,12 @@ class AddVisitFormContainer extends Component {
         selectedOwner={
           activeOwner ? this.getActivePersonInfo(owners, activeOwner) : 'Owner'
         }
-        selectedPet={
-          activeOwner && newVisit.petId
-            ? this.getActivePetInfo(pets, activeOwner, newVisit.petId)
-            : 'Pet'
-        }
+        selectedPet={this.getPetSelectionString(
+          activeOwner,
+          newVisit,
+          pets,
+          petById
+        )}
         selectedVet={
           newVisit.vetId
             ? this.getActivePersonInfo(vets, newVisit.vetId)
@@ -133,6 +143,8 @@ class AddVisitFormContainer extends Component {
         selectedEndTime={newVisit.end}
         visitDesc={newVisit.desc}
         selectVet={this.onSelectVet}
+        visitId={newVisit.id}
+        deleteVisit={deleteVisit}
       />
     );
   }
@@ -157,7 +169,8 @@ const mapStateToProps = state => ({
   visits: state.visitReducer.visits,
   showAddVisitModal: state.visitReducer.showAddVisitModal,
   shouldValidateVisitModalData: state.visitReducer.shouldValidateVisitModalData,
-  newVisit: state.visitReducer.newVisit
+  newVisit: state.visitReducer.newVisit,
+  petById: state.petReducer.searchResults
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -194,8 +207,8 @@ const mapDispatchToProps = dispatch => ({
   validateVisitModalData: () => {
     dispatch(validateVisitModalDataAction());
   },
-  saveVisitAction: visit => {
-    dispatch(saveVisitAction(visit));
+  deleteVisit: visitId => {
+    dispatch(deleteVisitAction(visitId));
   }
 });
 

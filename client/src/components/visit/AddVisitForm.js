@@ -7,6 +7,33 @@ import DropdownSearch from './DropdownSearch';
 import VisitDatePicker from './VisitDatePicker';
 import VisitTimePicker from './VisitTimePicker';
 
+// if has edit, then use update mode
+const ownerPetInfoChooser = (
+  owners,
+  selectOwner,
+  selectedOwner,
+  pets,
+  selectPet,
+  selectedPet
+) => (
+  <React.Fragment>
+    <DropdownSearch
+      title={selectedOwner}
+      dropdownOptions={owners}
+      onClick={selectOwner}
+    />
+    <DropdownSearch
+      title={selectedPet}
+      dropdownOptions={pets}
+      onClick={selectPet}
+    />
+  </React.Fragment>
+);
+
+const petInfo = selectedPet => (
+  <Button variant="outline-secondary">{selectedPet}</Button>
+);
+
 const AddVisitForm = ({
   formValidated,
   owners,
@@ -26,21 +53,23 @@ const AddVisitForm = ({
   selectedEndTime,
   visitDesc,
   selectVet,
-  selectedVet
+  selectedVet,
+  visitId,
+  deleteVisit
 }) => (
   <CommonForm onSubmit={onSubmit} formValidated={formValidated}>
     <Form.Row>
       <ButtonGroup aria-label="Owner Pet Vet Info">
-        <DropdownSearch
-          title={selectedOwner}
-          dropdownOptions={owners}
-          onClick={selectOwner}
-        />
-        <DropdownSearch
-          title={selectedPet}
-          dropdownOptions={pets}
-          onClick={selectPet}
-        />
+        {visitId
+          ? petInfo(selectedPet)
+          : ownerPetInfoChooser(
+              owners,
+              selectOwner,
+              selectedOwner,
+              pets,
+              selectPet,
+              selectedPet
+            )}
         <DropdownSearch
           title={selectedVet}
           dropdownOptions={vets}
@@ -69,11 +98,19 @@ const AddVisitForm = ({
       <Form.Group>
         <Form.Label>Description</Form.Label>
         <FormControl name="desc" type="text" defaultValue={visitDesc} />
+        <FormControl hidden name="id" defaultValue={visitId} />
       </Form.Group>
     </Form.Row>
     <Form.Row>
       <Button onClick={onHideAddVisitModal}>Cancel</Button>
-      <Button type="submit">Add</Button>
+      <Button
+        variant="danger"
+        hidden={!visitId}
+        onClick={() => deleteVisit(visitId)}
+      >
+        Delete
+      </Button>
+      <Button type="submit">{visitId ? 'Update' : 'Add'}</Button>
     </Form.Row>
   </CommonForm>
 );
@@ -91,13 +128,15 @@ AddVisitForm.propTypes = {
   selectStartTime: PropTypes.func.isRequired,
   selectEndTime: PropTypes.func.isRequired,
   selectVet: PropTypes.func.isRequired,
+  deleteVisit: PropTypes.func.isRequired,
   selectedOwner: PropTypes.string,
   selectedPet: PropTypes.string,
   selectedDate: PropTypes.shape({}),
   selectedStartTime: PropTypes.shape({}),
   selectedEndTime: PropTypes.shape({}),
   selectedVet: PropTypes.string,
-  visitDesc: PropTypes.string
+  visitDesc: PropTypes.string,
+  visitId: PropTypes.number
 };
 
 export default AddVisitForm;

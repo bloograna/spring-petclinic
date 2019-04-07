@@ -83,7 +83,7 @@ const petReducer = (state = petInitialState, action) => {
       const { pet } = action;
       const { pets } = state;
       const updatedPets = stitchPetsArray(pets, [pet]);
-      return { ...state, pets: updatedPets };
+      return { ...state, pets: updatedPets, searchResults: [pet] };
     }
     case OPEN_ADD_MODAL: {
       return { ...state, showAddPetModal: true };

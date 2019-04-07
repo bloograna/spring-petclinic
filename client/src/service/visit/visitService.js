@@ -10,6 +10,10 @@ const saveVisit = visit => {
   return clinicRequest.post(endpoint, visit);
 };
 
+const deleteVisit = visitId => {
+  return clinicRequest.del(endpoint + `/${visitId}`);
+};
+
 const getVisitsByVetId = vetId => {
   return clinicRequest.get(endpoint + `/vet-id/${vetId}`);
 };
@@ -26,6 +30,7 @@ const getVisitsByDateRange = (startDate, endDate) => {
 const visitService = {
   getVisitsByPetId,
   saveVisit,
+  deleteVisit,
   getVisitsByVetId,
   getVisitsByDate,
   getVisitsByDateRange

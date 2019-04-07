@@ -35,7 +35,8 @@ const initialState = {
       desc: null
     },
     isNewVisitValid: false,
-    visitVetSearchResult: []
+    visitVetSearchResult: [],
+    visitPetSearchResult: []
   },
   message: []
 };

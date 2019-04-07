@@ -10,7 +10,8 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { concat } from 'rxjs/observable/concat';
 import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
-import { addMessage } from '../message/messageStore';
+import { addMessage } from '../message';
+import { getPetById } from '../pet';
 import visitService from '../../service/visit/visitService';
 
 const DATE_FORMAT = 'yyyy-MM-dd';
@@ -28,8 +29,11 @@ const GET_VISIT_BY_VET_ID = 'visit/GET_VISIT_BY_VET_ID';
 const GET_VISIT_BY_VET_ID_SUCCESS = 'visit/GET_VISIT_BY_VET_ID_SUCCESS';
 const GET_VISIT_BY_PET_ID = 'visit/GET_VISIT_BY_PET_ID';
 const GET_VISIT_BY_PET_ID_SUCCESS = 'visit/GET_VISIT_BY_PET_ID_SUCCESS';
+const DELETE_VISIT = 'visit/DELETE_VISIT';
+const DELETE_VISIT_SUCCESS = 'visit/DELETE_VISIT_SUCCESS';
 
 // appointments related
+const SET_VISIT_ID = 'visit/SET_VISIT_ID';
 const SET_VISIT_DATE = 'visit/SET_VISIT_DATE';
 const SET_VISIT_START_TIME = 'visit/SET_VISIT_START_TIME';
 const SET_VISIT_END_TIME = 'visit/SET_VISIT_END_TIME';
@@ -46,7 +50,7 @@ const VALIDATE_MODAL_DATA = 'visit/VALIDATE_MODAL_DATA';
 const VALIDATE_MODAL_DATA_COMPLETED = 'visit/VALIDATE_MODAL_DATA_COMPLETED';
 
 /* ----- ACTIONS ----- */
-const saveVisit = mac(SAVE_VISIT, 'visit', 'add');
+const saveVisit = mac(SAVE_VISIT, 'visit');
 const saveVisitSuccess = mac(SAVE_VISIT_SUCCESS, 'visit');
 const getVisitsByDate = mac(GET_VISITS_BY_DATE, 'date');
 const getVisitsByDateSuccess = mac(GET_VISITS_BY_DATE_SUCCESS, 'visits');
@@ -63,8 +67,11 @@ const getVisitByVetId = mac(GET_VISIT_BY_VET_ID, 'vetId');
 const getVisitByVetIdSuccess = mac(GET_VISIT_BY_VET_ID_SUCCESS, 'visits');
 const getVisitByaPetId = mac(GET_VISIT_BY_PET_ID, 'petId');
 const getVisitByPetIdSuccess = mac(GET_VISIT_BY_PET_ID_SUCCESS, 'visits');
+const deleteVisit = mac(DELETE_VISIT, 'visitId');
+const deleteVisitSuccess = mac(DELETE_VISIT_SUCCESS);
 
 // add new data
+const setVisitId = mac(SET_VISIT_ID, 'id');
 const setVisitDate = mac(SET_VISIT_DATE, 'date');
 const setVisitStartTime = mac(SET_VISIT_START_TIME, 'start');
 const setVisitEndTime = mac(SET_VISIT_END_TIME, 'end');
@@ -74,7 +81,7 @@ const setVisitDescription = mac(SET_VISIT_DESCRIPTION, 'desc');
 const clearNewVisitData = mac(CLEAR_NEW_VISIT_DATA);
 
 // render/modal
-const openAddVisitModal = mac(OPEN_ADD_MODAL);
+const openAddVisitModal = mac(OPEN_ADD_MODAL, 'visit');
 const closeAddVisitModal = mac(CLOSE_ADD_MODAL);
 const validateVisitModalData = mac(VALIDATE_MODAL_DATA);
 const validateVisitModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
@@ -151,6 +158,12 @@ const visitReducer = (state = visitInitialState, action) => {
     }
     case VALIDATE_MODAL_DATA_COMPLETED: {
       return { ...state, shouldValidateVisitModalData: false };
+    }
+    case SET_VISIT_ID: {
+      const { id } = action;
+      const newVisit = cloneDeep(state.newVisit);
+      newVisit.id = id;
+      return { ...state, newVisit };
     }
     case SET_VISIT_DATE: {
       const { date } = action;
@@ -248,6 +261,26 @@ const getVisitsByDateRangeEpic = action$ =>
     )
   );
 
+const openAddModalEpic = (action$, store) =>
+  action$.ofType(OPEN_ADD_MODAL).mergeMap(action => {
+    const { visit } = action;
+    // which means this is opened by clicking on calendae
+    if (visit) {
+      const { desc, end, petId, vetId, start, id } = visit;
+      return concat(
+        of(getPetById(petId)),
+        of(setVisitId(id)),
+        of(setVisitDate(start)),
+        of(setVisitStartTime(start)),
+        of(setVisitEndTime(end)),
+        of(setVisitPetId(petId)),
+        of(setVisitVetId(vetId)),
+        of(setVisitDescription(desc))
+      );
+    }
+    return [];
+  });
+
 const closeAddModalEpic = action$ =>
   action$.ofType(CLOSE_ADD_MODAL).mergeMap(() => of(clearNewVisitData()));
 
@@ -256,21 +289,35 @@ const validateVisitDataEpic = (action$, store) =>
     const newVisit = store.value.visitReducer.newVisit;
     const validVisit = validateVisit(newVisit);
     if (validVisit) {
-      return concat(
-        of(saveVisit(constructVisitRequestBody(newVisit))),
-        of(clearNewVisitData())
-      );
+      return of(saveVisit(constructVisitRequestBody(newVisit)));
     }
     console.log(validVisit);
     return [];
   });
 
+const deleteVisitEpic = (action$, store) =>
+  action$.ofType(DELETE_VISIT).mergeMap(action =>
+    concat(
+      of(validateVisitModalDataCompleted()),
+      of(closeAddVisitModal()),
+      fromPromise(visitService.deleteVisit(action.visitId)).map(result => {
+        if (result.error) {
+          return addMessage('An error occurred while deleting visit');
+        }
+        return deleteVisitSuccess(result.data);
+      }),
+      of(getVisitsByDate(store.value.visitReducer.newVisit.date))
+    )
+  );
+
 const visitEpics = [
   getVisitsByDateEpic,
   saveVisitEpic,
   getVisitsByDateRangeEpic,
+  openAddModalEpic,
   closeAddModalEpic,
-  validateVisitDataEpic
+  validateVisitDataEpic,
+  deleteVisitEpic
 ];
 
 export {
@@ -288,5 +335,6 @@ export {
   setVisitEndTime,
   setVisitPetId,
   setVisitVetId,
-  setVisitDescription
+  setVisitDescription,
+  deleteVisit
 };

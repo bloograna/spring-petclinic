@@ -20,6 +20,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
@@ -33,7 +36,6 @@ import java.util.Collections;
  * PetClinic Spring Boot Application.
  *
  * @author Dave Syer
- *
  */
 @SpringBootApplication
 @EnableSwagger2
@@ -50,6 +52,7 @@ public class PetClinicApplication {
 
     /**
      * swagger definition setup.
+     *
      * @return swagger docket
      */
     @Bean
@@ -73,4 +76,18 @@ public class PetClinicApplication {
             Collections.emptyList());
     }
 
+    /**
+     * CORS config to allow everything.
+     *
+     * @return WebMvcConfigurer -- this service's mvc configuration
+     */
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD");
+            }
+        };
+    }
 }

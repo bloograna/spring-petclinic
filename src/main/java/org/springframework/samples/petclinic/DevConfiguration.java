@@ -28,9 +28,4 @@ public class DevConfiguration extends WebMvcConfigurerAdapter {
             .addResourceLocations("classpath:/META-INF/resources/")
             .setCacheControl(CacheControl.noCache());
     }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
-    }
 }

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import { connect } from 'react-redux';
+import { Button } from 'react-bootstrap';
 import {
   getVisitsByDate,
   openAddVisitModal as openAddVisitModalAction,
@@ -32,6 +33,7 @@ class VisitsContainer extends Component {
     return (
       <div style={calendarContainerStyle}>
         <AddVisitModal showAddVisitModal={showAddVisitModal} />
+        <Button onClick={() => openAddVisitModal()}>Add Appointment</Button>
         <BigCalendar
           selectable
           localizer={localizer}
@@ -41,8 +43,7 @@ class VisitsContainer extends Component {
           defaultView={BigCalendar.Views.WORK_WEEK}
           scrollToTime={new Date(2019, 1, 1, 6)}
           defaultDate={new Date()}
-          onSelectEvent={event => console.log('event', event)}
-          onSelectSlot={openAddVisitModal}
+          onSelectEvent={openAddVisitModal}
           views={{ month: true, work_week: true, day: true }}
         />
       </div>
@@ -68,8 +69,8 @@ const mapDispatchToProps = dispatch => ({
   saveVisit: visit => {
     dispatch(saveVisitAction(visit));
   },
-  openAddVisitModal: () => {
-    dispatch(openAddVisitModalAction());
+  openAddVisitModal: visit => {
+    dispatch(openAddVisitModalAction(visit));
   }
 });
 

@@ -51,4 +51,5 @@ INSERT INTO visits VALUES (1, 7, 1, '2013-01-01', '15:15:00', '16:30:00', 'rabie
 INSERT INTO visits VALUES (2, 8, 2, '2013-01-02', '15:15:00', '16:30:00', 'rabies shot');
 INSERT INTO visits VALUES (3, 8, 3, '2013-01-03', '15:15:00', '16:30:00', 'neutered');
 INSERT INTO visits VALUES (4, 7, 4, '2013-01-04', '15:15:00', '16:30:00', 'spayed');
-INSERT INTO visits VALUES (5, 7, 4, '2019-04-04', '15:15:00', '16:30:00', 'spayed');
+INSERT INTO visits VALUES (5, 7, 4, '2019-04-09', '15:15:00', '16:30:00', 'spayed');
+INSERT INTO visits VALUES (6, 2, 2, '2019-04-10', '15:15:00', '16:30:00', 'spayed');
