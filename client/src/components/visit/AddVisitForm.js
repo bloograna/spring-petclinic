@@ -55,7 +55,8 @@ const AddVisitForm = ({
   selectVet,
   selectedVet,
   visitId,
-  deleteVisit
+  deleteVisit,
+  excludeTimes
 }) => (
   <CommonForm onSubmit={onSubmit} formValidated={formValidated}>
     <Form.Row>
@@ -83,12 +84,16 @@ const AddVisitForm = ({
         <VisitTimePicker
           onSelectTime={selectStartTime}
           visitTime={selectedStartTime}
+          day={selectedDate}
+          excludeTimes={excludeTimes}
           placeholderText="Select a start time"
         />
         <VisitTimePicker
           onSelectTime={selectEndTime}
           visitTime={selectedEndTime}
           minTime={selectedStartTime}
+          day={selectedDate}
+          excludeTimes={excludeTimes}
           placeholderText="Select an end time"
         />
       </Form.Group>
@@ -97,7 +102,15 @@ const AddVisitForm = ({
     <Form.Row>
       <Form.Group>
         <Form.Label>Description</Form.Label>
-        <FormControl name="desc" type="text" defaultValue={visitDesc} />
+        <FormControl
+          name="desc"
+          required
+          type="text"
+          defaultValue={visitDesc}
+        />
+        <FormControl.Feedback type="invalid">
+          You must enter a visit description
+        </FormControl.Feedback>
         <FormControl hidden name="id" defaultValue={visitId} />
       </Form.Group>
     </Form.Row>
@@ -136,7 +149,8 @@ AddVisitForm.propTypes = {
   selectedEndTime: PropTypes.shape({}),
   selectedVet: PropTypes.string,
   visitDesc: PropTypes.string,
-  visitId: PropTypes.number
+  visitId: PropTypes.number,
+  excludeTimes: PropTypes.array
 };
 
 export default AddVisitForm;

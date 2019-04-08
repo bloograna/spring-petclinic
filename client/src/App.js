@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import { connect } from 'react-redux';
 import NavigationBar from './components/navbar/NavigationBar';
 import HomeContainer from './components/home/Home.container';
 import VetsContainer from './components/vet/Vets.container';
 import OwnersContainer from './components/owner/Owners.container';
 import VisitsContainer from './components/visit/Visits.container';
-
 import { getOwnerByLastName } from './state/owner';
 import { getPetTypes } from './state/pet';
 import { getVets, getVetSpecialties } from './state/vet';
 import { getVisitsByDateRange } from './state/visit';
+import { startOfMonthString, endOfMonthString } from './util/timeUtil';
 
 class App extends Component {
   constructor(props) {
@@ -84,13 +83,10 @@ const mapDispatchToProps = dispatch => ({
     dispatch(getVetSpecialties());
   },
   getVisitsByDateRange: () => {
-    const startOfCurrentMonth = moment()
-      .startOf('month')
-      .format('YYYY-MM-DD');
-    const endOfOfCurrentMonth = moment()
-      .endOf('month')
-      .format('YYYY-MM-DD');
-    dispatch(getVisitsByDateRange(startOfCurrentMonth, endOfOfCurrentMonth));
+    const today = new Date();
+    dispatch(
+      getVisitsByDateRange(startOfMonthString(today), endOfMonthString(today))
+    );
   },
   searchByLastName: ownerId => {
     dispatch(getOwnerByLastName(ownerId));

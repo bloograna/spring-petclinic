@@ -53,3 +53,4 @@ INSERT INTO visits VALUES (3, 8, 3, '2013-01-03', '15:15:00', '16:30:00', 'neute
 INSERT INTO visits VALUES (4, 7, 4, '2013-01-04', '15:15:00', '16:30:00', 'spayed');
 INSERT INTO visits VALUES (5, 7, 4, '2019-04-09', '15:15:00', '16:30:00', 'spayed');
 INSERT INTO visits VALUES (6, 2, 2, '2019-04-10', '15:15:00', '16:30:00', 'spayed');
+INSERT INTO visits VALUES (7, 2, 2, '2019-04-10', '10:15:00', '11:30:00', 'spayed');

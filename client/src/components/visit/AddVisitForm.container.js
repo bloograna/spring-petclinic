@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { isEmpty } from 'lodash';
-
 import { setActiveOwner, clearActiveOwner } from '../../state/owner';
 import { getPetsByOwner as getPetsByOwnerAction } from '../../state/pet';
 import {
@@ -18,6 +17,7 @@ import {
 } from '../../state/visit';
 
 import AddVisitForm from './AddVisitForm';
+import { sameDay, fillTimesBetween } from '../../util/timeUtil';
 
 class AddVisitFormContainer extends Component {
   getActivePetInfo = (pets, activeOwnerId, activePetId) => {
@@ -77,10 +77,12 @@ class AddVisitFormContainer extends Component {
     setVisitVet(parseInt(vetId, 10));
   };
 
-  onAddModalSubmit = formObj => {
+  onAddModalSubmit = (formObj, event) => {
     const { validateVisitModalData, setVisitDescription } = this.props;
+    const currentTarget = event.currentTarget;
     const { desc } = formObj;
     setVisitDescription(desc);
+    currentTarget.checkValidity();
     validateVisitModalData();
   };
 
@@ -93,6 +95,26 @@ class AddVisitFormContainer extends Component {
       return pet.id === newVisit.petId ? pet.name : newVisit.petId;
     }
     return 'Pet';
+  };
+
+  getExcludedTimes = () => {
+    const { newVisit, vetVisits } = this.props;
+    const { vetId, date } = newVisit;
+    if (vetId && date && !isEmpty(vetVisits)) {
+      // sanity check
+      const rightVet = vetVisits[0].vetId === newVisit.vetId;
+
+      if (rightVet) {
+        const vetVisitDays = vetVisits
+          .filter(visit => sameDay(visit.date, date))
+          .flatMap(visit =>
+            //gahh need to interate through start to end time and block each 15 min block. rip
+            fillTimesBetween(visit.startTime, visit.endTime)
+          );
+        return vetVisitDays;
+      }
+    }
+    return [];
   };
 
   render() {
@@ -145,6 +167,7 @@ class AddVisitFormContainer extends Component {
         selectVet={this.onSelectVet}
         visitId={newVisit.id}
         deleteVisit={deleteVisit}
+        excludeTimes={this.getExcludedTimes()}
       />
     );
   }
@@ -167,6 +190,7 @@ const mapStateToProps = state => ({
   pets: state.petReducer.pets,
   vets: state.vetReducer.vets,
   visits: state.visitReducer.visits,
+  vetVisits: state.visitReducer.visitVetSearchResult,
   showAddVisitModal: state.visitReducer.showAddVisitModal,
   shouldValidateVisitModalData: state.visitReducer.shouldValidateVisitModalData,
   newVisit: state.visitReducer.newVisit,

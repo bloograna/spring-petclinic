@@ -1,10 +1,8 @@
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
-import { cloneDeep } from 'lodash';
-import moment from 'moment';
+import { cloneDeep, isEmpty } from 'lodash';
 import isDate from 'date-fns/isDate';
 import isAfter from 'date-fns/isAfter';
-import format from 'date-fns/format';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { concat } from 'rxjs/observable/concat';
@@ -12,10 +10,13 @@ import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
 import { addMessage } from '../message';
 import { getPetById } from '../pet';
+import { clearActiveOwner } from '../owner';
 import visitService from '../../service/visit/visitService';
-
-const DATE_FORMAT = 'yyyy-MM-dd';
-const TIME_FORMAT = 'HH:mm:ss';
+import {
+  formatDate,
+  getDateTimeFromStrings,
+  formatTime
+} from '../../util/timeUtil';
 
 /* ----- TYPES ----- */
 const SAVE_VISIT = 'visit/SAVE_VISIT';
@@ -65,7 +66,7 @@ const getVisitsByDateRangeSuccess = mac(
 );
 const getVisitByVetId = mac(GET_VISIT_BY_VET_ID, 'vetId');
 const getVisitByVetIdSuccess = mac(GET_VISIT_BY_VET_ID_SUCCESS, 'visits');
-const getVisitByaPetId = mac(GET_VISIT_BY_PET_ID, 'petId');
+const getVisitByPetId = mac(GET_VISIT_BY_PET_ID, 'petId');
 const getVisitByPetIdSuccess = mac(GET_VISIT_BY_PET_ID_SUCCESS, 'visits');
 const deleteVisit = mac(DELETE_VISIT, 'visitId');
 const deleteVisitSuccess = mac(DELETE_VISIT_SUCCESS);
@@ -88,16 +89,13 @@ const validateVisitModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
 /* ----- REDUCER ----- */
 
-const getDateTimeFromStrings = (dateString, startTimeString) =>
-  moment(dateString + ' ' + startTimeString).toDate();
-
 const parseVisitResponse = newVisitData =>
   newVisitData.map(visit => {
     const start = getDateTimeFromStrings(visit.date, visit.startTime);
     const end = getDateTimeFromStrings(visit.date, visit.endTime);
     return {
       id: visit.id,
-      title: 'visit with someone todo fill this in',
+      title: 'Office Visit',
       start: start,
       end: end,
       desc: visit.description,
@@ -107,18 +105,19 @@ const parseVisitResponse = newVisitData =>
   });
 
 const validateVisit = newVisit => {
-  const { vetId, petId, date, start, end } = newVisit;
+  const { vetId, petId, date, start, end, desc } = newVisit;
   const hasSubjects = vetId && petId;
   const validDates = isDate(date) && isDate(start) && isDate(end);
   const endAfterStart = isAfter(end, start);
-  return hasSubjects && validDates && endAfterStart;
+  const descValid = !isEmpty(desc ? desc.trim() : null);
+  return hasSubjects && validDates && endAfterStart && descValid;
 };
 
 const constructVisitRequestBody = newVisit => {
   const { id, vetId, petId, date, start, end, desc } = newVisit;
-  const startTime = format(start, TIME_FORMAT);
-  const endTime = format(end, TIME_FORMAT);
-  const newDate = format(date, DATE_FORMAT);
+  const startTime = formatTime(start);
+  const endTime = formatTime(end);
+  const newDate = formatDate(date);
   return {
     id,
     vetId,
@@ -130,6 +129,12 @@ const constructVisitRequestBody = newVisit => {
   };
 };
 
+const appendOrUpdateExistingVisits = (existingVisits, newVisits) => {
+  const updatedVisits = cloneDeep(existingVisits);
+  newVisits.forEach(visit => (updatedVisits[visit.id] = visit));
+  return updatedVisits;
+};
+
 const visitInitialState = initialState.visit;
 const visitReducer = (state = visitInitialState, action) => {
   switch (action.type) {
@@ -137,11 +142,16 @@ const visitReducer = (state = visitInitialState, action) => {
     case GET_VISITS_BY_DATE_RANGE_SUCCESS: {
       const { visits } = action;
       const parsedVisits = parseVisitResponse(visits);
-      return { ...state, visits: parsedVisits };
+      const updatedVisits = appendOrUpdateExistingVisits(
+        state.visits,
+        parsedVisits
+      );
+      return { ...state, visits: updatedVisits };
     }
     case GET_VISIT_BY_VET_ID_SUCCESS: {
       const { visits } = action;
-      return { ...state, visits: visits };
+      // const parsedVisits = parseVisitResponse(visits);
+      return { ...state, visitVetSearchResult: visits };
     }
     case GET_VISIT_BY_PET_ID_SUCCESS: {
       const { visits } = action;
@@ -232,7 +242,7 @@ const getVisitsByDateEpic = action$ =>
     concat(
       fromPromise(
         visitService.getVisitsByDate(
-          isDate(action.date) ? format(action.date, DATE_FORMAT) : action.date
+          isDate(action.date) ? formatDate(action.date) : action.date
         )
       ).map(result => {
         if (result.error) {
@@ -241,6 +251,20 @@ const getVisitsByDateEpic = action$ =>
           );
         }
         return getVisitsByDateSuccess(result.data);
+      })
+    )
+  );
+
+const getVisitsByVetIdEpic = action$ =>
+  action$.ofType(GET_VISIT_BY_VET_ID).mergeMap(action =>
+    concat(
+      fromPromise(visitService.getVisitsByVetId(action.vetId)).map(result => {
+        if (result.error) {
+          return addMessage(
+            'An error occurred while getting visit from server'
+          );
+        }
+        return getVisitByVetIdSuccess(result.data);
       })
     )
   );
@@ -282,7 +306,9 @@ const openAddModalEpic = (action$, store) =>
   });
 
 const closeAddModalEpic = action$ =>
-  action$.ofType(CLOSE_ADD_MODAL).mergeMap(() => of(clearNewVisitData()));
+  action$
+    .ofType(CLOSE_ADD_MODAL)
+    .mergeMap(() => concat(of(clearNewVisitData())), of(clearActiveOwner()));
 
 const validateVisitDataEpic = (action$, store) =>
   action$.ofType(VALIDATE_MODAL_DATA).mergeMap(() => {
@@ -310,14 +336,21 @@ const deleteVisitEpic = (action$, store) =>
     )
   );
 
+const setVisitVetEpic = action$ =>
+  action$
+    .ofType(SET_VISIT_VET)
+    .mergeMap(action => of(getVisitByVetId(action.vetId)));
+
 const visitEpics = [
   getVisitsByDateEpic,
   saveVisitEpic,
   getVisitsByDateRangeEpic,
+  getVisitsByVetIdEpic,
   openAddModalEpic,
   closeAddModalEpic,
   validateVisitDataEpic,
-  deleteVisitEpic
+  deleteVisitEpic,
+  setVisitVetEpic
 ];
 
 export {

@@ -40,11 +40,11 @@ class VisitsContainer extends Component {
           events={visits}
           min={minTime}
           max={maxTime}
-          defaultView={BigCalendar.Views.WORK_WEEK}
+          defaultView={BigCalendar.Views.WEEK}
           scrollToTime={new Date(2019, 1, 1, 6)}
           defaultDate={new Date()}
           onSelectEvent={openAddVisitModal}
-          views={{ month: true, work_week: true, day: true }}
+          views={{ month: true, week: true, day: true }}
         />
       </div>
     );
