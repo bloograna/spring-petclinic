@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OwnersContainer render renders successfully 1`] = `
+<div>
+  <AddOwnerModal
+    onAddButtonClick={[Function]}
+    onHideAddOwnerModal={[MockFunction]}
+    shouldValidateOwnerModalData={false}
+    showAddOwnerModal={false}
+  />
+  <AddPetModal
+    onAddButtonClick={[Function]}
+    onHideAddPetModal={[MockFunction]}
+    pet={null}
+    petTypes={Array []}
+    shouldValidatePetModalData={false}
+    showAddPetModal={false}
+  />
+  <ForwardRef(Bootstrap(Form))
+    noValidate={true}
+  >
+    <ForwardRef(Bootstrap(FormRow))>
+      <ForwardRef(Bootstrap(FormGroup))
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "defaultProps": undefined,
+            "propTypes": undefined,
+            "render": [Function],
+          }
+        }
+        controlId="lastName"
+        md="4"
+      >
+        <ForwardRef(ContextTransform)>
+          Last Name
+        </ForwardRef(ContextTransform)>
+        <ForwardRef(ContextTransform)
+          placeholder="Last Name"
+          type="text"
+        />
+        <ForwardRef(Bootstrap(Button))
+          onClick={[Function]}
+          variant="primary"
+        >
+          Search
+        </ForwardRef(Bootstrap(Button))>
+      </ForwardRef(Bootstrap(FormGroup))>
+    </ForwardRef(Bootstrap(FormRow))>
+    <ForwardRef(Bootstrap(Button))
+      onClick={[MockFunction]}
+      variant="primary"
+    >
+      Add an owner
+    </ForwardRef(Bootstrap(Button))>
+  </ForwardRef(Bootstrap(Form))>
+  <Owners
+    getPetsByOwnerId={[MockFunction]}
+    onAddPet={[MockFunction]}
+    owners={Array []}
+    pets={Array []}
+    setActivePet={[Function]}
+  />
+</div>
+`;

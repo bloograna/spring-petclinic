@@ -1,0 +1,173 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AddOwnerForm render AddOwnerForm 1`] = `
+<CommonForm
+  formValidated={true}
+  onChange={[Function]}
+  onSubmit={[MockFunction]}
+>
+  <ForwardRef(Bootstrap(FormRow))>
+    <ForwardRef(Bootstrap(FormGroup))
+      as={
+        Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "defaultProps": undefined,
+          "propTypes": undefined,
+          "render": [Function],
+        }
+      }
+      controlId="firstName"
+      md="4"
+    >
+      <ForwardRef(ContextTransform)>
+        First Name
+      </ForwardRef(ContextTransform)>
+      <ForwardRef(ContextTransform)
+        name="firstName"
+        pattern="[A-Za-z]+"
+        placeholder="First Name"
+        required={true}
+        type="text"
+      />
+      <Feedback
+        as="div"
+        type="invalid"
+      >
+        Please enter a first name, no space allowed
+      </Feedback>
+    </ForwardRef(Bootstrap(FormGroup))>
+    <ForwardRef(Bootstrap(FormGroup))
+      as={
+        Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "defaultProps": undefined,
+          "propTypes": undefined,
+          "render": [Function],
+        }
+      }
+      controlId="lastName"
+      md="4"
+    >
+      <ForwardRef(ContextTransform)>
+        Last Name
+      </ForwardRef(ContextTransform)>
+      <ForwardRef(ContextTransform)
+        name="lastName"
+        pattern="[A-Za-z]+"
+        placeholder="Last Name"
+        required={true}
+        type="text"
+      />
+      <Feedback
+        as="div"
+        type="invalid"
+      >
+        Please enter a last name, no space allowed
+      </Feedback>
+    </ForwardRef(Bootstrap(FormGroup))>
+  </ForwardRef(Bootstrap(FormRow))>
+  <ForwardRef(Bootstrap(FormRow))>
+    <ForwardRef(Bootstrap(FormGroup))
+      as={
+        Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "defaultProps": undefined,
+          "propTypes": undefined,
+          "render": [Function],
+        }
+      }
+      controlId="address"
+      md="4"
+    >
+      <ForwardRef(ContextTransform)>
+        Address
+      </ForwardRef(ContextTransform)>
+      <ForwardRef(ContextTransform)
+        name="address"
+        pattern="[A-Za-z 0-9]+"
+        placeholder=""
+        required={true}
+        type="text"
+      />
+      <Feedback
+        as="div"
+        type="invalid"
+      >
+        Please enter an address
+      </Feedback>
+    </ForwardRef(Bootstrap(FormGroup))>
+    <ForwardRef(Bootstrap(FormGroup))
+      as={
+        Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "defaultProps": undefined,
+          "propTypes": undefined,
+          "render": [Function],
+        }
+      }
+      controlId="city"
+      md="4"
+    >
+      <ForwardRef(ContextTransform)>
+        City
+      </ForwardRef(ContextTransform)>
+      <ForwardRef(ContextTransform)
+        name="city"
+        pattern="[A-Za-z ]+"
+        placeholder=""
+        required={true}
+        type="text"
+      />
+      <Feedback
+        as="div"
+        type="invalid"
+      >
+        Please enter a city
+      </Feedback>
+    </ForwardRef(Bootstrap(FormGroup))>
+  </ForwardRef(Bootstrap(FormRow))>
+  <ForwardRef(Bootstrap(FormRow))>
+    <ForwardRef(Bootstrap(FormGroup))
+      as={
+        Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "defaultProps": undefined,
+          "propTypes": undefined,
+          "render": [Function],
+        }
+      }
+      controlId="telephone"
+      md="4"
+    >
+      <ForwardRef(ContextTransform)>
+        Telephone
+      </ForwardRef(ContextTransform)>
+      <ForwardRef(ContextTransform)
+        name="telephone"
+        pattern="[0-9]{10}"
+        placeholder=""
+        required={true}
+        type="tel"
+      />
+      <Feedback
+        as="div"
+        type="invalid"
+      >
+        Please enter a valid pohne number (10 digits)
+      </Feedback>
+    </ForwardRef(Bootstrap(FormGroup))>
+  </ForwardRef(Bootstrap(FormRow))>
+  <ForwardRef(Bootstrap(FormRow))>
+    <ForwardRef(Bootstrap(Button))
+      onClick={[MockFunction]}
+    >
+      Cancel
+    </ForwardRef(Bootstrap(Button))>
+    <ForwardRef(Bootstrap(Button))
+      type="submit"
+    >
+      Add
+    </ForwardRef(Bootstrap(Button))>
+  </ForwardRef(Bootstrap(FormRow))>
+</CommonForm>
+`;
