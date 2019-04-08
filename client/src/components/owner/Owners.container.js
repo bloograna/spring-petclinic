@@ -24,20 +24,6 @@ import AddOwnerModal from './AddOwnerModal';
 import AddPetModal from '../pet/AddPetModal';
 
 class OwnersContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      newPet: {
-        petName: '',
-        petBirthdate: '',
-        petType: ''
-      },
-      validatedNewPet: false,
-      showAddPetModal: false,
-      formRef: null
-    };
-  }
-
   onSearch = event => {
     const { searchByLastName } = this.props;
     const form = event.currentTarget.form[0];
@@ -222,6 +208,7 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
+export { OwnersContainer as TestOwnersContainer };
 export default connect(
   mapStateToProps,
   mapDispatchToProps
