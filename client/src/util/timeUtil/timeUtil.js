@@ -7,6 +7,10 @@ import isSameDay from 'date-fns/isSameDay';
 import endOfMonth from 'date-fns/endOfMonth';
 import startOfMonth from 'date-fns/startOfMonth';
 import addMinutes from 'date-fns/addMinutes';
+import compareAsc from 'date-fns/compareAsc';
+import setHours from 'date-fns/setHours';
+import setMinutes from 'date-fns/setMinutes';
+import { isEmpty } from 'lodash';
 
 const DATE_FORMAT = 'yyyy-MM-dd';
 const TIME_FORMAT = 'HH:mm:ss';
@@ -36,8 +40,12 @@ const startOfMonthString = date => format(startOfMonth(date), DATE_FORMAT);
 const endOfMonthString = date => format(endOfMonth(date), DATE_FORMAT);
 
 const fillTimesBetween = (startTime, endTime, incrementInMin = 15) => {
-  let start = parse(startTime, TIME_FORMAT, new Date());
-  const end = parse(endTime, TIME_FORMAT, new Date());
+  let start = isDate(startTime)
+    ? startTime
+    : parse(startTime, TIME_FORMAT, new Date());
+  const end = isDate(endTime)
+    ? endTime
+    : parse(endTime, TIME_FORMAT, new Date());
 
   const times = [];
   while (isBefore(start, end)) {
@@ -47,6 +55,20 @@ const fillTimesBetween = (startTime, endTime, incrementInMin = 15) => {
   return times;
 };
 
+// assume times is sorted
+const earliestBefore = (timeToCompare, times) => {
+  const afters = times.filter(time => isAfter(time, timeToCompare));
+  return isEmpty(afters) ? null : afters[0];
+};
+
+const sortAsc = dates => dates.sort(compareAsc);
+
+const setTime = dateWithTime =>
+  setMinutes(
+    setHours(new Date(), dateWithTime.getHours()),
+    dateWithTime.getMinutes()
+  );
+
 export {
   formatDate,
   formatTime,
@@ -54,5 +76,8 @@ export {
   sameDay,
   startOfMonthString,
   endOfMonthString,
-  fillTimesBetween
+  fillTimesBetween,
+  sortAsc,
+  earliestBefore,
+  setTime
 };

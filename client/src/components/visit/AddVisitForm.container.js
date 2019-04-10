@@ -17,21 +17,20 @@ import {
 } from '../../state/visit';
 
 import AddVisitForm from './AddVisitForm';
-import { sameDay, fillTimesBetween } from '../../util/timeUtil';
 
 class AddVisitFormContainer extends Component {
   getActivePetInfo = (pets, activeOwnerId, activePetId) => {
     const pet = this.formatPetData(pets, activeOwnerId).filter(
       pet => pet.id === activePetId
-    )[0].name;
-    return pet;
+    );
+    return isEmpty(pet) ? null : pet[0].name;
   };
 
   getActivePersonInfo = (people, activePerson) => {
     const person = this.formatPersonData(
       people.filter(person => person.id === activePerson)
-    )[0].name;
-    return person;
+    );
+    return isEmpty(person) ? null : person[0].name;
   };
 
   formatPetData = (petsByOwner, activeOwner) => {
@@ -97,26 +96,6 @@ class AddVisitFormContainer extends Component {
     return 'Pet';
   };
 
-  getExcludedTimes = () => {
-    const { newVisit, vetVisits } = this.props;
-    const { vetId, date } = newVisit;
-    if (vetId && date && !isEmpty(vetVisits)) {
-      // sanity check
-      const rightVet = vetVisits[0].vetId === newVisit.vetId;
-
-      if (rightVet) {
-        const vetVisitDays = vetVisits
-          .filter(visit => sameDay(visit.date, date))
-          .flatMap(visit =>
-            //gahh need to interate through start to end time and block each 15 min block. rip
-            fillTimesBetween(visit.startTime, visit.endTime)
-          );
-        return vetVisitDays;
-      }
-    }
-    return [];
-  };
-
   render() {
     const {
       shouldValidateVisitModalData,
@@ -167,7 +146,8 @@ class AddVisitFormContainer extends Component {
         selectVet={this.onSelectVet}
         visitId={newVisit.id}
         deleteVisit={deleteVisit}
-        excludeTimes={this.getExcludedTimes()}
+        excludedStartTimes={newVisit.excludedStartTimes}
+        maxEndTime={newVisit.maxEndTime}
       />
     );
   }
@@ -190,7 +170,6 @@ const mapStateToProps = state => ({
   pets: state.petReducer.pets,
   vets: state.vetReducer.vets,
   visits: state.visitReducer.visits,
-  vetVisits: state.visitReducer.visitVetSearchResult,
   showAddVisitModal: state.visitReducer.showAddVisitModal,
   shouldValidateVisitModalData: state.visitReducer.shouldValidateVisitModalData,
   newVisit: state.visitReducer.newVisit,

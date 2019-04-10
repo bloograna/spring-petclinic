@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, ButtonGroup, Button, FormControl } from 'react-bootstrap';
+import setMinutes from 'date-fns/setMinutes';
+import setHours from 'date-fns/setHours';
+import addMinutes from 'date-fns/addMinutes';
 
 import CommonForm from '../common/CommonForm';
 import DropdownSearch from './DropdownSearch';
@@ -56,7 +59,8 @@ const AddVisitForm = ({
   selectedVet,
   visitId,
   deleteVisit,
-  excludeTimes
+  excludedStartTimes,
+  maxEndTime
 }) => (
   <CommonForm onSubmit={onSubmit} formValidated={formValidated}>
     <Form.Row>
@@ -84,16 +88,17 @@ const AddVisitForm = ({
         <VisitTimePicker
           onSelectTime={selectStartTime}
           visitTime={selectedStartTime}
-          day={selectedDate}
-          excludeTimes={excludeTimes}
+          disabled={!selectedDate}
+          maxTime={setHours(setMinutes(new Date(), 45), 16)}
+          excludeTimes={excludedStartTimes}
           placeholderText="Select a start time"
         />
         <VisitTimePicker
           onSelectTime={selectEndTime}
           visitTime={selectedEndTime}
-          minTime={selectedStartTime}
-          day={selectedDate}
-          excludeTimes={excludeTimes}
+          minTime={addMinutes(selectedStartTime, 15)}
+          disabled={!selectedStartTime}
+          maxTime={maxEndTime}
           placeholderText="Select an end time"
         />
       </Form.Group>
@@ -142,6 +147,7 @@ AddVisitForm.propTypes = {
   selectEndTime: PropTypes.func.isRequired,
   selectVet: PropTypes.func.isRequired,
   deleteVisit: PropTypes.func.isRequired,
+  excludedStartTimes: PropTypes.array.isRequired,
   selectedOwner: PropTypes.string,
   selectedPet: PropTypes.string,
   selectedDate: PropTypes.shape({}),
@@ -150,7 +156,7 @@ AddVisitForm.propTypes = {
   selectedVet: PropTypes.string,
   visitDesc: PropTypes.string,
   visitId: PropTypes.number,
-  excludeTimes: PropTypes.array
+  maxEndTime: PropTypes.shape({})
 };
 
 export default AddVisitForm;

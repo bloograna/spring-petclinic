@@ -8,39 +8,43 @@ const VisitTimePicker = ({
   visitTime,
   onSelectTime,
   placeholderText,
-  day,
+  disabled,
   minTime,
   maxTime,
   excludeTimes
 }) => (
   <DatePicker
-    disabled={!!!day}
+    disabled={disabled}
     selected={visitTime}
     onChange={onSelectTime}
     showTimeSelect
     showTimeSelectOnly
     timeIntervals={15}
     excludeTimes={excludeTimes}
-    minTime={minTime ? minTime : setHours(setMinutes(day, 0), 8)}
-    maxTime={maxTime ? maxTime : setHours(setMinutes(day, 0), 17)}
+    minTime={minTime ? minTime : setHours(setMinutes(new Date(), 0), 8)}
+    maxTime={maxTime ? maxTime : setHours(setMinutes(new Date(), 0), 17)}
     timeCaption="Time"
     dateFormat="h:mm aa"
-    placeholderText={day ? placeholderText : 'Please select a day first'}
+    placeholderText={
+      !disabled ? placeholderText : 'Please select a day/start time first'
+    }
   />
 );
 
 VisitTimePicker.propTypes = {
   onSelectTime: PropTypes.func.isRequired,
   placeholderText: PropTypes.string.isRequired,
-  excludeTimes: PropTypes.array.isRequired,
-  day: PropTypes.shape({}),
+
+  disabled: PropTypes.bool.isRequired,
   minTime: PropTypes.shape({}),
   maxTime: PropTypes.shape({}),
-  visitTime: PropTypes.shape({})
+  visitTime: PropTypes.shape({}),
+  excludeTimes: PropTypes.array
 };
 
 VisitTimePicker.defaultProps = {
-  visitTime: null
+  visitTime: null,
+  excludeTimes: []
 };
 
 export default VisitTimePicker;

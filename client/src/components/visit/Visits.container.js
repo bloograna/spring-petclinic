@@ -33,17 +33,19 @@ class VisitsContainer extends Component {
     return (
       <div style={calendarContainerStyle}>
         <AddVisitModal showAddVisitModal={showAddVisitModal} />
-        <Button onClick={() => openAddVisitModal()}>Add Appointment</Button>
         <BigCalendar
           selectable
           localizer={localizer}
           events={visits}
+          step={15}
+          timeslots={8}
           min={minTime}
           max={maxTime}
           defaultView={BigCalendar.Views.WEEK}
           scrollToTime={new Date(2019, 1, 1, 6)}
           defaultDate={new Date()}
-          onSelectEvent={openAddVisitModal}
+          onDoubleClickEvent={openAddVisitModal}
+          onSelectSlot={openAddVisitModal}
           views={{ month: true, week: true, day: true }}
         />
       </div>

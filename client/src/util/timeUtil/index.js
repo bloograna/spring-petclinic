@@ -5,7 +5,10 @@ import {
   sameDay,
   startOfMonthString,
   endOfMonthString,
-  fillTimesBetween
+  fillTimesBetween,
+  sortAsc,
+  earliestBefore,
+  setTime
 } from './timeUtil';
 
 export {
@@ -15,5 +18,8 @@ export {
   sameDay,
   startOfMonthString,
   endOfMonthString,
-  fillTimesBetween
+  fillTimesBetween,
+  sortAsc,
+  earliestBefore,
+  setTime
 };
