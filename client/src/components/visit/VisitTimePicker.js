@@ -17,6 +17,7 @@ const VisitTimePicker = ({
     disabled={disabled}
     selected={visitTime}
     onChange={onSelectTime}
+    isClearable
     showTimeSelect
     showTimeSelectOnly
     timeIntervals={15}
@@ -34,7 +35,6 @@ const VisitTimePicker = ({
 VisitTimePicker.propTypes = {
   onSelectTime: PropTypes.func.isRequired,
   placeholderText: PropTypes.string.isRequired,
-
   disabled: PropTypes.bool.isRequired,
   minTime: PropTypes.shape({}),
   maxTime: PropTypes.shape({}),

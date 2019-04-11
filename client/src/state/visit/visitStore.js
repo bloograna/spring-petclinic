@@ -3,6 +3,7 @@ import 'rxjs/add/operator/map';
 import { cloneDeep, isEmpty } from 'lodash';
 import isDate from 'date-fns/isDate';
 import isAfter from 'date-fns/isAfter';
+import isBefore from 'date-fns/isBefore';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { concat } from 'rxjs/observable/concat';
@@ -20,7 +21,7 @@ import {
   fillTimesBetween,
   sortAsc,
   earliestBefore,
-  setTime
+  setTimeForDate
 } from '../../util/timeUtil';
 
 /* ----- TYPES ----- */
@@ -48,6 +49,7 @@ const SET_VISIT_VET = 'visit/SET_VISIT_VET';
 const SET_VISIT_DESCRIPTION = 'visit/SET_VISIT_DESCRIPTION';
 const SET_VISIT_EXCLUDED_START_TIMES = 'visit/SET_VISIT_EXCLUDED_START_TIMES';
 const SET_VISIT_EXCLUDED_END_TIMES = 'visit/SET_VISIT_EXCLUDED_END_TIMES';
+const SET_VISIT_EXCLUDED_VETS = 'visit/SET_VISIT_EXCLUDED_VETS';
 const CLEAR_NEW_VISIT_DATA = 'visit/CLEAR_NEW_VISIT_DATA';
 
 // render/modal
@@ -71,6 +73,7 @@ const getVisitsByDateRangeSuccess = mac(
   GET_VISITS_BY_DATE_RANGE_SUCCESS,
   'visits'
 );
+
 const getVisitByVetId = mac(GET_VISIT_BY_VET_ID, 'vetId');
 const getVisitByVetIdSuccess = mac(GET_VISIT_BY_VET_ID_SUCCESS, 'visits');
 const getVisitByPetId = mac(GET_VISIT_BY_PET_ID, 'petId');
@@ -88,6 +91,7 @@ const setVisitVetId = mac(SET_VISIT_VET, 'vetId');
 const setVisitDescription = mac(SET_VISIT_DESCRIPTION, 'desc');
 const setVisitExcludedStartTimes = mac(SET_VISIT_EXCLUDED_START_TIMES, 'times');
 const setVisitExcludedEndTimes = mac(SET_VISIT_EXCLUDED_END_TIMES, 'times');
+const setVisitExcludedVets = mac(SET_VISIT_EXCLUDED_VETS, 'vets');
 const clearNewVisitData = mac(CLEAR_NEW_VISIT_DATA);
 
 // render/modal
@@ -138,8 +142,8 @@ const constructVisitRequestBody = newVisit => {
 };
 
 const appendOrUpdateExistingVisits = (existingVisits, newVisits) => {
-  const updatedVisits = cloneDeep(existingVisits);
-  newVisits.forEach(visit => (updatedVisits[visit.id] = visit));
+  let updatedVisits = cloneDeep(existingVisits);
+  newVisits.forEach(visit => updatedVisits.set(visit.id, visit));
   return updatedVisits;
 };
 
@@ -148,7 +152,7 @@ const filterStartTimes = state => {
   const { vetId, date, id } = newVisit;
   if (vetId) {
     const vetVisitDays = sortAsc(
-      visits
+      Array.from(visits.values())
         .filter(visit =>
           visit
             ? sameDay(visit.start, date) &&
@@ -157,14 +161,36 @@ const filterStartTimes = state => {
             : false
         )
         .flatMap(visit =>
-          fillTimesBetween(setTime(visit.start), setTime(visit.end))
+          fillTimesBetween(
+            setTimeForDate(visit.start),
+            setTimeForDate(visit.end)
+          )
         )
     );
-
-    console.log(vetVisitDays);
     return vetVisitDays;
   }
   return [];
+};
+
+const filterVetsByStartEndTime = visitState => {
+  const { newVisit, visits } = visitState;
+  const { date, start, end } = newVisit;
+  // if both are null in the case of clear then no filters
+  if (!start || !end) {
+    return [];
+  }
+  const startTime = setTimeForDate(start, date);
+  const endTime = setTimeForDate(end, date);
+
+  // which visits are happening between those times?
+  const conflictVets = Array.from(visits.values())
+    .filter(visit => {
+      const visitEndAfterApptStart = isAfter(visit.end, startTime);
+      const visitStartBeforeApptEnd = isBefore(visit.start, endTime);
+      return visitEndAfterApptStart && visitStartBeforeApptEnd;
+    })
+    .map(visit => visit.vetId);
+  return conflictVets;
 };
 
 /* ----- REDUCER ----- */
@@ -181,17 +207,10 @@ const visitReducer = (state = visitInitialState, action) => {
         state.visits,
         parsedVisits
       );
-      return { ...state, visits: updatedVisits };
+      return Object.assign({}, state, {
+        visits: updatedVisits
+      });
     }
-    // case GET_VISIT_BY_VET_ID_SUCCESS: {
-    //   const { visits } = action;
-    //   // const parsedVisits = parseVisitResponse(visits);
-    //   return { ...state, visitVetSearchResult: visits };
-    // }
-    // case GET_VISIT_BY_PET_ID_SUCCESS: {
-    //   const { visits } = action;
-    //   return { ...state, visits: visits };
-    // }
     case OPEN_ADD_MODAL: {
       return { ...state, showAddVisitModal: true };
     }
@@ -256,6 +275,12 @@ const visitReducer = (state = visitInitialState, action) => {
       const { times } = action;
       const newVisit = cloneDeep(state.newVisit);
       newVisit.maxEndTime = times;
+      return { ...state, newVisit };
+    }
+    case SET_VISIT_EXCLUDED_VETS: {
+      const { vets } = action;
+      const newVisit = cloneDeep(state.newVisit);
+      newVisit.excludedVets = vets;
       return { ...state, newVisit };
     }
     case CLEAR_NEW_VISIT_DATA: {
@@ -351,8 +376,8 @@ const openAddModalEpic = (action$, store) =>
     } else {
       const { start, end } = visit;
       // normalize data
-      const startTime = setTime(start);
-      const endTime = setTime(end);
+      const startTime = setTimeForDate(start);
+      const endTime = setTimeForDate(end);
       return concat(
         of(setVisitDate(start)),
         of(setVisitStartTime(startTime)),
@@ -425,6 +450,18 @@ const setVisitStartTimeEpic = (action$, store) =>
     );
   });
 
+const setVisitEndTimeEpic = (action$, store) =>
+  action$.ofType(SET_VISIT_END_TIME).mergeMap(() => {
+    const visitStore = store.value.visitReducer;
+    const { id } = visitStore.newVisit;
+    // only filter vets if its a new appt
+    if (!id) {
+      const excludedVets = filterVetsByStartEndTime(visitStore);
+      return of(setVisitExcludedVets(excludedVets));
+    }
+    return [];
+  });
+
 const visitEpics = [
   getVisitsByDateEpic,
   saveVisitEpic,
@@ -436,7 +473,8 @@ const visitEpics = [
   deleteVisitEpic,
   setVisitVetEpic,
   setVisitDateEpic,
-  setVisitStartTimeEpic
+  setVisitStartTimeEpic,
+  setVisitEndTimeEpic
 ];
 
 export {

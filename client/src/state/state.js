@@ -17,16 +17,14 @@ const initialState = {
     shouldValidateVetModalData: false
   },
   owner: {
-    // TODO USE MAP
-    owners: [],
+    owners: new Map(),
     searchResults: [],
     showAddOwnerModal: false,
     shouldValidateOwnerModalData: false,
     activeOwner: null
   },
   visit: {
-    // TODO USE MAP.
-    visits: [],
+    visits: new Map(),
     showAddVisitModal: false,
     shouldValidateVisitModalData: false,
     newVisit: {
@@ -38,7 +36,8 @@ const initialState = {
       vetId: null,
       desc: null,
       excludedStartTimes: [],
-      maxEndTime: null
+      maxEndTime: null,
+      excludedVets: []
     },
     isNewVisitValid: false
   },

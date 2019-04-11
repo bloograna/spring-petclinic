@@ -63,11 +63,17 @@ const earliestBefore = (timeToCompare, times) => {
 
 const sortAsc = dates => dates.sort(compareAsc);
 
-const setTime = dateWithTime =>
+const setTimeForDate = (dateWithTime, date = new Date()) =>
   setMinutes(
-    setHours(new Date(), dateWithTime.getHours()),
+    setHours(date, dateWithTime.getHours()),
     dateWithTime.getMinutes()
   );
+
+const isBetween = (start, end, dateToCheck) => {
+  const isNotBeforeStart = !isBefore(dateToCheck, start);
+  const isNotAfter = !isAfter(dateToCheck, end);
+  return isNotBeforeStart && isNotAfter;
+};
 
 export {
   formatDate,
@@ -79,5 +85,6 @@ export {
   fillTimesBetween,
   sortAsc,
   earliestBefore,
-  setTime
+  setTimeForDate,
+  isBetween
 };

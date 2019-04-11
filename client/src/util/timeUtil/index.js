@@ -8,7 +8,8 @@ import {
   fillTimesBetween,
   sortAsc,
   earliestBefore,
-  setTime
+  setTimeForDate,
+  isBetween
 } from './timeUtil';
 
 export {
@@ -21,5 +22,6 @@ export {
   fillTimesBetween,
   sortAsc,
   earliestBefore,
-  setTime
+  setTimeForDate,
+  isBetween
 };

@@ -59,7 +59,7 @@ VisitsContainer.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  visits: state.visitReducer.visits,
+  visits: [...state.visitReducer.visits.values()],
   showAddVisitModal: state.visitReducer.showAddVisitModal
 });
 

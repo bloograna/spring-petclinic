@@ -64,6 +64,11 @@ class AddVisitFormContainer extends Component {
     getPetsByOwner(ownerId);
   };
 
+  filterVets = () => {
+    const { newVisit, vets } = this.props;
+    return vets.filter(vet => !newVisit.excludedVets.includes(vet.id));
+  };
+
   onSelectPet = event => {
     const { setVisitPet } = this.props;
     const petId = event.currentTarget.getAttribute('name');
@@ -116,7 +121,7 @@ class AddVisitFormContainer extends Component {
       <AddVisitForm
         formValidated={shouldValidateVisitModalData}
         owners={this.formatPersonData(owners)}
-        vets={this.formatPersonData(vets)}
+        vets={this.formatPersonData(this.filterVets())}
         pets={activeOwner ? this.formatPetData(pets, activeOwner) : []}
         onSubmit={this.onAddModalSubmit}
         onHideAddVisitModal={onHideAddVisitModal}
@@ -165,11 +170,11 @@ AddVisitFormContainer.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  owners: state.ownerReducer.owners,
+  owners: [...state.ownerReducer.owners.values()],
   activeOwner: state.ownerReducer.activeOwner,
   pets: state.petReducer.pets,
   vets: state.vetReducer.vets,
-  visits: state.visitReducer.visits,
+  visits: [...state.visitReducer.visits.values()],
   showAddVisitModal: state.visitReducer.showAddVisitModal,
   shouldValidateVisitModalData: state.visitReducer.shouldValidateVisitModalData,
   newVisit: state.visitReducer.newVisit,

@@ -43,7 +43,7 @@ const clearActiveOwner = mac(CLEAR_ACTIVE_OWNER);
 /* ----- REDUCER HELPER FUNCTIONS ----- */
 const stitchOwnersArray = (existingOwners, newOwners) => {
   const updatedOwners = cloneDeep(existingOwners);
-  newOwners.forEach(owner => (updatedOwners[owner.id] = owner));
+  newOwners.forEach(owner => updatedOwners.set(owner.id, owner));
   return updatedOwners;
 };
 
