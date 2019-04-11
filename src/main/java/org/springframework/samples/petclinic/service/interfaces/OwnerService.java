@@ -9,6 +9,6 @@ public interface OwnerService {
 
     ResponseData<Collection<OwnerDTO>> findOwnerByLastName(String lastName);
 
-    ResponseData<String> saveOwner(OwnerDTO ownerDTO);
+    ResponseData<OwnerDTO> saveOwner(OwnerDTO ownerDTO);
 
 }

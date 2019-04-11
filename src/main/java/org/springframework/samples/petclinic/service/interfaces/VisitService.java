@@ -6,7 +6,7 @@ import org.springframework.samples.petclinic.dtos.VisitDTO;
 import java.util.Collection;
 
 public interface VisitService {
-    ResponseData<String> saveVisit(VisitDTO visitDTO);
+    ResponseData<VisitDTO> saveVisit(VisitDTO visitDTO);
 
     ResponseData<String> deleteVisit(int visitId);
 

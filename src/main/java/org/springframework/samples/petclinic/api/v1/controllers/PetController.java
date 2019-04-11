@@ -44,7 +44,7 @@ class PetController {
     }
 
     @PostMapping
-    public ResponseData<String> savePet(@RequestBody @NonNull PetDTO pet) {
+    public ResponseData<PetDTO> savePet(@RequestBody @NonNull PetDTO pet) {
         return petService.savePet(pet);
     }
 
@@ -55,8 +55,7 @@ class PetController {
 
     // in an ideal world i would have done something like /v1/pets?ownerId=2&type=1
     // to do a more refined db look up by criteria, but then that means I gotta write
-    // custom DALs and DAOs which I'm not an expert at so screw it this will do for now
-    // even though its very confusing syntactically.
+    // DALs and DAOs which I'm not an expert at so screw it this will do for now
     @GetMapping("/owner/{ownerId}")
     public  ResponseData<Collection<PetDTO>> getPetByOwnerId(@PathVariable int ownerId) {
         return petService.getPetsByOwnerId(ownerId);

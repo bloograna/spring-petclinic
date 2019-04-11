@@ -38,7 +38,7 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public ResponseData<String> saveVisit(VisitDTO visitDTO) {
+    public ResponseData<VisitDTO> saveVisit(VisitDTO visitDTO) {
         try {
             if (visitDTO.getPetId() != null) {
                 Pet pet = pets.findById(visitDTO.getPetId());
@@ -49,7 +49,7 @@ public class VisitServiceImpl implements VisitService {
                 } else {
                     throw new InvalidIdException("Invalid pet id, this pet is not registered yet");
                 }
-                return new ResponseData<>("ok");
+                return new ResponseData<>(visitDTO);
             } else {
                 throw new InvalidRequestBodyException("Received bad request body for visit, missing pet id");
             }

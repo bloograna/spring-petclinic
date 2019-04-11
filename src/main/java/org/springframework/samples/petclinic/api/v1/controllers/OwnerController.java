@@ -39,7 +39,7 @@ class OwnerController {
     }
 
     @PostMapping
-    public ResponseData<String> saveOwner(@RequestBody @NonNull OwnerDTO ownerDTO) {
+    public ResponseData<OwnerDTO> saveOwner(@RequestBody @NonNull OwnerDTO ownerDTO) {
         return ownerService.saveOwner(ownerDTO);
     }
 

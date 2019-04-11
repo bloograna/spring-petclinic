@@ -81,46 +81,4 @@ describe('timeUtil', () => {
     const result = fillTimesBetween(startString, endString);
     expect(result.length).toEqual(expectedResult);
   });
-
-  describe('isBetween', () => {
-    test('should return true for 3:15 is between 3 and 3:30', () => {
-      const timeInBetween = new Date('2019-04-11T03:15:00');
-      const start = new Date('2019-04-11T03:00:00');
-      const end = new Date('2019-04-11T03:30:00');
-      const result = isBetween(start, end, timeInBetween);
-      expect(result).toEqual(true);
-    });
-
-    test('should return true for 3:00 is between 3:00 and 3:30', () => {
-      const timeInBetween = new Date('2019-04-11 03:00:00');
-      const start = new Date('2019-04-11 03:00:00');
-      const end = new Date('2019-04-11 03:30:00');
-      const result = isBetween(start, end, timeInBetween);
-      expect(result).toEqual(true);
-    });
-
-    test('should return true for 3:30 is between 3:00 and 3:30', () => {
-      const timeInBetween = new Date('2019-04-11 03:30:00');
-      const start = new Date('2019-04-11 03:00:00');
-      const end = new Date('2019-04-11 03:30:00');
-      const result = isBetween(start, end, timeInBetween);
-      expect(result).toEqual(true);
-    });
-
-    test('should return false for 2:30 is between 3:00 and 3:30', () => {
-      const timeInBetween = new Date('2019-04-11 02:30:00');
-      const start = new Date('2019-04-11 03:00:00');
-      const end = new Date('2019-04-11 03:30:00');
-      const result = isBetween(start, end, timeInBetween);
-      expect(result).toEqual(false);
-    });
-
-    test('should return false for 4:00 is between 3:00 and 3:30', () => {
-      const timeInBetween = new Date('2019-04-11 04:00:00');
-      const start = new Date('2019-04-11 03:00:00');
-      const end = new Date('2019-04-11 03:30:00');
-      const result = isBetween(start, end, timeInBetween);
-      expect(result).toEqual(false);
-    });
-  });
 });

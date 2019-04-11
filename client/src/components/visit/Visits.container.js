@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
+import isAfter from 'date-fns/isAfter';
 import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
 import {
@@ -27,6 +28,13 @@ const calendarContainerStyle = {
 };
 
 class VisitsContainer extends Component {
+  filterVisitBlock = event => {
+    const { openAddVisitModal } = this.props;
+    if (isAfter(event.start, new Date())) {
+      openAddVisitModal(event);
+    }
+  };
+
   render() {
     const { visits, showAddVisitModal, openAddVisitModal } = this.props;
 
@@ -45,7 +53,7 @@ class VisitsContainer extends Component {
           scrollToTime={new Date(2019, 1, 1, 6)}
           defaultDate={new Date()}
           onDoubleClickEvent={openAddVisitModal}
-          onSelectSlot={openAddVisitModal}
+          onSelectSlot={this.filterVisitBlock}
           views={{ month: true, week: true, day: true }}
         />
       </div>

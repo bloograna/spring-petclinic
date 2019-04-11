@@ -69,12 +69,6 @@ const setTimeForDate = (dateWithTime, date = new Date()) =>
     dateWithTime.getMinutes()
   );
 
-const isBetween = (start, end, dateToCheck) => {
-  const isNotBeforeStart = !isBefore(dateToCheck, start);
-  const isNotAfter = !isAfter(dateToCheck, end);
-  return isNotBeforeStart && isNotAfter;
-};
-
 export {
   formatDate,
   formatTime,
@@ -85,6 +79,5 @@ export {
   fillTimesBetween,
   sortAsc,
   earliestBefore,
-  setTimeForDate,
-  isBetween
+  setTimeForDate
 };

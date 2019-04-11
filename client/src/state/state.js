@@ -10,8 +10,7 @@ const initialState = {
     activePet: null
   },
   vet: {
-    // TODO USE MAP
-    vets: [],
+    vets: new Map(),
     specialties: [],
     showAddVetModal: false,
     shouldValidateVetModalData: false

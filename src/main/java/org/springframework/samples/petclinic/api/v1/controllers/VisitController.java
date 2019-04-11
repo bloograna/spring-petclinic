@@ -44,7 +44,7 @@ class VisitController {
     }
 
     @PostMapping
-    public ResponseData<String> saveVisit(@RequestBody @NonNull VisitDTO visit) {
+    public ResponseData<VisitDTO> saveVisit(@RequestBody @NonNull VisitDTO visit) {
         return visitService.saveVisit(visit);
     }
 
@@ -53,7 +53,7 @@ class VisitController {
         return visitService.deleteVisit(visitId);
     }
 
-    // again.. in an ideal world I would do /v1/visits?petId=1&vetId=2&dateString=2019-03-04
+    // in an ideal world I would do /v1/visits?petId=1&vetId=2&dateString=2019-03-04
     // to handle the 3 different gets, and visitService would have DAO that construct the
     // sql statement from a db with something like
     // PreparedStatement = SELECT * FROM VISITS WHERE PET_ID = ? AND VET_ID = ? AND SOMETHING ELSE ORDER BY DATE;

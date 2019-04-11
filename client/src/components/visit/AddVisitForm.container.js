@@ -173,7 +173,7 @@ const mapStateToProps = state => ({
   owners: [...state.ownerReducer.owners.values()],
   activeOwner: state.ownerReducer.activeOwner,
   pets: state.petReducer.pets,
-  vets: state.vetReducer.vets,
+  vets: [...state.vetReducer.vets.values()],
   visits: [...state.visitReducer.visits.values()],
   showAddVisitModal: state.visitReducer.showAddVisitModal,
   shouldValidateVisitModalData: state.visitReducer.shouldValidateVisitModalData,

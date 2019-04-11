@@ -14,9 +14,9 @@ public interface VetService {
 
     ResponseData<Vet> getVetById(int vetId);
 
-    ResponseData<String> saveVet(Vet vet);
+    ResponseData<Vet> saveVet(Vet vet);
 
     ResponseData<Set<Specialty>> getSpecialties();
 
-    ResponseData<String> addSpecialtyToVet(int vetId, Collection<Specialty> specialty);
+    ResponseData<Vet> addSpecialtyToVet(int vetId, Collection<Specialty> specialty);
 }

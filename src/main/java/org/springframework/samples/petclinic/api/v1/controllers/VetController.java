@@ -23,7 +23,6 @@ import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.dtos.ResponseData;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.interfaces.VetService;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -49,7 +48,7 @@ class VetController {
     }
 
     @PostMapping
-    public ResponseData<String> saveVet(@RequestBody @Valid Vet vet) {
+    public ResponseData<Vet> saveVet(@RequestBody @Valid Vet vet) {
         return vetService.saveVet(vet);
     }
 
@@ -69,7 +68,7 @@ class VetController {
     }
 
     @PostMapping("/{vetId}/specialty")
-    public ResponseData<String> addSpecialty(@PathVariable int vetId, @RequestBody @Valid Collection<Specialty> specialty) {
+    public ResponseData<Vet> addSpecialty(@PathVariable int vetId, @RequestBody @Valid Collection<Specialty> specialty) {
         return vetService.addSpecialtyToVet(vetId, specialty);
     }
 

@@ -31,14 +31,14 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public ResponseData<String> saveOwner(OwnerDTO ownerDTO) {
+    public ResponseData<OwnerDTO> saveOwner(OwnerDTO ownerDTO) {
         try {
             Owner owner = modelMapper.map(ownerDTO, Owner.class);
             owners.save(owner);
         } catch (ConstraintViolationException exception) {
             throw new InvalidRequestBodyException("Received bad request body for owner: " + exception.getConstraintViolations());
         }
-        return new ResponseData<>("ok");
+        return new ResponseData<>(ownerDTO);
     }
 
     private Collection<OwnerDTO> convertToOwnerDTO(Collection<Owner> owners) {

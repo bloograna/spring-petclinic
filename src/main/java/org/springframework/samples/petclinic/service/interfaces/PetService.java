@@ -7,7 +7,7 @@ import org.springframework.samples.petclinic.dtos.ResponseData;
 import java.util.Collection;
 
 public interface PetService {
-    ResponseData<String> savePet(PetDTO pet);
+    ResponseData<PetDTO> savePet(PetDTO pet);
 
     ResponseData<PetDTO> getPetById(int petId);
 

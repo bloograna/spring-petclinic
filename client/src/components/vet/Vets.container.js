@@ -92,7 +92,7 @@ VetsContainer.protoTypes = {
 
 /* istanbul ignore next */
 const mapStateToProps = state => ({
-  vets: state.vetReducer.vets,
+  vets: [...state.vetReducer.vets.values()],
   specialties: state.vetReducer.specialties,
   showAddVetModal: state.vetReducer.showAddVetModal,
   shouldValidateVetModalData: state.vetReducer.shouldValidateVetModalData

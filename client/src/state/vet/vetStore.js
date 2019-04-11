@@ -46,9 +46,9 @@ const validateVetModalData = mac(VALIDATE_MODAL_DATA);
 const validateVetModalDataCompleted = mac(VALIDATE_MODAL_DATA_COMPLETED);
 
 /* ----- REDUCER HELPER FUNCTIONS ----- */
-const stitchVetsArray = (existingVets, newVets) => {
+const updateVets = (existingVets, newVets) => {
   const updatedVets = cloneDeep(existingVets);
-  newVets.forEach(owner => (updatedVets[owner.id] = owner));
+  newVets.forEach(owner => updatedVets.set(owner.id, owner));
   return updatedVets;
 };
 
@@ -58,7 +58,7 @@ const vetReducer = (state = vetInitialState, action) => {
   switch (action.type) {
     case GET_VETS_SUCCESS: {
       const { vets } = action;
-      const updatedVets = stitchVetsArray(state.vets, vets);
+      const updatedVets = updateVets(state.vets, vets);
       return { ...state, vets: updatedVets };
     }
     case GET_VET_SPECIALTIES_SUCCESS: {
@@ -91,7 +91,7 @@ const getVetRequestBody = vet => {
     return specialtyWithId;
   });
   // for some odd reason server only allows one add vet to go through and then the rest of them makes
-  // the special thing stuck in a "transient state" pet the log message.
+  // the special thing stuck in a "transient state" per the log message.
   return {
     firstName,
     lastName,

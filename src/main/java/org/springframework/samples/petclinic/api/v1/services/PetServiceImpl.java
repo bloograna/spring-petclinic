@@ -35,7 +35,7 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public ResponseData<String> savePet(PetDTO petDTO) {
+    public ResponseData<PetDTO> savePet(PetDTO petDTO) {
         Owner owner = owners.findById(petDTO.getOwnerId());
         if (owner != null) {
             try {
@@ -48,7 +48,7 @@ public class PetServiceImpl implements PetService {
         } else {
             throw new InvalidIdException("Invalid owner id, this owner is not registered yet");
         }
-        return new ResponseData<>("ok");
+        return new ResponseData<>(petDTO);
     }
 
     @Override
