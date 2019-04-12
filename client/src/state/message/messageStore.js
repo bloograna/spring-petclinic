@@ -3,15 +3,13 @@ import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
 
 /* ----- TYPES ----- */
-const ADD_MESSAGE = 'spark/message/ADD_MESSAGE';
-const MARK_ALL_AS_READ = 'spark/message/MARK_ALL_AS_READ';
-const MARK_AS_READ = 'spark/message/MARK_AS_READ';
-const CLEAR_ALL = 'spark/message/CLEAR_ALL';
+const ADD_MESSAGE = 'message/ADD_MESSAGE';
+const MARK_AS_READ = 'message/MARK_AS_READ';
+const CLEAR_ALL = 'message/CLEAR_ALL';
 
 /* ----- ACTIONS ----- */
 const addMessage = mac(ADD_MESSAGE, 'message');
 const clearAllMessages = mac(CLEAR_ALL);
-const markAllMessagesAsRead = mac(MARK_ALL_AS_READ);
 const markMessageAsRead = mac(MARK_AS_READ, 'id');
 
 /* ----- REDUCER ----- */
@@ -22,28 +20,22 @@ const messageReducer = (state = messageInitialState, action) => {
       const { message } = action;
       return [...state, message];
     }
-    case MARK_ALL_AS_READ: {
-      return _.map(state, msg => {
-        const newMsg = msg.clone();
-        newMsg.isRead = true;
-        return newMsg;
-      });
-    }
     case MARK_AS_READ: {
       const { id } = action;
-      return _.map(state, msg => {
+      return state.map(msg => {
         if (msg.id !== id) {
           return msg;
         }
 
         const newMsg = msg.clone();
         newMsg.isRead = true;
+        newMsg.displayNotification = false;
 
         return newMsg;
       });
     }
     case CLEAR_ALL: {
-      return initialState;
+      return [];
     }
     default:
       return state;
@@ -54,7 +46,6 @@ const messageReducer = (state = messageInitialState, action) => {
 export {
   addMessage,
   clearAllMessages,
-  markAllMessagesAsRead,
   markMessageAsRead,
   messageReducer as default
 };

@@ -1,14 +1,7 @@
 import messageReducer, {
   addMessage,
   clearAllMessages,
-  markAllMessagesAsRead,
   markMessageAsRead
 } from './messageStore';
 
-export {
-  addMessage,
-  clearAllMessages,
-  markAllMessagesAsRead,
-  markMessageAsRead,
-  messageReducer
-};
+export { addMessage, clearAllMessages, markMessageAsRead, messageReducer };

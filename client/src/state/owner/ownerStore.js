@@ -8,6 +8,7 @@ import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
 import { addMessage } from '../message/messageStore';
 import ownerService from '../../service/owner/ownerService';
+import Msg from '../../dataModel/Msg';
 
 /* ----- TYPES ----- */
 // services related
@@ -89,18 +90,24 @@ const getSearchRequest = lastName => {
 /* -------- EPICS ------- */
 
 const getOwnersEpic = action$ =>
-  action$.ofType(GET_OWNERS_BY_LASTNAME).mergeMap(action =>
+  action$.ofType(GET_OWNERS_BY_LASTNAME).flatMap(action =>
     fromPromise(ownerService.getOwners(getSearchRequest(action.lastName))).map(
       result => {
         if (result.error) {
           return addMessage(
-            'An error occurred while getting owners from server'
+            Msg.error('An error occurred while getting owners from server')
           );
         }
         return getOwnerByLastNameSuccess(result.data);
       }
     )
   );
+
+// beause apparently I have issues with from promise returning more than 1 action.
+const getOwnersSuccessEpic = action$ =>
+  action$
+    .ofType(GET_OWNERS_BY_LASTNAME_SUCCESS)
+    .flatMap(() => of(addMessage(Msg.success('Retrieved owners from server'))));
 
 const saveOwnerEpic = action$ =>
   action$.ofType(SAVE_OWNER).mergeMap(action =>
@@ -117,7 +124,7 @@ const saveOwnerEpic = action$ =>
     )
   );
 
-const ownerEpics = [getOwnersEpic, saveOwnerEpic];
+const ownerEpics = [getOwnersEpic, saveOwnerEpic, getOwnersSuccessEpic];
 
 export {
   ownerReducer as default,

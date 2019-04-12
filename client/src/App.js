@@ -6,6 +6,7 @@ import HomeContainer from './components/home/Home.container';
 import VetsContainer from './components/vet/Vets.container';
 import OwnersContainer from './components/owner/Owners.container';
 import VisitsContainer from './components/visit/Visits.container';
+import NotificationsContainer from './components/common/NotificationsContainer';
 import { getOwnerByLastName } from './state/owner';
 import { getPetTypes } from './state/pet';
 import { getVets, getVetSpecialties } from './state/vet';
@@ -55,6 +56,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <NotificationsContainer />
         <NavigationBar
           onHomeClick={() => this.onTabClick('home')}
           onOwnerClick={() => this.onTabClick('owners')}
