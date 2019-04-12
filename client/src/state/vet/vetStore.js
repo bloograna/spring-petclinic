@@ -8,6 +8,7 @@ import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
 import { addMessage } from '../message/messageStore';
 import vetService from '../../service/vet/vetService';
+import Msg from '../../dataModel/Msg';
 
 /* ----- TYPES ----- */
 const SAVE_VET = 'vet/SAVE_VET';
@@ -106,7 +107,9 @@ const getVetsEpic = action$ =>
     concat(
       fromPromise(vetService.getVets()).map(result => {
         if (result.error) {
-          return addMessage('An error occurred while getting vets from server');
+          return addMessage(
+            Msg.error('An error occurred while getting vets from server')
+          );
         }
         return getVetsSuccess(result.data);
       })
@@ -121,7 +124,7 @@ const saveVetEpic = action$ =>
       fromPromise(vetService.saveVet(getVetRequestBody(action.vet))).map(
         result => {
           if (result.error) {
-            return addMessage('An error occurred while saving vet');
+            return addMessage(Msg.error('An error occurred while saving vet'));
           }
           return saveVetSuccess(result.data);
         }
@@ -136,13 +139,20 @@ const getSpecialtiesEpic = action$ =>
       fromPromise(vetService.getVetSpecialties()).map(result => {
         if (result.error) {
           return addMessage(
-            'An error occured while getting vet specialities from server'
+            Msg.error(
+              'An error occured while getting vet specialities from server'
+            )
           );
         }
         return getVetSpecialtiesSuccess(result.data);
       })
     )
   );
+
+const saveSuccessEpic = action$ =>
+  action$
+    .ofType(SAVE_VET_SUCCESS)
+    .flatMap(() => of(addMessage(Msg.success('Successfully saved vet.'))));
 
 const vetEpics = [getVetsEpic, getSpecialtiesEpic, saveVetEpic];
 
@@ -156,5 +166,6 @@ export {
   openAddVetModal,
   closeAddVetModal,
   validateVetModalData,
-  validateVetModalDataCompleted
+  validateVetModalDataCompleted,
+  saveSuccessEpic
 };

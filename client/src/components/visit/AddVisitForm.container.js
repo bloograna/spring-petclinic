@@ -75,12 +75,6 @@ class AddVisitFormContainer extends Component {
     setVisitPet(parseInt(petId, 10));
   };
 
-  onSelectVet = event => {
-    const { setVisitVet } = this.props;
-    const vetId = event.currentTarget.getAttribute('name');
-    setVisitVet(parseInt(vetId, 10));
-  };
-
   onAddModalSubmit = (formObj, event) => {
     const { validateVisitModalData, setVisitDescription } = this.props;
     const currentTarget = event.currentTarget;
@@ -114,7 +108,8 @@ class AddVisitFormContainer extends Component {
       setVisitStartTime,
       setVisitEndTime,
       petById,
-      deleteVisit
+      deleteVisit,
+      setVisitVet
     } = this.props;
 
     return (
@@ -148,7 +143,7 @@ class AddVisitFormContainer extends Component {
         selectEndTime={setVisitEndTime}
         selectedEndTime={newVisit.end}
         visitDesc={newVisit.desc}
-        selectVet={this.onSelectVet}
+        selectVet={setVisitVet}
         visitId={newVisit.id}
         deleteVisit={deleteVisit}
         excludedStartTimes={newVisit.excludedStartTimes}

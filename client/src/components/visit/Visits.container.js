@@ -35,12 +35,27 @@ class VisitsContainer extends Component {
     }
   };
 
+  filterVisitsByVet = vetId => {
+    const { visits } = this.props;
+    return visits.filter(visit => visit.vetId === vetId);
+  };
+
+  filterVisitsByPet = petId => {
+    const { visits } = this.props;
+    return visits.filter(visit => visit.petId === petId);
+  };
+
   render() {
     const { visits, showAddVisitModal, openAddVisitModal } = this.props;
 
     return (
       <div style={calendarContainerStyle}>
         <AddVisitModal showAddVisitModal={showAddVisitModal} />
+        <DropdownSearch
+          title={'selectedVet'}
+          dropdownOptions={[{ id: 1, name: 'annie' }, { id: 2, name: 'scott' }]}
+          onClick={option => console.log(option)}
+        />
         <BigCalendar
           selectable
           localizer={localizer}

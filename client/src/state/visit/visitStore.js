@@ -23,6 +23,7 @@ import {
   earliestBefore,
   setTimeForDate
 } from '../../util/timeUtil';
+import Msg from '../../dataModel/Msg';
 
 /* ----- TYPES ----- */
 const SAVE_VISIT = 'visit/SAVE_VISIT';
@@ -301,7 +302,7 @@ const saveVisitEpic = action$ =>
       of(closeAddVisitModal()),
       fromPromise(visitService.saveVisit(action.visit)).map(result => {
         if (result.error) {
-          return addMessage('An error occurred while saving visit');
+          return addMessage(Msg.error('An error occurred while saving visit'));
         }
         return saveVisitSuccess(result.data);
       }),
@@ -333,7 +334,7 @@ const getVisitsByVetIdEpic = action$ =>
       fromPromise(visitService.getVisitsByVetId(action.vetId)).map(result => {
         if (result.error) {
           return addMessage(
-            'An error occurred while getting visit from server'
+            Msg.error('An error occurred while getting visit from server')
           );
         }
         return getVisitByVetIdSuccess(result.data);
@@ -349,7 +350,7 @@ const getVisitsByDateRangeEpic = action$ =>
       ).map(result => {
         if (result.error) {
           return addMessage(
-            'An error occurred while getting visit from server'
+            Msg.error('An error occurred while getting visit from server')
           );
         }
         return getVisitsByDateRangeSuccess(result.data);
@@ -409,7 +410,9 @@ const deleteVisitEpic = (action$, store) =>
       of(closeAddVisitModal()),
       fromPromise(visitService.deleteVisit(action.visitId)).map(result => {
         if (result.error) {
-          return addMessage('An error occurred while deleting visit');
+          return addMessage(
+            Msg.error('An error occurred while deleting visit')
+          );
         }
         return deleteVisitSuccess(result.data);
       }),
@@ -462,6 +465,16 @@ const setVisitEndTimeEpic = (action$, store) =>
     return [];
   });
 
+const saveSuccessEpic = action$ =>
+  action$
+    .ofType(SAVE_VISIT_SUCCESS)
+    .flatMap(() => of(addMessage(Msg.success('Successfully saved visit.'))));
+
+const deleteSuccessEpic = action$ =>
+  action$
+    .ofType(DELETE_VISIT_SUCCESS)
+    .flatMap(() => of(addMessage(Msg.success('Successfully saved visit.'))));
+
 const visitEpics = [
   getVisitsByDateEpic,
   saveVisitEpic,
@@ -474,7 +487,9 @@ const visitEpics = [
   setVisitVetEpic,
   setVisitDateEpic,
   setVisitStartTimeEpic,
-  setVisitEndTimeEpic
+  setVisitEndTimeEpic,
+  saveSuccessEpic,
+  deleteSuccessEpic
 ];
 
 export {

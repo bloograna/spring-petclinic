@@ -9,6 +9,7 @@ import initialState from '../state';
 import { addMessage } from '../message/messageStore';
 import petService from '../../service/pet/petService';
 import { setActiveOwner, clearActiveOwner } from '../owner/ownerStore';
+import Msg from '../../dataModel/Msg';
 
 /* ----- TYPES ----- */
 const SAVE_PET = 'pet/SAVE_PET';
@@ -114,7 +115,9 @@ const getPetsByOwnerEpic = action$ =>
     concat(
       fromPromise(petService.getPetsbyOwnerId(action.ownerId)).map(result => {
         if (result.error) {
-          return addMessage('An error occurred while getting pets from server');
+          return addMessage(
+            Msg.error('An error occurred while getting pets from server')
+          );
         }
         return getPetsByOwnerSuccess(result.data);
       })
@@ -126,7 +129,9 @@ const getPetByIdEpic = action$ =>
     concat(
       fromPromise(petService.getPetById(action.petId)).map(result => {
         if (result.error) {
-          return addMessage('An error occurred while getting pets from server');
+          return addMessage(
+            Msg.error('An error occurred while getting pets from server')
+          );
         }
         return getPetByIdSuccess(result.data);
       })
@@ -146,7 +151,7 @@ const savePetEpic = (action$, store) =>
         )
       ).map(result => {
         if (result.error) {
-          return addMessage('An error occurred while saving pet');
+          return addMessage(Msg.error('An error occurred while saving pet'));
         }
         return savePetSuccess();
       }),
@@ -158,7 +163,7 @@ const getPetTypesEpic = action$ =>
   action$.ofType(GET_PET_TYPES).mergeMap(() =>
     fromPromise(petService.getPetTypes()).map(result => {
       if (result.error) {
-        return addMessage('An error occurred while saving pet');
+        return addMessage(Msg.error('An error occurred while saving pet'));
       }
       return getPetTypesSuccess(result.data);
     })
@@ -174,13 +179,19 @@ const closeAddModalEpic = action$ =>
     .ofType(CLOSE_ADD_MODAL)
     .mergeMap(() => concat(of(clearActiveOwner()), of(clearActivePet())));
 
+const saveSuccessEpic = action$ =>
+  action$
+    .ofType(SAVE_PET_SUCCESS)
+    .flatMap(() => of(addMessage(Msg.success('Successfully saved pet.'))));
+
 const petEpics = [
   getPetsByOwnerEpic,
   getPetByIdEpic,
   savePetEpic,
   getPetTypesEpic,
   openAddModalEpic,
-  closeAddModalEpic
+  closeAddModalEpic,
+  saveSuccessEpic
 ];
 
 export {

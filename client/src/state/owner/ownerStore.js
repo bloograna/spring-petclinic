@@ -107,7 +107,7 @@ const getOwnersEpic = action$ =>
 const getOwnersSuccessEpic = action$ =>
   action$
     .ofType(GET_OWNERS_BY_LASTNAME_SUCCESS)
-    .flatMap(() => of(addMessage(Msg.success('Retrieved owners from server'))));
+    .flatMap(() => of(addMessage(Msg.info('Retrieved owners from server.'))));
 
 const saveOwnerEpic = action$ =>
   action$.ofType(SAVE_OWNER).mergeMap(action =>
@@ -116,7 +116,7 @@ const saveOwnerEpic = action$ =>
       of(closeAddOwnerModal()),
       fromPromise(ownerService.saveOwner(action.owner)).map(result => {
         if (result.error) {
-          return addMessage('An error occurred while saving owner');
+          return addMessage(Msg.error('An error occurred while saving owner'));
         }
         return saveOwnerSuccess();
       }),
@@ -124,7 +124,17 @@ const saveOwnerEpic = action$ =>
     )
   );
 
-const ownerEpics = [getOwnersEpic, saveOwnerEpic, getOwnersSuccessEpic];
+const saveSuccessEpic = action$ =>
+  action$
+    .ofType(SAVE_OWNER_SUCCESS)
+    .flatMap(() => of(addMessage(Msg.success('Successfully saved owner.'))));
+
+const ownerEpics = [
+  getOwnersEpic,
+  saveOwnerEpic,
+  getOwnersSuccessEpic,
+  saveSuccessEpic
+];
 
 export {
   ownerReducer as default,
