@@ -15,7 +15,8 @@ import visitReducer, {
   setVisitEndTime,
   setVisitPetId,
   setVisitVetId,
-  setVisitDescription
+  setVisitDescription,
+  setVisitOwner
 } from './visitStore';
 
 export {
@@ -34,5 +35,6 @@ export {
   setVisitEndTime,
   setVisitPetId,
   setVisitVetId,
-  setVisitDescription
+  setVisitDescription,
+  setVisitOwner
 };

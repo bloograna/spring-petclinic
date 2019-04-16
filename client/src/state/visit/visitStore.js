@@ -11,7 +11,6 @@ import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
 import { addMessage } from '../message';
 import { getPetById } from '../pet';
-import { clearActiveOwner } from '../owner';
 import visitService from '../../service/visit/visitService';
 import {
   formatDate,
@@ -51,6 +50,7 @@ const SET_VISIT_DESCRIPTION = 'visit/SET_VISIT_DESCRIPTION';
 const SET_VISIT_EXCLUDED_START_TIMES = 'visit/SET_VISIT_EXCLUDED_START_TIMES';
 const SET_VISIT_EXCLUDED_END_TIMES = 'visit/SET_VISIT_EXCLUDED_END_TIMES';
 const SET_VISIT_EXCLUDED_VETS = 'visit/SET_VISIT_EXCLUDED_VETS';
+const SET_VISIT_OWNER = 'visit/SET_VISIT_OWNER';
 const CLEAR_NEW_VISIT_DATA = 'visit/CLEAR_NEW_VISIT_DATA';
 
 // render/modal
@@ -93,6 +93,7 @@ const setVisitDescription = mac(SET_VISIT_DESCRIPTION, 'desc');
 const setVisitExcludedStartTimes = mac(SET_VISIT_EXCLUDED_START_TIMES, 'times');
 const setVisitExcludedEndTimes = mac(SET_VISIT_EXCLUDED_END_TIMES, 'times');
 const setVisitExcludedVets = mac(SET_VISIT_EXCLUDED_VETS, 'vets');
+const setVisitOwner = mac(SET_VISIT_OWNER, 'owner');
 const clearNewVisitData = mac(CLEAR_NEW_VISIT_DATA);
 
 // render/modal
@@ -284,6 +285,12 @@ const visitReducer = (state = visitInitialState, action) => {
       newVisit.excludedVets = vets;
       return { ...state, newVisit };
     }
+    case SET_VISIT_OWNER: {
+      const { owner } = action;
+      const newVisit = cloneDeep(state.newVisit);
+      newVisit.ownerId = owner;
+      return { ...state, newVisit };
+    }
     case CLEAR_NEW_VISIT_DATA: {
       const { newVisit } = visitInitialState;
       return { ...state, newVisit };
@@ -389,9 +396,7 @@ const openAddModalEpic = (action$, store) =>
   });
 
 const closeAddModalEpic = action$ =>
-  action$
-    .ofType(CLOSE_ADD_MODAL)
-    .mergeMap(() => concat(of(clearNewVisitData())), of(clearActiveOwner()));
+  action$.ofType(CLOSE_ADD_MODAL).mergeMap(() => of(clearNewVisitData()));
 
 const validateVisitDataEpic = (action$, store) =>
   action$.ofType(VALIDATE_MODAL_DATA).mergeMap(() => {
@@ -508,5 +513,6 @@ export {
   setVisitPetId,
   setVisitVetId,
   setVisitDescription,
+  setVisitOwner,
   deleteVisit
 };

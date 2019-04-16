@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { isEmpty } from 'lodash';
-import { setActiveOwner, clearActiveOwner } from '../../state/owner';
 import { getPetsByOwner as getPetsByOwnerAction } from '../../state/pet';
 import {
   deleteVisit as deleteVisitAction,
@@ -13,66 +12,30 @@ import {
   setVisitPetId as setVisitPetIdAction,
   setVisitVetId as setVisitVetIdAction,
   setVisitDescription as setVisitDescriptionAction,
-  validateVisitModalData as validateVisitModalDataAction
+  validateVisitModalData as validateVisitModalDataAction,
+  setVisitOwner as setVisitOwnerAction
 } from '../../state/visit';
 
 import AddVisitForm from './AddVisitForm';
 
+import {
+  getActivePersonDisplayInfo,
+  formatPersonData,
+  getActivePetDisplayInfo,
+  formatPetData
+} from '../../util/displayInfo';
+
 class AddVisitFormContainer extends Component {
-  getActivePetInfo = (pets, activeOwnerId, activePetId) => {
-    const pet = this.formatPetData(pets, activeOwnerId).filter(
-      pet => pet.id === activePetId
-    );
-    return isEmpty(pet) ? null : pet[0].name;
-  };
-
-  getActivePersonInfo = (people, activePerson) => {
-    const person = this.formatPersonData(
-      people.filter(person => person.id === activePerson)
-    );
-    return isEmpty(person) ? null : person[0].name;
-  };
-
-  formatPetData = (petsByOwner, activeOwner) => {
-    const cleanArray = [];
-    if (isEmpty(petsByOwner) || !activeOwner) {
-      return [];
-    } else {
-      // need another check in the case data hasnt returned
-      const pets = petsByOwner[activeOwner];
-      if (pets) {
-        Object.values(pets).forEach(pet => {
-          const { name, id } = pet;
-          cleanArray.push({ name, id });
-        });
-      }
-      return cleanArray;
-    }
-  };
-
-  formatPersonData = people =>
-    people.map(person => {
-      const { firstName, lastName, id } = person;
-      return { id, name: lastName + ', ' + firstName };
-    });
-
-  searchPetsByOwnerId = event => {
-    const { getPetsByOwner, setActiveOwner, setVisitPet } = this.props;
-    const ownerId = event.currentTarget.getAttribute('name');
+  searchPetsByOwnerId = ownerId => {
+    const { getPetsByOwner, setVisitOwner, setVisitPet } = this.props;
     setVisitPet(null);
-    setActiveOwner(parseInt(ownerId, 10));
+    setVisitOwner(ownerId);
     getPetsByOwner(ownerId);
   };
 
   filterVets = () => {
     const { newVisit, vets } = this.props;
     return vets.filter(vet => !newVisit.excludedVets.includes(vet.id));
-  };
-
-  onSelectPet = event => {
-    const { setVisitPet } = this.props;
-    const petId = event.currentTarget.getAttribute('name');
-    setVisitPet(parseInt(petId, 10));
   };
 
   onAddModalSubmit = (formObj, event) => {
@@ -86,7 +49,7 @@ class AddVisitFormContainer extends Component {
 
   getPetSelectionString = (activeOwner, newVisit, pets, petById) => {
     if (activeOwner && newVisit.petId) {
-      return this.getActivePetInfo(pets, activeOwner, newVisit.petId);
+      return getActivePetDisplayInfo(pets, activeOwner, newVisit.petId);
     }
     if (newVisit.petId && newVisit.id && !isEmpty(petById)) {
       const pet = petById[0];
@@ -99,7 +62,6 @@ class AddVisitFormContainer extends Component {
     const {
       shouldValidateVisitModalData,
       owners,
-      activeOwner,
       vets,
       pets,
       onHideAddVisitModal,
@@ -109,21 +71,25 @@ class AddVisitFormContainer extends Component {
       setVisitEndTime,
       petById,
       deleteVisit,
-      setVisitVet
+      setVisitVet,
+      setVisitPet
     } = this.props;
+    const activeOwner = newVisit.ownerId;
 
     return (
       <AddVisitForm
         formValidated={shouldValidateVisitModalData}
-        owners={this.formatPersonData(owners)}
-        vets={this.formatPersonData(this.filterVets())}
-        pets={activeOwner ? this.formatPetData(pets, activeOwner) : []}
+        owners={formatPersonData(owners)}
+        vets={formatPersonData(this.filterVets())}
+        pets={activeOwner ? formatPetData(pets, activeOwner) : []}
         onSubmit={this.onAddModalSubmit}
         onHideAddVisitModal={onHideAddVisitModal}
         selectOwner={this.searchPetsByOwnerId}
-        selectPet={this.onSelectPet}
+        selectPet={setVisitPet}
         selectedOwner={
-          activeOwner ? this.getActivePersonInfo(owners, activeOwner) : 'Owner'
+          activeOwner
+            ? getActivePersonDisplayInfo(owners, activeOwner)
+            : 'Owner'
         }
         selectedPet={this.getPetSelectionString(
           activeOwner,
@@ -133,7 +99,7 @@ class AddVisitFormContainer extends Component {
         )}
         selectedVet={
           newVisit.vetId
-            ? this.getActivePersonInfo(vets, newVisit.vetId)
+            ? getActivePersonDisplayInfo(vets, newVisit.vetId)
             : 'Vet'
         }
         selectDate={setVisitDate}
@@ -160,13 +126,11 @@ AddVisitFormContainer.propTypes = {
   pets: PropTypes.array.isRequired,
   onHideAddVisitModal: PropTypes.func.isRequired,
   newVisit: PropTypes.shape({}).isRequired,
-  activeOwner: PropTypes.number,
   activePet: PropTypes.number
 };
 
 const mapStateToProps = state => ({
   owners: [...state.ownerReducer.owners.values()],
-  activeOwner: state.ownerReducer.activeOwner,
   pets: state.petReducer.pets,
   vets: [...state.vetReducer.vets.values()],
   visits: [...state.visitReducer.visits.values()],
@@ -183,11 +147,8 @@ const mapDispatchToProps = dispatch => ({
   onHideAddVisitModal: () => {
     dispatch(closeAddVisitModalAction());
   },
-  setActiveOwner: ownerId => {
-    dispatch(setActiveOwner(ownerId));
-  },
-  clearActiveOwner: () => {
-    dispatch(clearActiveOwner());
+  setVisitOwner: ownerId => {
+    dispatch(setVisitOwnerAction(ownerId));
   },
   setVisitDate: date => {
     dispatch(setVisitDateAction(date));

@@ -3,16 +3,23 @@ import PropTypes from 'prop-types';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import isAfter from 'date-fns/isAfter';
+import { Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { Button } from 'react-bootstrap';
 import {
   getVisitsByDate,
   openAddVisitModal as openAddVisitModalAction,
   saveVisit as saveVisitAction
 } from '../../state/visit';
+import { getPetsByOwner as getPetsByOwnerAction } from '../../state/pet';
 
 import DropdownSearch from './DropdownSearch';
 import AddVisitModal from './AddVisitModal';
+import {
+  getActivePersonDisplayInfo,
+  formatPersonData,
+  getActivePetDisplayInfo,
+  formatPetData
+} from '../../util/displayInfo';
 
 const localizer = BigCalendar.momentLocalizer(moment);
 
@@ -28,6 +35,26 @@ const calendarContainerStyle = {
 };
 
 class VisitsContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      vetFilter: null,
+      petFilter: null,
+      ownerFilter: null
+    };
+  }
+
+  searchPetsByOwnerId = ownerId => {
+    const { getPetsByOwner } = this.props;
+    this.setState({ petFilter: null });
+    getPetsByOwner(ownerId);
+  };
+
+  onOwnerFilterClick = ownerId => {
+    this.setState({ ownerFilter: ownerId });
+    this.searchPetsByOwnerId(ownerId);
+  };
+
   filterVisitBlock = event => {
     const { openAddVisitModal } = this.props;
     if (isAfter(event.start, new Date())) {
@@ -46,16 +73,56 @@ class VisitsContainer extends Component {
   };
 
   render() {
-    const { visits, showAddVisitModal, openAddVisitModal } = this.props;
-
+    const {
+      visits,
+      showAddVisitModal,
+      openAddVisitModal,
+      owners,
+      pets,
+      vets
+    } = this.props;
+    const { ownerFilter, vetFilter, petFilter } = this.state;
+    // const filteredVisits = vetFilter
+    //   ? this.filterVisitsByVet(vetFilter)
+    //   : visits;
+    console.log(pets);
     return (
       <div style={calendarContainerStyle}>
         <AddVisitModal showAddVisitModal={showAddVisitModal} />
-        <DropdownSearch
-          title={'selectedVet'}
-          dropdownOptions={[{ id: 1, name: 'annie' }, { id: 2, name: 'scott' }]}
-          onClick={option => console.log(option)}
-        />
+        <Row>
+          <DropdownSearch
+            title={
+              ownerFilter
+                ? getActivePersonDisplayInfo(owners, ownerFilter)
+                : 'Filter visits by owner'
+            }
+            dropdownOptions={formatPersonData(owners)}
+            onClick={this.onOwnerFilterClick}
+            onClear={() => this.setState({ ownerFilter: null })}
+          />
+          <DropdownSearch
+            title={
+              petFilter
+                ? getActivePetDisplayInfo(pets, ownerFilter, petFilter)
+                : 'Filter visits by pet'
+            }
+            dropdownOptions={
+              ownerFilter ? formatPetData(pets, ownerFilter) : []
+            }
+            onClick={petId => this.setState({ petFilter: petId })}
+            onClear={() => this.setState({ petFilter: null })}
+          />
+          <DropdownSearch
+            title={
+              vetFilter
+                ? getActivePersonDisplayInfo(vets, vetFilter)
+                : 'Filter visits by vet'
+            }
+            dropdownOptions={formatPersonData(vets)}
+            onClick={vetId => this.setState({ vetFilter: vetId })}
+            onClear={() => this.setState({ vetFilter: null })}
+          />
+        </Row>
         <BigCalendar
           selectable
           localizer={localizer}
@@ -82,6 +149,9 @@ VisitsContainer.propTypes = {
 };
 
 const mapStateToProps = state => ({
+  owners: [...state.ownerReducer.owners.values()],
+  pets: state.petReducer.pets,
+  vets: [...state.vetReducer.vets.values()],
   visits: [...state.visitReducer.visits.values()],
   showAddVisitModal: state.visitReducer.showAddVisitModal
 });
@@ -96,6 +166,9 @@ const mapDispatchToProps = dispatch => ({
   },
   openAddVisitModal: visit => {
     dispatch(openAddVisitModalAction(visit));
+  },
+  getPetsByOwner: ownerId => {
+    dispatch(getPetsByOwnerAction(ownerId));
   }
 });
 

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { makeActionCreator as mac } from '../common/makeActionCreator';
 import initialState from '../state';
 

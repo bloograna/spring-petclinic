@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { FormControl, Dropdown, Button } from 'react-bootstrap';
+import { FormControl, Dropdown, Button, Row, Form } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 class CustomToggle extends Component {
   handleClick = e => {
@@ -32,20 +34,26 @@ class CustomMenu extends Component {
       children,
       style,
       className,
-      'aria-labelledby': labeledBy
+      'aria-labelledby': labeledBy,
+      onClear
     } = this.props;
 
     const { value } = this.state;
 
     return (
       <div style={style} className={className} aria-labelledby={labeledBy}>
-        <FormControl
-          autoFocus
-          className="mx-3 my-2 w-auto"
-          placeholder="Type to filter..."
-          onChange={this.handleChange}
-          value={value}
-        />
+        <Form.Group as={Row} controlId="horizontal-input">
+          <Form.Control
+            autoFocus
+            className="mx-3 my-2 w-auto"
+            placeholder="Type to filter..."
+            onChange={this.handleChange}
+            value={value}
+          />
+          {onClear ? (
+            <FontAwesomeIcon icon={faTimesCircle} onClick={onClear} />
+          ) : null}
+        </Form.Group>
         <ul className="list-unstyled">
           {React.Children.toArray(children).filter(
             child =>
@@ -58,12 +66,18 @@ class CustomMenu extends Component {
 }
 
 class DropdownSearch extends Component {
+  onSelect = event => {
+    const { onClick } = this.props;
+    const id = event.currentTarget.getAttribute('name');
+    onClick(parseInt(id, 10));
+  };
+
   renderItems = () => {
-    const { dropdownOptions, onClick } = this.props;
+    const { dropdownOptions } = this.props;
     return dropdownOptions.map(option => (
       <Dropdown.Item
         key={`dropdown-option-${option.name}-${option.id}`}
-        onClick={onClick}
+        onClick={this.onSelect}
         name={option.id}
       >
         {option.name}
@@ -72,13 +86,15 @@ class DropdownSearch extends Component {
   };
 
   render() {
-    const { title } = this.props;
+    const { title, onClear } = this.props;
     return (
       <Dropdown>
         <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
           {title}
         </Dropdown.Toggle>
-        <Dropdown.Menu as={CustomMenu}>{this.renderItems()}</Dropdown.Menu>
+        <Dropdown.Menu as={CustomMenu} onClear={onClear}>
+          {this.renderItems()}
+        </Dropdown.Menu>
       </Dropdown>
     );
   }

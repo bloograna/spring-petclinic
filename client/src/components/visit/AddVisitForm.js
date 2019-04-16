@@ -10,11 +10,6 @@ import DropdownSearch from './DropdownSearch';
 import VisitDatePicker from './VisitDatePicker';
 import VisitTimePicker from './VisitTimePicker';
 
-const onSelectVet = (event, cbAction) => {
-  const id = event.currentTarget.getAttribute('name');
-  cbAction(parseInt(id, 10));
-};
-
 // if has edit, then use update mode
 const ownerPetInfoChooser = (
   owners,
@@ -83,7 +78,7 @@ const AddVisitForm = ({
         <DropdownSearch
           title={selectedVet}
           dropdownOptions={vets}
-          onClick={event => onSelectVet(event, selectVet)}
+          onClick={selectVet}
         />
       </ButtonGroup>
     </Form.Row>

@@ -36,7 +36,8 @@ const initialState = {
       desc: null,
       excludedStartTimes: [],
       maxEndTime: null,
-      excludedVets: []
+      excludedVets: [],
+      ownerId: null
     },
     isNewVisitValid: false
   },
