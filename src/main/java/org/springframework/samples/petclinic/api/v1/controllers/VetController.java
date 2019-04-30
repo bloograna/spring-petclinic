@@ -18,7 +18,6 @@ package org.springframework.samples.petclinic.api.v1.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.samples.petclinic.exceptions.ServiceException;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.dtos.ResponseData;
 import org.springframework.samples.petclinic.model.Vet;

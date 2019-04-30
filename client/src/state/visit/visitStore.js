@@ -480,6 +480,20 @@ const deleteSuccessEpic = action$ =>
     .ofType(DELETE_VISIT_SUCCESS)
     .flatMap(() => of(addMessage(Msg.success('Successfully saved visit.'))));
 
+const getVisitsByPetIdEpic = action$ =>
+  action$.ofType(GET_VISIT_BY_PET_ID).mergeMap(action =>
+    concat(
+      fromPromise(visitService.getVisitsByPetId(action.petId)).map(result => {
+        if (result.error) {
+          return addMessage(
+            Msg.error('An error occurred while getting visit from server')
+          );
+        }
+        return getVisitByPetIdSuccess(result.data);
+      })
+    )
+  );
+
 const visitEpics = [
   getVisitsByDateEpic,
   saveVisitEpic,
@@ -494,7 +508,8 @@ const visitEpics = [
   setVisitStartTimeEpic,
   setVisitEndTimeEpic,
   saveSuccessEpic,
-  deleteSuccessEpic
+  deleteSuccessEpic,
+  getVisitsByPetIdEpic
 ];
 
 export {
@@ -514,5 +529,6 @@ export {
   setVisitVetId,
   setVisitDescription,
   setVisitOwner,
-  deleteVisit
+  deleteVisit,
+  getVisitByPetId
 };

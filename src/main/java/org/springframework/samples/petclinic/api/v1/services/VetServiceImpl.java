@@ -1,7 +1,6 @@
 package org.springframework.samples.petclinic.api.v1.services;
 
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.dtos.ResponseData;
 import org.springframework.samples.petclinic.exceptions.InvalidIdException;
@@ -62,7 +61,7 @@ public class VetServiceImpl implements VetService {
 
     @Override
     public ResponseData<Vet> addSpecialtyToVet(int vetId, Collection<Specialty> specialties) {
-        Vet vet = this.vets.findById(vetId);
+        Vet vet = vets.findById(vetId);
         if (vet != null) {
             specialties.forEach(specialty -> vet.addSpecialty(specialty));
             vets.save(vet);

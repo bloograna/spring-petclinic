@@ -72,6 +72,19 @@ class VisitsContainer extends Component {
     return visits.filter(visit => visit.petId === petId);
   };
 
+  filterVisits = () => {
+    const { visits } = this.props;
+    const { ownerFilter, petFilter, vetFilter } = this.state;
+    let returnVisits = visits;
+    if (petFilter) {
+      returnVisits = returnVisits.filter(visit => visit.petId === petFilter);
+    }
+    if (vetFilter) {
+      returnVisits = returnVisits.filter(visit => visit.vetId === vetFilter);
+    }
+    return returnVisits;
+  };
+
   render() {
     const {
       visits,
@@ -82,10 +95,7 @@ class VisitsContainer extends Component {
       vets
     } = this.props;
     const { ownerFilter, vetFilter, petFilter } = this.state;
-    // const filteredVisits = vetFilter
-    //   ? this.filterVisitsByVet(vetFilter)
-    //   : visits;
-    console.log(pets);
+    const filteredVisits = this.filterVisits();
     return (
       <div style={calendarContainerStyle}>
         <AddVisitModal showAddVisitModal={showAddVisitModal} />
@@ -126,7 +136,7 @@ class VisitsContainer extends Component {
         <BigCalendar
           selectable
           localizer={localizer}
-          events={visits}
+          events={filteredVisits}
           step={15}
           timeslots={8}
           min={minTime}

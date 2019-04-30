@@ -5,7 +5,7 @@ import Msg from '../../dataModel/Msg';
 
 const Notifications = ({ messages, onDismiss }) => {
   const showingMessages = messages.map(msg => (
-    <Alert message={msg} onDismiss={() => onDismiss(msg.id)} />
+    <Alert message={msg} onDismiss={() => onDismiss(msg.id)} key={msg.id} />
   ));
 
   return <React.Fragment>{showingMessages}</React.Fragment>;

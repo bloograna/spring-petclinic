@@ -1,7 +1,8 @@
 import React from 'react';
-import LargeModal from '../common/LargeModal';
-import AddPetForm from './AddPetForm';
 import PropTypes from 'prop-types';
+import LargeModal from '../common/LargeModal';
+import VisitList from '../common/VisitList';
+import AddPetForm from './AddPetForm';
 
 const AddPetModal = ({
   pet,
@@ -9,7 +10,8 @@ const AddPetModal = ({
   shouldValidatePetModalData,
   onHideAddPetModal,
   onAddButtonClick,
-  petTypes
+  petTypes,
+  visits
 }) => {
   return (
     <LargeModal
@@ -24,6 +26,7 @@ const AddPetModal = ({
         onHideAddPetModal={onHideAddPetModal}
         pet={pet}
       />
+      <VisitList visits={visits} />
     </LargeModal>
   );
 };
@@ -34,6 +37,7 @@ AddPetModal.propTypes = {
   onHideAddPetModal: PropTypes.func.isRequired,
   onAddButtonClick: PropTypes.func.isRequired,
   petTypes: PropTypes.array.isRequired,
+  visits: PropTypes.array.isRequired,
   pet: PropTypes.shape({})
 };
 

@@ -16,7 +16,8 @@ import visitReducer, {
   setVisitPetId,
   setVisitVetId,
   setVisitDescription,
-  setVisitOwner
+  setVisitOwner,
+  getVisitByPetId
 } from './visitStore';
 
 export {
@@ -36,5 +37,6 @@ export {
   setVisitPetId,
   setVisitVetId,
   setVisitDescription,
-  setVisitOwner
+  setVisitOwner,
+  getVisitByPetId
 };

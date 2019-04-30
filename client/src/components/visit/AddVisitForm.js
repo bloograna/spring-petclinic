@@ -4,6 +4,7 @@ import { Form, ButtonGroup, Button, FormControl } from 'react-bootstrap';
 import setMinutes from 'date-fns/setMinutes';
 import setHours from 'date-fns/setHours';
 import addMinutes from 'date-fns/addMinutes';
+import isBefore from 'date-fns/isBefore';
 
 import CommonForm from '../common/CommonForm';
 import DropdownSearch from './DropdownSearch';
@@ -123,12 +124,14 @@ const AddVisitForm = ({
       <Button onClick={onHideAddVisitModal}>Cancel</Button>
       <Button
         variant="danger"
-        hidden={!visitId}
+        hidden={!visitId || isBefore(selectedDate, new Date())}
         onClick={() => deleteVisit(visitId)}
       >
         Delete
       </Button>
-      <Button type="submit">{visitId ? 'Update' : 'Add'}</Button>
+      <Button type="submit" hidden={isBefore(selectedDate, new Date())}>
+        {visitId ? 'Update' : 'Add'}
+      </Button>
     </Form.Row>
   </CommonForm>
 );

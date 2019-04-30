@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import NavigationBar from './components/navbar/NavigationBar';
-import HomeContainer from './components/home/Home.container';
+import Home from './components/home/Home';
 import VetsContainer from './components/vet/Vets.container';
 import OwnersContainer from './components/owner/Owners.container';
 import VisitsContainer from './components/visit/Visits.container';
@@ -41,7 +41,7 @@ class App extends Component {
     const { activePanel } = this.state;
     switch (activePanel) {
       case 'home':
-        return <HomeContainer />;
+        return <Home />;
       case 'owners':
         return <OwnersContainer />;
       case 'vets':

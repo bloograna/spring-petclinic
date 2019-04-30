@@ -15,6 +15,7 @@ exports[`OwnersContainer render renders successfully 1`] = `
     petTypes={Array []}
     shouldValidatePetModalData={false}
     showAddPetModal={false}
+    visits={Array []}
   />
   <ForwardRef(Bootstrap(Form))
     noValidate={true}

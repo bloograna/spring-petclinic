@@ -19,6 +19,7 @@ import {
   savePet,
   setActivePet
 } from '../../state/pet';
+import { getVisitByPetId as getVisitByPetIdAction } from '../../state/visit';
 import Owners from './Owners';
 import AddOwnerModal from './AddOwnerModal';
 import AddPetModal from '../pet/AddPetModal';
@@ -44,6 +45,14 @@ class OwnersContainer extends Component {
       return pets[activeOwner][activePet];
     }
     return null;
+  };
+
+  filterVisitsByPet = () => {
+    const { visits, activePet } = this.props;
+    if (activePet) {
+      return visits.filter(visit => visit.petId === activePet);
+    }
+    return [];
   };
 
   handleAddOwnerFormData = (formObj, event) => {
@@ -97,7 +106,9 @@ class OwnersContainer extends Component {
       closeAddPetModal,
       shouldValidatePetModalData,
       getPetsByOwner,
-      petTypes
+      petTypes,
+      // visit
+      getVisitByPetId
     } = this.props;
     return (
       <div>
@@ -114,6 +125,7 @@ class OwnersContainer extends Component {
           onAddButtonClick={this.handleAddPetFormData}
           petTypes={petTypes}
           pet={this.getActivePetObject()}
+          visits={this.filterVisitsByPet()}
         />
         {this.renderSearchButton()}
         <Owners
@@ -122,6 +134,7 @@ class OwnersContainer extends Component {
           onAddPet={openAddPetModal}
           setActivePet={this.onPetClick}
           getPetsByOwnerId={getPetsByOwner}
+          getVisitByPetId={getVisitByPetId}
         />
       </div>
     );
@@ -148,7 +161,8 @@ OwnersContainer.protoTypes = {
   setActivePet: PropTypes.func.isRequired,
   getPetsByOwner: PropTypes.func.isRequired,
   validatePetModalData: PropTypes.func.isRequired,
-  savePet: PropTypes.func.isRequired
+  savePet: PropTypes.func.isRequired,
+  getVisitByPetId: PropTypes.func.isRequired
 };
 
 /* istanbul ignore next */
@@ -163,7 +177,9 @@ const mapStateToProps = state => ({
   petTypes: state.petReducer.petTypes,
   showAddPetModal: state.petReducer.showAddPetModal,
   shouldValidatePetModalData: state.petReducer.shouldValidatePetModalData,
-  activePet: state.petReducer.activePet
+  activePet: state.petReducer.activePet,
+  /*----- visits -----*/
+  visits: [...state.visitReducer.visits.values()]
 });
 
 /* istanbul ignore next */
@@ -205,6 +221,9 @@ const mapDispatchToProps = dispatch => ({
   },
   savePet: pet => {
     dispatch(savePet(pet));
+  },
+  getVisitByPetId: petId => {
+    dispatch(getVisitByPetIdAction(petId));
   }
 });
 
